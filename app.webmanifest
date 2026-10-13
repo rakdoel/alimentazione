@@ -1,8 +1,8 @@
 {
- "id": "./?app=2",
+ "id": "./?app=3",
  "name": "Diario",
  "short_name": "Diario",
- "start_url": "./?app=2",
+ "start_url": "./?app=3",
  "scope": "./",
  "display": "standalone",
  "orientation": "portrait",
