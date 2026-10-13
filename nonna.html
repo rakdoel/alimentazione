@@ -882,7 +882,7 @@ function nonnaBanner(compact){if(!rangeLoaded())return '';if(nonnaInSync())retur
 function tabOggi(){var iso=S.day;if(needMonths([iso]))return '<p class="muted">Carico…</p>';
  var dd=dayData(iso)||{};var p=dayScore(iso,dd);var isToday=iso===todayIso();var plan=PLAN[dowOf(iso)];var dev=deviations(iso,dd);
  var h='<div class="daynav"><button class="icon" data-act="day" data-n="-1" aria-label="Giorno prima">‹</button><div class="dn-mid"><div class="dn-date serif">'+fmtDay(iso)+'</div>'+(isToday?'<span class="pill">oggi</span>':'<button class="link" data-act="today">torna a oggi</button>')+'</div><button class="icon" data-act="day" data-n="1" aria-label="Giorno dopo">›</button></div>';
- var r=nonnaRange();if(iso>=r[0]&&iso<=r[13])h+=nonnaBanner(true);
+ var r=nonnaRange();if(!ISGH&&iso>=r[0]&&iso<=r[13])h+=nonnaBanner(true);
  h+='<section class="card"><div class="score">'+ring(p)+'<div style="flex:1"><div class="score-t">'+(p==null?'Nessun pasto segnato':'Giornata al '+p+'%')+'</div><div class="muted small">'+marked(iso,dd)+'/4 pasti segnati'+(dev.length?' · '+dev.length+(dev.length===1?' cosa diversa':' cose diverse'):'')+'</div></div></div>';
  if(dev.length)h+='<details style="margin-top:8px"><summary class="small" style="cursor:pointer;font-weight:700">Dove non hai seguito</summary><ul class="dev">'+dev.map(function(d){return '<li>'+esc(d.txt)+'</li>'}).join('')+'</ul></details>';
  if(dd.xo&&dd.xo.length)h+='<div class="lbl" style="margin:10px 0 0">Fuori dai pasti</div><ul class="xl">'+dd.xo.map(function(x,i){return '<li><span>+ '+esc(xtxt(x))+'</span><button data-act="delx" data-slot="xo" data-i="'+i+'" aria-label="Togli">×</button></li>'}).join('')+'</ul>';
@@ -1367,7 +1367,7 @@ function renderNonna(){var L=S.lang,t=T[L],pl=L==='pl';var today=todayIso();if(S
   if(!out&&!(plan.libera&&src==='n')){if(src==='p'||src==='n'){var d=pickDish(iso,src,dd);if(d)h+='<button class="n-dish" data-act="nrecipe" data-iso="'+iso+'" data-src="'+src+'"><span>👩‍🍳 '+(pl?'Przepis':'Ricetta')+'</span><b>'+esc(pl&&DTPL[d.t.id]?plTitle(d):dishName(d))+'</b><em>'+(pl?'Zobacz, jak zrobić ›':'Vedi come si fa ›')+'</em></button>'}else if(plan.pancake&&src==='c')h+='<button class="n-dish" data-act="npanc"><span>👩‍🍳 '+(pl?'Przepis':'Ricetta')+'</span><b>'+(pl?'Placuszki':'Pancake')+'</b><em>'+(pl?'Zobacz, jak zrobić ›':'Vedi come si fa ›')+'</em></button>'}
   h+='</section>'});
  if(EMB.u)h+='<p class="n-foot">'+t.upd+': '+esc(fmtDay(EMB.u.slice(0,10),L))+'</p>';
- if(S.isLeo)h+='<div class="banner todo" style="margin-top:16px;font-size:14px"><span>Anteprima di come la vede nonna.</span><button class="btn" data-act="backleo">Torna al diario</button></div>';
+ if(S.isLeo)h+='<div class="banner todo" style="margin-top:16px;font-size:14px"><span>Anteprima di come la vede nonna.</span><button class="btn" data-act="backleo">Torna al diario</button></div>'+(ISGH?'<div class="banner done" style="margin-top:8px;font-size:14px"><span>Se hai cambiato verdure o pasti e vuoi che lo veda anche lei, mandale il link aggiornato.</span><button class="btn ghost" data-act="publish">Manda a nonna</button></div>':'');
  return h+'</div>'}
 function renderNonnaFull(){var L=S.lang,t=T[L],pl=L==='pl';var mon=addDays(mondayOf(todayIso()),7*S.nweek);if(S.nday==null)S.nday=S.nweek===0?dowOf(todayIso()):0;var today=todayIso();
  var tabs=[['menu','🍽️',pl?'Jadłospis':'Menu'],['shop','🛒',pl?'Zakupy':'Spesa'],['help','❓',pl?'Pomoc':'Aiuto']];
