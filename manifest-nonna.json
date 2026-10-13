@@ -1,0 +1,31 @@
+{
+ "id": "./nonna.html",
+ "name": "Jadłospis",
+ "short_name": "Jadłospis",
+ "start_url": "./nonna.html",
+ "scope": "./nonna.html",
+ "display": "standalone",
+ "orientation": "portrait",
+ "background_color": "#f5efe4",
+ "theme_color": "#5b7234",
+ "icons": [
+  {
+   "src": "icon-nonna-192.png",
+   "sizes": "192x192",
+   "type": "image/png",
+   "purpose": "any"
+  },
+  {
+   "src": "icon-nonna-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "any"
+  },
+  {
+   "src": "icon-nonna-maskable-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "maskable"
+  }
+ ]
+}
