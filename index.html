@@ -564,8 +564,8 @@ var SAPORE=[
 ['Brodo fatto in casa','Bucce di cipolla, gambi, scarti di carota e sedano in acqua per 30 minuti: base gratis per zuppe e risotti.']
 ];
 
-/* riso 40 g senza alternative nel piano: equivalenze del nutrizionista per 40 g di riso (gruppo della domenica) */
-[3,6].forEach(function(i){var it=PLAN[i].p[0];if(it[0]==='riso'&&it[1]==='40 g'&&!it[2])it[2]='CC_DOM'});
+/* riso 40 g a pranzo: giovedì con la lista del nutrizionista (RISO40), domenica con le equivalenze della cena */
+[[3,'RISO40'],[6,'CC_DOM']].forEach(function(x){var it=PLAN[x[0]].p[0];if(it[0]==='riso'&&it[1]==='40 g'&&!it[2])it[2]=x[1]});
 /* ---------- piatti: cosa cucino ---------- */
 var CAT={carb:{pasta:['pasta','pastai','gnocchi','gnocchicrudi'],cereali:['riso','quinoa','miglio','orzo','saraceno','couscous','mais'],pane:['paneb','panei','wasa','wasai','pancarre','pancarrei','friselle','panefarro','segale','multic','tortillas','pizzab','pizzap','pizzapm'],polenta:['polenta'],patate:['patate','batata']},
 prot:{leg:['borlotti','lenticchie','ceci','piselli','borlottif','pisellif','pisellis','cecis','cannellini'],hum:['hummus'],tofu:['tofu','tempeh'],seit:['seitan','psteak','pchicken','ppulled','soias','straccetti','burgsoia','burgveg'],uova:['uova'],form:['mozzp','mozzl','primosale','ricotta','ricpecora','ricbufala','feta','parmigiano','fiocprot','fiocmagro']}};
@@ -1252,6 +1252,12 @@ function openQuick(iso,src,mode){S.qk={iso:iso,src:src,mode:mode||S.qkm||'em'};S
  sheet(h)}
 function qkUse(){var q=S.qk;if(!q)return;var nc=ncCtx(q.iso,q.src);ensureMonth(ymOf(q.iso)).then(function(){var dd=dayEdit(q.iso);dd.sw=dd.sw||{};Object.keys(nc.sw).forEach(function(k){dd.sw[k]=nc.sw[k]});saveDay(q.iso);closeSheet();toast('Scambi segnati');render()})}
 
+/* alternative al riso 40 g del pranzo di giovedì, dalla lista del nutrizionista */
+[['farro','Farro','Orkisz'],['risoint','Riso integrale','Ryż brązowy'],['venere','Riso venere','Ryż czarny (venere)'],['parboiled','Riso parboiled','Ryż parboiled'],['polentac','Polenta già cotta','Polenta ugotowana'],['pastasar','Pasta di grano saraceno','Makaron gryczany'],['pastafarro','Pasta di farro integrale','Makaron orkiszowy pełnoziarnisty']].forEach(function(x){if(!F[x[0]])F[x[0]]={it:x[1],pl:x[2]}});
+CAT.carb.cereali.push('farro','risoint','venere','parboiled');CAT.carb.polenta.push('polentac');CAT.carb.pasta.push('pastasar','pastafarro');
+Object.assign(SHORT,{farro:'farro',risoint:'riso integrale',venere:'riso venere',parboiled:'riso parboiled',polentac:'polenta',pastasar:'pasta di grano saraceno',pastafarro:'pasta di farro'});
+['farro','risoint','venere','parboiled'].forEach(function(k){if(EYE.riso&&!EYE[k])EYE[k]=EYE.riso});['pastasar','pastafarro'].forEach(function(k){if(EYE.pasta&&!EYE[k])EYE[k]=EYE.pasta});
+G.RISO40=[['riso','40 g'],['paneb','50 g'],['panei','70 g'],['pastai','40 g'],['pasta','40 g'],['quinoa','40 g'],['miglio','40 g'],['orzo','40 g'],['saraceno','40 g'],['farro','40 g'],['risoint','40 g'],['venere','40 g'],['couscous','50 g'],['segale','60 g'],['parboiled','40 g'],['polenta','50 g'],['polentac','200 g'],['multic','60 g'],['pastasar','40 g'],['pastafarro','40 g'],['patate','200 g','max 2/sett'],['batata','170 g','max 2/sett'],['wasai','40 g','1/sett'],['pancarrei','50 g','1/sett'],['pancarre','50 g','1/sett'],['friselle','40 g','1/sett'],['gnocchicrudi','90 g'],['panefarro','50 g']];
 /* ---------- scelte automatiche: proteine a rotazione e verdure ---------- */
 var AUTO0='2026-10-15',VEG0='2026-10-14';
 function vegFrom(){var a=autoFrom();return a<VEG0?a:VEG0}
