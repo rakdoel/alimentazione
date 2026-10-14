@@ -564,6 +564,8 @@ var SAPORE=[
 ['Brodo fatto in casa','Bucce di cipolla, gambi, scarti di carota e sedano in acqua per 30 minuti: base gratis per zuppe e risotti.']
 ];
 
+/* riso 40 g senza alternative nel piano: equivalenze del nutrizionista per 40 g di riso (gruppo della domenica) */
+[3,6].forEach(function(i){var it=PLAN[i].p[0];if(it[0]==='riso'&&it[1]==='40 g'&&!it[2])it[2]='CC_DOM'});
 /* ---------- piatti: cosa cucino ---------- */
 var CAT={carb:{pasta:['pasta','pastai','gnocchi','gnocchicrudi'],cereali:['riso','quinoa','miglio','orzo','saraceno','couscous','mais'],pane:['paneb','panei','wasa','wasai','pancarre','pancarrei','friselle','panefarro','segale','multic','tortillas','pizzab','pizzap','pizzapm'],polenta:['polenta'],patate:['patate','batata']},
 prot:{leg:['borlotti','lenticchie','ceci','piselli','borlottif','pisellif','pisellis','cecis','cannellini'],hum:['hummus'],tofu:['tofu','tempeh'],seit:['seitan','psteak','pchicken','ppulled','soias','straccetti','burgsoia','burgveg'],uova:['uova'],form:['mozzp','mozzl','primosale','ricotta','ricpecora','ricbufala','feta','parmigiano','fiocprot','fiocmagro']}};
