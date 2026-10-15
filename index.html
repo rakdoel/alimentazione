@@ -330,6 +330,7 @@ svg.i{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke
 .n-h4{font-size:19px;margin:18px 0 6px}
 .n-ing{list-style:none;padding:0;margin:0}.n-ing li{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px dashed var(--line);font-size:18px}.n-ing b{white-space:nowrap}
 .n-steps{padding-left:24px;margin:0}.n-steps li{font-size:18px;line-height:1.5;margin:0 0 12px}
+.n-key{background:var(--olive-soft);border-radius:12px;padding:12px 14px;margin:14px 0 4px;font-size:19px;line-height:1.45}.n-key b{display:block;font-size:15px;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px;color:var(--olive)}.n-steps li::marker{font-weight:700;font-size:20px}
 .n-tip{background:var(--ochre-soft);border-radius:12px;padding:10px 12px;font-size:17px}
 
 .hd .hd-top{display:flex;align-items:center;justify-content:space-between;gap:10px}.hd .hd-top b{display:block;font-size:15px}.hd .hd-top small{display:block;font-size:12.5px;color:var(--muted)}.hd .hd-top .btn{flex:none;padding:8px 14px}
@@ -649,7 +650,7 @@ function dishSteps(d,L){var pl=L==='pl';var x=d.ctx,t0=d.t,w=dishWords(d);var t=
 function contornoFor(d){var w=dishWords(d);var cs=R.filter(function(r){return r.k==='contorno'});var lc=w.vlist.map(function(v){return v.toLowerCase()});var m=cs.filter(function(r){return r.v.some(function(v){return lc.indexOf(v.toLowerCase())>=0})});if(!m.length){var mo=parseIso(d.ctx.iso).getMonth()+1;m=cs.filter(function(r){return seasonVeg([r.v[0]],[mo]).length})}return m.length?m[hashStr(d.ctx.iso+d.t.id)%m.length]:null}
 function openDish(iso,src){var dd=dayData(iso)||{};var d=pickDish(iso,src,dd);if(!d)return;S.dishAt=[iso,src];var w=dishWords(d);var cont=contornoFor(d);var x=d.ctx;
  var ings=[x.C,x.P,x.O].filter(Boolean).map(function(it){return '<span>'+esc(fname(it.f))+' · '+esc(it.q)+'</span>'}).join('')+'<span>Verdure: '+esc(w.vlist.join(', '))+'</span>';
- sheet('<div class="kind">'+MEALS[src].it+' di '+esc(DAYS.it[dowOf(iso)].toLowerCase())+' · '+d.t.t+' min</div><h3>'+esc(dishName(d))+'</h3><div class="ingc">'+ings+'</div><div class="lbl">Come si fa</div><ol class="steps">'+dishSteps(d).map(function(s){return '<li>'+s+'</li>'}).join('')+'</ol>'+(d.t.tip?'<p class="small" style="background:var(--ochre-soft);border-radius:12px;padding:10px 12px"><b>Trucco:</b> '+esc(d.t.tip)+'</p>':'')+(cont?'<p class="small"><b>Se vuoi un contorno in più:</b> <button class="link" data-act="recipe" data-id="'+cont.id+'">'+esc(cont.t)+'</button></p>':'')+(w.unused.length?'<p class="small" style="background:var(--surface2);border-radius:12px;padding:10px 12px">Le verdure che avevi scelto ('+esc(w.unused.join(', ').toLowerCase())+') qui non c\'entrano: usale come contorno, oppure <button class="link" data-act="dishveg" data-iso="'+iso+'" data-src="'+src+'">metti le verdure della ricetta</button>.</p>':'')+(salseFor(d.t).length?'<p class="small"><b>Con le tue salse:</b> '+esc(salseFor(d.t).join(', '))+'.</p>':'')+'<p class="muted small">Le dosi sono quelle del tuo menu di oggi. Olio solo quello del pasto. Spezie, erbe, aceto e limone di solito non contano.</p>'+batchHtml(iso,src,d)+'<div class="row" style="margin-top:8px">'+(d.opts.length>1?'<button class="btn ghost" data-act="dishnext">Un\'altra idea</button>':'')+'<button class="btn ghost" data-act="dishall" data-iso="'+iso+'" data-src="'+src+'">Tutte le idee</button></div>')}
+ sheet('<div class="kind">'+MEALS[src].it+' di '+esc(DAYS.it[dowOf(iso)].toLowerCase())+' · '+d.t.t+' min</div><h3>'+esc(dishName(d))+'</h3><div class="ingc">'+ings+'</div>'+(d.t.k?'<p class="small" style="background:var(--olive-soft);border-radius:12px;padding:10px 12px"><b>La cosa che conta:</b> '+esc(d.t.k)+'</p>':'')+'<div class="lbl">Come si fa</div><ol class="steps">'+dishSteps(d).map(function(s){return '<li>'+s+'</li>'}).join('')+'</ol>'+(d.t.tip?'<p class="small" style="background:var(--ochre-soft);border-radius:12px;padding:10px 12px"><b>Trucco:</b> '+esc(d.t.tip)+'</p>':'')+(cont?'<p class="small"><b>Se vuoi un contorno in più:</b> <button class="link" data-act="recipe" data-id="'+cont.id+'">'+esc(cont.t)+'</button></p>':'')+(w.unused.length?'<p class="small" style="background:var(--surface2);border-radius:12px;padding:10px 12px">Le verdure che avevi scelto ('+esc(w.unused.join(', ').toLowerCase())+') qui non c\'entrano: usale come contorno, oppure <button class="link" data-act="dishveg" data-iso="'+iso+'" data-src="'+src+'">metti le verdure della ricetta</button>.</p>':'')+(salseFor(d.t).length?'<p class="small"><b>Con le tue salse:</b> '+esc(salseFor(d.t).join(', '))+'.</p>':'')+'<p class="muted small">Le dosi sono quelle del tuo menu di oggi. Olio solo quello del pasto. Spezie, erbe, aceto e limone di solito non contano.</p>'+batchHtml(iso,src,d)+'<div class="row" style="margin-top:8px">'+(d.opts.length>1?'<button class="btn ghost" data-act="dishnext">Un\'altra idea</button>':'')+'<button class="btn ghost" data-act="dishall" data-iso="'+iso+'" data-src="'+src+'">Tutte le idee</button></div>')}
 
 
 R.push(
@@ -1468,6 +1469,65 @@ form_gratin:{n:'Zapiekane warzywa z serem',st:['Obgotuj albo ugotuj na parze war
 form_greca:{n:'Sałatka grecka',st:['Pokrój warzywa ({V}) w duże kawałki i czerwoną cebulę w plasterki.','Dodaj ser w kostce ({P}).','Oregano, ocet winny albo cytryna. Na surowo: {O}.','{Cs}'],cs:'Z dodatkiem, opieczonym albo ugotowanym i zimnym: {C}.',tip:'Oliwki są poza dietą, chyba że to one są „tłuszczem” tego posiłku.'}
 };
 
+/* ---------- la cosa che conta di piu', per ogni ricetta (IT per L., PL per nonna) + gratin riscritto ---------- */
+(function(){
+var K={
+leg_zuppa:['Densa e saporita, non acquosa. Sale, rosmarino e olio a crudo alla fine.','Gęsta, nie wodnista. Sól, rozmaryn, a oliwa na surowo na samym końcu.'],
+leg_minestra:['Prima fai appassire le verdure, poi l\'acqua. I legumi vanno dentro a metà cottura.','Najpierw podduś warzywa, dopiero potem woda. Strączki dodaj w połowie gotowania.'],
+leg_bowl:['Le verdure vanno arrostite in forno, non lessate. Spezie prima di infornare.','Warzywa piec w piekarniku, nie gotować w wodzie. Przyprawy przed pieczeniem.'],
+leg_crema:['Frulla fino a farla liscia e aggiungi limone e cumino: senza è insipida.','Zmiksuj na gładko i dodaj cytrynę i kmin rzymski, bez nich będzie bez smaku.'],
+leg_wrap:['I legumi vanno schiacciati con passata e spezie, mai messi dentro da soli.','Strączki rozgnieć z passatą i przyprawami, nie kładź ich do środka samych.'],
+leg_polenta:['Il sugo deve cuocere qualche minuto con aglio e rosmarino prima dei legumi.','Sos musi chwilę się gotować z czosnkiem i rozmarynem, zanim dodasz strączki.'],
+leg_patate:['Patate e legumi ben asciutti, altrimenti non si dorano.','Ziemniaki i strączki dobrze osuszone, inaczej się nie przyrumienią.'],
+hum_pinz:['Olio sopra l\'hummus, paprika e qualche goccia di limone.','Oliwa na wierzch hummusu, papryka i kilka kropel cytryny.'],
+hum_wrap:['Le verdure sulla piastra molto calda finché prendono colore, non in acqua.','Warzywa na bardzo gorącej patelni, aż się zrumienią. Nie w wodzie.'],
+hum_bowl:['Verdure arrostite in forno con spezie, mai lessate.','Warzywa pieczone z przyprawami, nigdy gotowane w wodzie.'],
+tofu_soia:['Il tofu va asciugato bene e lasciato fermo in padella finché si dora.','Tofu dobrze osusz i nie ruszaj na patelni, aż się zrumieni.'],
+tofu_piastra:['10 minuti di marinata e padella molto calda: senza, è insipido.','10 minut marynaty i bardzo gorąca patelnia. Bez tego będzie bez smaku.'],
+tofu_strap:['Curcuma e pepe nero: senza non sa di niente.','Kurkuma i czarny pieprz. Bez nich nie ma smaku.'],
+seit_ragu:['Il seitan deve dorarsi bene prima di mettere il pomodoro.','Seitan musi się dobrze zrumienić, zanim dodasz pomidory.'],
+seit_pizzaiola:['Capperi e origano danno il sapore: non saltarli.','Kapary i oregano dają smak. Nie pomijaj ich.'],
+seit_strac:['Fuoco alto e padella larga: si rosola, non si bolle.','Duży ogień i szeroka patelnia. Ma się przypiekać, nie gotować.'],
+uova_frittata:['Le verdure prima in padella, così non rilasciano acqua nella frittata.','Warzywa najpierw na patelni, żeby nie puściły wody do omletu.'],
+uova_shak:['Cumino e paprika vanno tostati prima di aggiungere la passata.','Kmin i paprykę podprażyć przed dodaniem passaty.'],
+uova_riso:['Padella molto calda; il riso del giorno prima viene meglio.','Bardzo gorąca patelnia. Ryż z poprzedniego dnia wychodzi lepiej.'],
+uova_carbo:['Uova a fuoco spento e mescola subito: crema, non frittata.','Jajka poza ogniem i od razu mieszać. Ma być krem, nie jajecznica.'],
+uova_patate:['Patate sottili e già cotte in forno prima delle uova.','Ziemniaki cienko pokrojone i wcześniej upieczone, dopiero potem jajka.'],
+form_sorr:['Il formaggio va aggiunto a fuoco spento, per ultimo.','Ser dodaj dopiero na końcu, po zdjęciu z ognia.'],
+form_zucca:['La zucca deve disfarsi in padella: così la crema viene dolce.','Dynia musi się rozpaść na patelni, wtedy krem jest słodki.'],
+form_bowl:['Verdure arrostite, formaggio per ultimo.','Warzywa pieczone, ser na samym końcu.'],
+form_brus:['Il pane ben tostato e strofinato con l\'aglio.','Chleb dobrze opieczony i natarty czosnkiem.'],
+form_polenta:['I funghi in padella finché non rilasciano e riassorbono l\'acqua.','Grzyby na patelni, aż oddadzą wodę i ją wchłoną.'],
+form_tortino:['Condisci ogni strato con sale, pepe e noce moscata.','Dopraw każdą warstwę solą, pieprzem i gałką muszkatołową.'],
+leg_panzanella:['Lasciala riposare 10 minuti prima di mangiarla.','Odstaw na 10 minut przed jedzeniem.'],
+insfredda:['Condiscila poco prima di mangiarla.','Dopraw tuż przed jedzeniem.'],
+form_ripiene:['Il ripieno va condito bene con erbe e pepe.','Farsz dobrze dopraw ziołami i pieprzem.'],
+poke:['Salsa di soia e zenzero fresco fanno tutto il sapore.','Sos sojowy i świeży imbir dają cały smak.'],
+seit_burger:['Piastra molto calda, 3-4 minuti per lato.','Bardzo gorąca patelnia, 3-4 minuty z każdej strony.'],
+leg_polpette:['L\'impasto deve essere denso: se è morbido, 20 minuti in frigo.','Masa musi być gęsta. Jeśli miękka, 20 minut w lodówce.'],
+leg_curry:['Le spezie vanno tostate 30 secondi prima dei liquidi.','Przyprawy podprażyć 30 sekund, zanim dodasz płyny.'],
+leg_chili:['Le spezie vanno tostate 30 secondi prima della passata.','Przyprawy podprażyć 30 sekund, zanim dodasz passatę.'],
+leg_insalata:['Legumi ben sciacquati e cipolla in acqua e aceto: si addolcisce.','Strączki dobrze opłukane, cebula w wodzie z octem. Wtedy jest słodsza.'],
+leg_vellutata:['I legumi croccanti vanno fatti a parte e messi sopra all\'ultimo.','Chrupiące strączki zrób osobno i połóż na wierzch na samym końcu.'],
+tofu_spiedini:['Marinata di almeno 15 minuti, forno a 220°.','Marynata co najmniej 15 minut, piekarnik 220°.'],
+seit_spezz:['Prima rosola bene il seitan, poi le verdure e l\'acqua.','Najpierw dobrze zrumień seitan, potem warzywa i woda.'],
+seit_fajitas:['Padella molto calda e spezie: paprika, cumino, lime.','Bardzo gorąca patelnia i przyprawy: papryka, kmin, limonka.'],
+uova_muffin:['Le verdure prima ammorbidite in padella, poi nelle uova.','Warzywa najpierw zmiękczyć na patelni, dopiero potem do jajek.'],
+uova_insalata:['Condisci bene con limone, sale e pepe.','Dobrze dopraw cytryną, solą i pieprzem.'],
+form_gratin:['Non lessare le verdure: forno a 220° con sale, pepe e aglio. La mozzarella solo alla fine, finché si dora.','Nie gotuj warzyw w wodzie. Piekarnik 220°, sól, pieprz i czosnek. Ser dopiero na koniec, aż się zrumieni.'],
+form_greca:['Il formaggio è già salato: non aggiungere sale.','Ser jest już słony, nie dodawaj soli.']
+};
+DT.forEach(function(t){if(K[t.id])t.k=K[t.id][0]});
+Object.keys(K).forEach(function(id){if(DTPL[id])DTPL[id].k=K[id][1]});
+/* gratin: forno forte, spezie, formaggio alla fine */
+DT.forEach(function(t){if(t.id==='form_gratin'){
+ t.st=['Forno a 220°. Taglia {V} a pezzi su carta forno con sale, pepe, noce moscata e uno spicchio d\'aglio schiacciato. Non lessarle: 20 minuti, finché sono dorate ai bordi.','Spezzetta {P}. Se è mozzarella falla scolare 5 minuti su carta da cucina, altrimenti allunga tutto.','Mettila sopra le verdure calde e rimetti in forno 8–10 minuti, gli ultimi 2 col grill, finché è sciolta e dorata.','{Cs}','{O} a crudo sopra, a fine cottura.'];
+ t.tip='Se le verdure sono già lesse, scolale bene, asciugale e dai 10 minuti di forno a 220° con le spezie prima del formaggio. Con il parmigiano viene la crosticina; con la ricotta resta cremoso.';
+ t.t=35}});
+DTPL.form_gratin.st=['Piekarnik 220°. Pokrój warzywa ({V}) na papierze do pieczenia, dodaj sól, pieprz, gałkę muszkatołową i zgnieciony ząbek czosnku. Nie gotuj ich w wodzie: 20 minut, aż będą złote na brzegach.','Pokrój ser ({P}). Jeśli to mozzarella, odsącz ją 5 minut na ręczniku papierowym, bo inaczej zrobi się woda.','Połóż na gorące warzywa i wstaw z powrotem na 8–10 minut, ostatnie 2 minuty z grillem, aż ser się rozpuści i zrumieni.','{Cs}','Na surowo, na koniec: {O}.'];
+DTPL.form_gratin.tip='Jeśli warzywa są już ugotowane, dobrze je odcedź i osusz, potem 10 minut w piekarniku 220° z przyprawami, zanim dodasz ser.';
+})();
+
 /* ---------- progressi (PIN + foto solo sul dispositivo) ---------- */
 var IDB={p:null,open:function(){if(this.p)return this.p;this.p=new Promise(function(res,rej){try{var r=indexedDB.open('leo-foto',1);r.onupgradeneeded=function(){r.result.createObjectStore('foto',{keyPath:'id'})};r.onsuccess=function(){res(r.result)};r.onerror=function(){rej(r.error)}}catch(e){rej(e)}});var self=this;this.p.catch(function(){self.p=null});return this.p},
 tx:function(mode,fn){return this.open().then(function(db){return new Promise(function(res,rej){var t=db.transaction('foto',mode);var r=fn(t.objectStore('foto'));t.oncomplete=function(){res(r&&r.result)};t.onerror=function(){rej(t.error)};t.onabort=function(){rej(t.error)}})})},
@@ -1568,7 +1628,7 @@ function openNRecipe(iso,src){var L=S.lang==='pl'?'pl':'it',pl=L==='pl';var dd=n
  var ing=mealItems(iso,src,dd).filter(function(it){return it.f!=='caffe'}).map(function(it){if(it.g==='VEG'){var v=(dd.veg&&dd.veg[src])||[];var vl=v.length?v:dishWords(d).vlist;return '<li><span>'+esc(vl.map(function(n){return vegName(n,L)}).join(', ')||(pl?'Warzywa':'Verdure'))+'</span><b>min. '+esc(it.q)+'</b></li>'}return '<li><span>'+esc(fname(it.f,L))+'</span><b>'+esc(it.q)+'</b></li>'}).join('');
  var h='<h3>'+esc(tp?plTitle(d):dishName(d))+'</h3><p class="n-sub">'+esc(MEALS[src]?MEALS[src][L]:'')+' · '+esc(fmtDay(iso,L))+'</p>';
  h+='<h4 class="n-h4">'+(pl?'Składniki':'Ingredienti')+'</h4><ul class="n-ing">'+ing+'</ul>';
- h+='<h4 class="n-h4">'+(pl?'Jak zrobić':'Come si fa')+'</h4><ol class="n-steps">'+dishSteps(d,L).map(function(s){return '<li>'+s+'</li>'}).join('')+'</ol>';
+ var kk=tp?tp.k:d.t.k;if(kk)h+='<div class="n-key"><b>'+(pl?'Najważniejsze':'La cosa che conta')+'</b><span>'+esc(kk)+'</span></div>';h+='<h4 class="n-h4">'+(pl?'Jak zrobić':'Come si fa')+'</h4><ol class="n-steps">'+dishSteps(d,L).map(function(s){return '<li>'+s+'</li>'}).join('')+'</ol>';
  var un=dishWords(d).unused;if(un.length)h=h.replace('</ol>','<li>'+esc((pl?'Warzywa spoza przepisu ('+un.map(function(v){return vegName(v,L).toLowerCase()}).join(', ')+'): podaj obok, z patelni albo z piekarnika.':'Verdure fuori dalla ricetta ('+un.join(', ').toLowerCase()+'): servile a parte, in padella o al forno.'))+'</li></ol>');
  var tip=tp?tp.tip:d.t.tip;if(tip)h+='<p class="n-tip">💡 '+esc(tip)+'</p>';
  h+='<p class="n-sub" style="margin-top:14px">'+(pl?'Ilości na jedną porcję.':'Dosi per una porzione.')+'</p>';
