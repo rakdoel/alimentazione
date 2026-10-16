@@ -1661,7 +1661,8 @@ tx:function(mode,fn){return this.open().then(function(db){return new Promise(fun
 all:function(){return this.tx('readonly',function(s){return s.getAll()})},put:function(o){return this.tx('readwrite',function(s){return s.put(o)})},del:function(id){return this.tx('readwrite',function(s){return s.delete(id)})},clear:function(){return this.tx('readwrite',function(s){return s.clear()})}};
 function hashPin(p){var data=new TextEncoder().encode('diario-leo|'+p);try{return crypto.subtle.digest('SHA-256',data).then(function(h){return Array.prototype.map.call(new Uint8Array(h),function(b){return b.toString(16).padStart(2,'0')}).join('')})}catch(e){var x=7;data.forEach(function(c){x=(x*31+c)>>>0});return Promise.resolve('f'+x)}}
 function lockProg(){S.unlocked=false;Object.keys(S.urls).forEach(function(k){try{URL.revokeObjectURL(S.urls[k])}catch(e){}});S.urls={};S.photos=null;S.cmp=[null,null]}
-function tabProg(){var pin=lsGet('leo:pin');
+function tabProg(){return valCard()+tabProg0()}
+function tabProg0(){var pin=lsGet('leo:pin');
  if(!pin)return '<section class="card lock"><div style="font-size:30px" aria-hidden="true">🔒</div><h2>Scegli un PIN</h2><p class="small muted">Serve a chiudere questa sezione (peso e foto) se qualcuno usa il tuo telefono. Da 4 a 6 cifre.</p><input id="pin1" class="inp" type="password" inputmode="numeric" maxlength="6" autocomplete="new-password" aria-label="Nuovo PIN"><input id="pin2" class="inp" type="password" inputmode="numeric" maxlength="6" autocomplete="new-password" placeholder="ripeti" aria-label="Ripeti PIN"><button class="btn" data-act="pinset">Imposta PIN</button></section>'+privacyNote();
  if(!S.unlocked)return '<section class="card lock" id="lockbox"><div style="font-size:30px" aria-hidden="true">🔒</div><h2>Sezione privata</h2><p class="small muted">Inserisci il PIN</p><input id="pin" class="inp" type="password" inputmode="numeric" maxlength="6" autocomplete="current-password" aria-label="PIN"><button class="btn" data-act="pinopen">Apri</button><p><button class="link" data-act="pinforgot">Ho dimenticato il PIN</button></p></section>';
  var list=(S.peso.list||[]).slice().sort(function(a,b){return a.d<b.d?-1:1});
@@ -1683,6 +1684,16 @@ function compress(file){if(!window.createImageBitmap)return Promise.resolve(file
 function addPhotos(files){if(!files||!files.length)return;try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}toast('Salvo…');var d=todayIso();var arr=Array.prototype.slice.call(files,0,6);
  arr.reduce(function(pr,f){return pr.then(function(){return compress(f).then(function(b){return IDB.put({id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),d:d,label:S.photoLabel,blob:b,at:Date.now()})})})},Promise.resolve()).then(function(){S.photos=null;toast('Foto salvate sul telefono');fillPhotos()}).catch(function(){toast('Non riesco a salvare le foto in questo browser')})}
 function openPhoto(id){var p=(S.photos||[]).filter(function(x){return x.id===id})[0];if(!p)return;sheet('<h3>'+esc(p.label)+' · '+esc(fmtDay(p.d))+'</h3><img src="'+S.urls[id]+'" alt="" style="width:100%;border-radius:14px;display:block;margin-bottom:10px"><div class="row"><button class="btn ghost" data-act="cmpset" data-id="'+id+'" data-s="0">Usa come "prima"</button><button class="btn ghost" data-act="cmpset" data-id="'+id+'" data-s="1">Usa come "dopo"</button></div><button class="link" style="margin-top:14px;color:var(--red)" data-act="delphoto" data-id="'+id+'">Elimina questa foto</button>')}
+
+/* ---------- note da dire al nutrizionista ---------- */
+function valList(){var l=lsGet('leo:val');return Array.isArray(l)?l:[]}
+function valCard(){var l=valList();var op=l.filter(function(x){return !x.done}),dn=l.filter(function(x){return x.done});
+ var li=function(x){return '<li class="it"><div class="it-main"><span class="it-n"'+(x.done?' style="text-decoration:line-through;opacity:.6"':'')+'>'+esc(x.t)+'</span><span class="it-q">'+esc(fmtShort(x.d))+'</span></div><button class="swap" data-act="valtog" data-id="'+x.id+'" aria-label="'+(x.done?'Rimetti tra quelle da dire':'Segna come detta')+'">'+(x.done?'↩':'✓')+'</button><button class="swap" data-act="valdel" data-id="'+x.id+'" aria-label="Elimina">✕</button></li>'};
+ var h='<section class="card"><h2>Da dire al nutrizionista</h2><p class="small muted" style="margin:4px 0 10px">Scrivi qui le modifiche o le domande per il prossimo controllo, appena ti vengono in mente.</p><textarea id="valtxt" class="inp" rows="2" placeholder="Per esempio: una merenda a metà mattina" aria-label="Nuova nota per il nutrizionista" style="width:100%;resize:vertical"></textarea><button class="btn" data-act="valadd">Aggiungi</button>';
+ if(op.length)h+='<ul class="items" style="margin-top:10px">'+op.map(li).join('')+'</ul><button class="btn ghost" data-act="valcopy">Copia l\'elenco</button>';
+ else if(!dn.length)h+='<p class="small muted" style="margin:10px 0 0">Ancora niente.</p>';
+ if(dn.length)h+='<details class="small" style="margin-top:10px"><summary class="muted" style="cursor:pointer;font-weight:600">Già dette ('+dn.length+')</summary><ul class="items">'+dn.map(li).join('')+'</ul></details>';
+ return h+'</section>'}
 
 /* ---------- backup foto (cifrato con password) ---------- */
 function abToB64(buf){var b=new Uint8Array(buf),s='',CH=0x8000;for(var i=0;i<b.length;i+=CH)s+=String.fromCharCode.apply(null,b.subarray(i,i+CH));return btoa(s)}
@@ -1914,7 +1925,11 @@ function act(a,b){var ds=b.dataset;
  case 'dishall':openDishAll(ds.iso,ds.src);break;
  case 'fitapply':var tt3=DT.filter(function(x){return x.id===ds.t})[0];applyFit(tt3,ds.iso,ds.src).then(function(ok){if(!ok){toast('Non compatibile con quel pasto');return}closeSheet();toast('Fatto: '+mealLabel(ds.iso,ds.src)+' aggiornato');render();openDish(ds.iso,ds.src)});break;
  case 'dishveg':var dvv=dayEdit(ds.iso);var pdd=pickDish(ds.iso,ds.src,dvv);if(pdd){var ww=dishWords(pdd);dvv.veg=dvv.veg||{};dvv.veg[ds.src]=ww.vlist;dvv.dish=dvv.dish||{};dvv.dish[ds.src]=pdd.t.id;saveDay(ds.iso);openDish(ds.iso,ds.src);render()}break;
- case 'em':openEm(ds.iso,ds.src);break;case 'qkopen':openQuick(ds.iso,ds.src);break;case 'qkmode':openQuick(S.qk.iso,S.qk.src,ds.v);break;case 'qkuse':qkUse();break;
+ case 'valadd':{var vt=$('#valtxt');var vv=vt&&vt.value.trim();if(!vv){toast('Scrivi prima la nota');break}var vl=valList();vl.unshift({id:Date.now().toString(36),t:vv,d:todayIso()});lsSet('leo:val',vl);render();toast('Aggiunta all\'elenco');break}
+case 'valtog':{var vl2=valList();vl2.forEach(function(x){if(x.id===ds.id)x.done=!x.done});lsSet('leo:val',vl2);render();break}
+case 'valdel':{lsSet('leo:val',valList().filter(function(x){return x.id!==ds.id}));render();break}
+case 'valcopy':{var vtx=valList().filter(function(x){return !x.done}).map(function(x){return '- '+x.t}).join('\n');try{navigator.clipboard.writeText(vtx).then(function(){toast('Elenco copiato')},function(){toast('Non riesco a copiare')})}catch(e){toast('Non riesco a copiare')}break}
+case 'em':openEm(ds.iso,ds.src);break;case 'qkopen':openQuick(ds.iso,ds.src);break;case 'qkmode':openQuick(S.qk.iso,S.qk.src,ds.v);break;case 'qkuse':qkUse();break;
  case 'swin':S.sw=ds.v;render();break;
  case 'wvt':var wv=S.settings.wv=S.settings.wv||{};Object.keys(wv).forEach(function(k){if(k<addDays(mondayOf(todayIso()),-7))delete wv[k]});var lst=(wv[ds.mon]||[]).slice();var ii=lst.indexOf(ds.name);if(ii>=0)lst.splice(ii,1);else if(lst.length<6)lst.push(ds.name);else{toast('Massimo 6');break}wv[ds.mon]=lst;Store.save('settings',S.settings);render();break;
  case 'wvdist':S.wvo=false;var wl=(S.settings.wv||{})[ds.mon]||[];if(!wl.length)break;var mm=ds.mon;Promise.all([0,6].map(function(k){return ensureMonth(ymOf(addDays(mm,k)))})).then(function(){distributeVeg(mm,wl);toast('Verdure messe in pranzi e cene');render()});break;
