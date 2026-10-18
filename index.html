@@ -1796,7 +1796,7 @@ function tabProg0(){var pin=lsGet('leo:pin');
  var h='<div class="row" style="margin-bottom:12px"><span></span><button class="btn ghost" style="flex:none" data-act="lock">🔒 Blocca</button></div>';
  h+='<section class="card"><h2>Peso</h2><p class="small muted" style="margin:4px 0 10px">Facoltativo. Una volta a settimana, stessa ora, basta e avanza.</p><div class="row"><input id="kg" class="inp" type="number" inputmode="decimal" step="0.1" min="30" max="250" placeholder="kg" aria-label="Peso in kg"><input id="kgd" class="inp" type="date" value="'+todayIso()+'" max="'+todayIso()+'" aria-label="Data"><button class="btn" style="flex:none;margin-bottom:10px" data-act="addpeso">Salva</button></div>'+pesoChart(list)+(list.length?'<details class="small"><summary class="muted" style="cursor:pointer;font-weight:600">Tutte le misure ('+list.length+')</summary><ul class="items">'+list.slice().reverse().map(function(p){return '<li class="it"><div class="it-main"><span class="it-n">'+String(p.kg).replace('.',',')+' kg</span><span class="it-q">'+esc(fmtDay(p.d))+'</span></div><button class="swap" data-act="delpeso" data-d="'+p.d+'" aria-label="Elimina">×</button></li>'}).join('')+'</ul></details>':'')+'</section>';
  h+='<section class="card"><h2>Foto prima e dopo</h2><p class="small muted" style="margin:4px 0 10px">Restano solo su questo telefono: non vengono mai caricate online, nonna non le vede neanche dal suo link.</p><div class="row"><select id="phl" class="inp" aria-label="Tipo di foto">'+['Fronte','Lato','Retro'].map(function(l){return '<option'+(S.photoLabel===l?' selected':'')+'>'+l+'</option>'}).join('')+'</select><label class="btn filebtn" style="margin-bottom:10px">+ Foto<input id="phin" type="file" accept="image/*" multiple aria-label="Aggiungi foto"></label></div><div id="photos" class="photos"><p class="muted small">Carico…</p></div><div id="cmpbox"></div></section>';
- return h+bkCard()+privacyNote()}
+ return h+sbCard()+bkCard()+privacyNote()}
 function privacyNote(){return '<p class="muted small">Il peso è salvato nel tuo spazio privato dell\'app (non lo vede nessun altro). Le foto stanno solo nella memoria di questo browser: se cancelli i dati di Chrome spariscono, quindi tieni gli originali nello Spazio privato del telefono.</p>'}
 function pesoChart(list){if(list.length<2)return list.length?'<p class="small">Ultimo: <b>'+String(list[0].kg).replace('.',',')+' kg</b> ('+esc(fmtShort(list[0].d))+')</p>':'';var l=list.slice(-30);var mn=Math.min.apply(null,l.map(function(p){return p.kg})),mx=Math.max.apply(null,l.map(function(p){return p.kg}));if(mx-mn<2){mn-=1;mx+=1}var W=320,H=110;var pts=l.map(function(p,i){return [(i/(l.length-1))*(W-20)+10,H-10-((p.kg-mn)/(mx-mn))*(H-30)]});var first=l[0],last=l[l.length-1];var diff=Math.round((last.kg-first.kg)*10)/10;
  return '<svg viewBox="0 0 '+W+' '+H+'" width="100%" height="'+H+'" role="img" aria-label="Andamento del peso"><polyline fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" points="'+pts.map(function(p){return p[0].toFixed(1)+','+p[1].toFixed(1)}).join(' ')+'"/>'+pts.map(function(p){return '<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="3" fill="var(--accent)"/>'}).join('')+'</svg><p class="small" style="margin:4px 0 8px">Ultimo <b>'+String(last.kg).replace('.',',')+' kg</b> · dal '+esc(fmtShort(first.d))+': <b>'+(diff>0?'+':'')+String(diff).replace('.',',')+' kg</b></p>'}
@@ -1847,6 +1847,47 @@ function bkRestore(){var pw=($('#bk-rpw')||{}).value||'';var f=S.bkFile;if(!f)re
   return IDB.all().then(function(have){var ids={};(have||[]).forEach(function(p){ids[p.id]=1});var add=o.photos.filter(function(p){return !ids[p.id]});
    return add.reduce(function(pr,p){return pr.then(function(){return IDB.put({id:p.id,d:p.d,label:p.label,at:p.at,blob:new Blob([b64ToAb(p.data)],{type:p.type})})})},Promise.resolve()).then(function(){S.bkFile=null;S.photos=null;closeSheet();toast(hadLs?'Dati ripristinati':(add.length?'Ripristinate '+add.length+' foto':'Le foto c\'erano già tutte'));if(hadLs)setTimeout(function(){location.reload()},900);else render()})})})
  .catch(function(e){toast(e&&e.message==='fmt'?'Questo file non è un backup delle foto':'Password sbagliata o file rovinato')})}
+
+/* ---------- copia dei dati su Supabase (stesso progetto del Quaderno) ----------
+   Il telefono resta la fonte: ogni salvataggio locale viene copiato nella tabella docs (col "dieta").
+   Si entra con l'account del Quaderno: la chiave qui sotto è pubblica per progetto, i dati li protegge il login
+   e la regola del database (ognuno legge e scrive solo le proprie righe). Password, PIN, token GitHub e foto non vengono copiati. */
+var SBURL='https://apgmocjixobglbiwqycz.supabase.co',SBKEY='sb_publishable_qdIYUwrhGiyFLJJImoGCjA_BXisYaVf',SBCOL='dieta';
+var SB={t:null,busy:false,err:null,again:false};
+function sbSess(){return lsGet('leo:sb')}
+function sbOn(){return ISGH&&!NPAGE&&!!sbSess()}
+function sbHead(tok){return {'apikey':SBKEY,'Authorization':'Bearer '+(tok||SBKEY),'Content-Type':'application/json'}}
+function sbStore(j,email){var s={access:j.access_token,refresh:j.refresh_token,exp:Date.now()+(j.expires_in||3600)*1000,uid:(j.user&&j.user.id)||(sbSess()||{}).uid,email:email||(j.user&&j.user.email)||(sbSess()||{}).email||''};lsSet('leo:sb',s);return s}
+function sbToken(){var s=sbSess();if(!s)return Promise.reject({code:'nologin'});if(Date.now()<s.exp-60000)return Promise.resolve(s);
+ return fetch(SBURL+'/auth/v1/token?grant_type=refresh_token',{method:'POST',headers:sbHead(),body:JSON.stringify({refresh_token:s.refresh})}).then(function(r){if(!r.ok)throw {code:(r.status===400||r.status===401||r.status===403)?'expired':'net'};return r.json()}).then(function(j){return sbStore(j,s.email)},function(e){throw e&&e.code?e:{code:'net'}})}
+function sbDirty(){var a=[];try{Object.keys(localStorage).forEach(function(k){if(k.indexOf('leo:sbd:')===0)a.push(k.slice(8))})}catch(e){}return a}
+function sbPayload(n){var d=lsGet('leo:'+n);if(!d)return null;if(n.indexOf('m-')!==0)return d;var o=JSON.parse(JSON.stringify(d));Object.keys(o.days||{}).forEach(function(iso){try{var p=dayScore(iso,d.days[iso]);if(p!=null)o.days[iso].pct=p}catch(e){}});return o}
+function sbState(){if(!sbOn())return 'off';if(SB.err)return 'err';return sbDirty().length?'wait':'ok'}
+function sbPaint(){try{setSync(S.sync)}catch(e){}var el=$('#sbnote');if(el)el.innerHTML=sbNoteHtml()}
+function sbTouch(n){if(!sbOn())return;lsSet('leo:sbd:'+n,Date.now());clearTimeout(SB.t);SB.t=setTimeout(sbPush,2500);sbPaint()}
+function sbAll(){try{Object.keys(localStorage).forEach(function(k){if(/^leo:(m-\d{4}-\d{2}|peso|settings)$/.test(k))lsSet('leo:sbd:'+k.slice(4),Date.now())})}catch(e){}}
+function sbPush(){if(!sbOn())return Promise.resolve(false);if(SB.busy){SB.again=true;return Promise.resolve(false)}
+ var names=sbDirty();if(!names.length){SB.err=null;sbPaint();return Promise.resolve(true)}
+ var marks={};names.forEach(function(n){marks[n]=lsGet('leo:sbd:'+n)});SB.busy=true;
+ return sbToken().then(function(s){var rows=[];names.forEach(function(n){var p=sbPayload(n);if(p)rows.push({user_id:s.uid,col:SBCOL,id:n,data:p,updated_at:new Date().toISOString()})});
+  if(!rows.length){names.forEach(function(n){lsDel('leo:sbd:'+n)});return true}
+  var h=sbHead(s.access);h.Prefer='resolution=merge-duplicates,return=minimal';
+  return fetch(SBURL+'/rest/v1/docs?on_conflict=user_id,col,id',{method:'POST',headers:h,body:JSON.stringify(rows)}).then(function(r){if(r.status===401||r.status===403)throw {code:'expired'};if(!r.ok)throw {code:'srv'+r.status};names.forEach(function(n){if(lsGet('leo:sbd:'+n)===marks[n])lsDel('leo:sbd:'+n)});lsSet('leo:sbAt',Date.now());return true})})
+ .then(function(ok){SB.err=null;SB.retried=false;return ok},function(e){var c=e&&e.code;if(c==='expired'&&!SB.retried){SB.retried=true;var s0=sbSess();if(s0){s0.exp=0;lsSet('leo:sb',s0)}SB.busy=false;return sbPush()}SB.err=c==='expired'?'login':(c==='net'||!c||c==='nologin'?null:'srv');if(c==='net'||!c){clearTimeout(SB.t);SB.t=setTimeout(sbPush,45000)}return false})
+ .then(function(ok){SB.busy=false;sbPaint();if(SB.again){SB.again=false;sbPush()}return ok})}
+function sbLogin(email,pass){return fetch(SBURL+'/auth/v1/token?grant_type=password',{method:'POST',headers:sbHead(),body:JSON.stringify({email:email,password:pass})}).then(function(r){return r.json().then(function(j){if(!r.ok||!j.access_token)throw {code:'bad'};return j},function(){throw {code:'bad'}})},function(){throw {code:'net'}}).then(function(j){sbStore(j,email);return true})}
+function sbNoteHtml(){var st=sbState();if(st==='off')return '<span>I dati restano solo su questo telefono.</span><button class="btn" data-act="sblogin">Collega</button>';
+ var s=sbSess()||{};var at=lsGet('leo:sbAt');var d=at?new Date(at):null;var n=sbDirty().length;
+ var line=st==='err'?(SB.err==='login'?'Il collegamento è scaduto: entra di nuovo.':'La copia non è riuscita, riprovo da solo.'):(st==='wait'?'✓ Collegato · '+n+(n===1?' elemento in attesa':' elementi in attesa'):'✓ Copia aggiornata'+(d?' · '+fmtDay(d.toISOString().slice(0,10))+' alle '+pad(d.getHours())+':'+pad(d.getMinutes()):''));
+ return '<span>'+esc(line)+'<br><span class="small muted">'+esc(s.email||'')+'</span></span><button class="btn ghost" data-act="sbnow">Copia adesso</button>'}
+function sbCard(){if(!ISGH||NPAGE)return '';return '<section class="card"><h2>Copia su Supabase</h2><p class="small muted" style="margin:4px 0 10px">Il telefono resta la fonte. Con il login del Quaderno si tiene anche una copia sul tuo spazio privato: la vedi solo tu. Pasti, peso e allenamenti vengono copiati, PIN, token e foto no.</p><div class="banner done" id="sbnote" style="font-size:14px">'+sbNoteHtml()+'</div>'+(sbOn()?'<button class="btn ghost block" data-act="sboff" style="margin-top:8px">Scollega</button>':'')+'</section>'}
+function openSbLogin(){sheet('<h3>Collega il Quaderno</h3><p class="small muted" style="margin:0 0 8px">Stessa email e password con cui entri nel Quaderno. La password non viene salvata su questo telefono: resta solo il collegamento.</p><input id="sb-e" class="inp" type="email" autocomplete="username" placeholder="Email"><input id="sb-p" class="inp" type="password" autocomplete="current-password" placeholder="Password"><button class="btn block" data-act="sbgo">Collega e copia i dati</button>')}
+function sbGo(){var e=(($('#sb-e')||{}).value||'').trim(),p=($('#sb-p')||{}).value||'';if(!e||!p){toast('Scrivi email e password');return}toast('Controllo…');
+ sbLogin(e,p).then(function(){var pi=$('#sb-p');if(pi)pi.value='';sbAll();SB.err=null;closeSheet();render();toast('Collegato: copio i dati');return sbPush()}).then(function(ok){if(ok)toast('Dati copiati');render()},function(er){toast(er&&er.code==='net'?'Non riesco a contattare Supabase, riprova':'Email o password non corrette')})}
+function sbOff(){lsDel('leo:sb');lsDel('leo:sbAt');sbDirty().forEach(function(n){lsDel('leo:sbd:'+n)});SB.err=null;render();toast('Scollegato. I dati sul telefono sono rimasti')}
+(function(){if(!ISGH||NPAGE)return;var w=Store.write;Store.write=function(n){var r=w.apply(this,arguments);Promise.resolve(r).then(function(){sbTouch(n)});return r};
+ var ss=setSync;setSync=function(s){ss(s);var el=$('#sync');if(el&&sbOn()){var st=sbState();el.className='sync '+(st==='ok'?(s==='err'?'err':'ok'):st==='err'?'err':'saving');el.title=st==='ok'?'Salvato sul telefono e su Supabase':st==='err'?(SB.err==='login'?'Copia su Supabase: entra di nuovo':'Copia su Supabase non riuscita'):'Salvato sul telefono, copia su Supabase in attesa'}};
+ window.addEventListener('online',function(){sbPush()});document.addEventListener('visibilitychange',function(){if(!document.hidden)sbPush()});setTimeout(sbPush,4000)})();
 
 
 /* ---------- vista nonna ---------- */
@@ -2008,6 +2049,10 @@ function act(a,b){var ds=b.dataset;
  case 'out':var d2=dayEdit(S.day);d2.out=d2.out||{};if(d2.out[ds.slot])delete d2.out[ds.slot];else d2.out[ds.slot]=1;saveDay(S.day);render();break;
  case 'mstate':if(ds.v==='detail')S.open[ds.slot+S.day]=1;mstate(ds.slot,ds.v);break;
  case 'ist':openItem(ds.slot,ds.key);break;
+ case 'sblogin':openSbLogin();break;
+ case 'sbgo':sbGo();break;
+ case 'sbnow':toast('Copio…');sbPush().then(function(ok){toast(ok?'Copia aggiornata':'Non riuscita, riprovo da solo');sbPaint()});break;
+ case 'sboff':sbOff();break;
  case 'itopen':{var dI=dayData(S.day)||{};openItem(slotOf(dI,ds.key[0]),ds.key);break}
  case 'itc':S.itm.c=ds.v;Array.prototype.forEach.call(document.querySelectorAll('#it-c button'),function(x){x.classList.toggle('on',x===b)});itPrev();break;
  case 'itq':S.itm.q=ds.v;Array.prototype.forEach.call(document.querySelectorAll('#it-q button'),function(x){x.classList.toggle('on',x===b)});itPrev();break;
