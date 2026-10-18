@@ -361,6 +361,8 @@ details.bimby{background:var(--surface2);border-radius:12px;padding:10px 12px;ma
 details.bimby summary{font-weight:800;cursor:pointer}
 details.bimby>ol{margin:10px 0 0;padding-left:22px}
 details.bimby.nn summary{font-size:18px}
+
+.ist.off{background:var(--ochre-soft);color:var(--ochre)}
 </style>
 <div id="app"><div class="splash"><p class="muted" style="font-size:28px">…</p></div></div>
 <script type="application/json" id="nonna-data">{"u":null,"days":{}}</script>
@@ -824,7 +826,11 @@ function fruitPick(iso,key){var mo=parseIso(iso).getMonth()+1;var pool=G.FRUIT.f
 function mealItems(iso,src,dd){return PLAN[dowOf(iso)][src].map(function(it,i){return resolve(it,src+i,dd,iso)})}
 
 /* ---------- aderenza ---------- */
-var ST={ok:{l:'Come da piano',s:'✓',v:1},meno:{l:'Ne ho mangiato meno',s:'meno',v:.75},piu:{l:'Ne ho mangiato di più',s:'di più',v:.6},eq:{l:'Sostituito con qualcosa di simile',s:'simile',v:.9},no:{l:'Saltato',s:'saltato',v:.15},alt:{l:'Sostituito con altro, diverso dal piano',s:'altro',v:.1}};
+var ST={ok:{l:'Come da piano',s:'✓',v:1},meno:{l:'Ne ho mangiato meno',s:'meno',v:.75},piu:{l:'Ne ho mangiato di più',s:'di più',v:.6},eq:{l:'Sostituito con qualcosa di simile',s:'simile',v:.9},no:{l:'Saltato',s:'saltato',v:.15},alt:{l:'Sostituito con altro, diverso dal piano',s:'altro',v:.1},off:{l:'Ho mangiato altro (scelgo tipo e quantità)',s:'fuori',v:.5}};
+var OFFC=[['carb','Carboidrato'],['prot','Proteina'],['fat','Grassi e condimenti'],['fruit','Frutta'],['sweet','Dolce'],['other','Altro']];
+var OFFR=[['meno','Meno del piano'],['pari','Più o meno uguale'],['piu','Un po\' di più'],['molto','Molto di più']];
+var OFFV={same:{meno:.8,pari:.95,piu:.75,molto:.5},diff:{meno:.4,pari:.35,piu:.25,molto:.1}};
+function offVal(sub,cls){if(!sub)return .5;var tb=OFFV[sub.c===cls?'same':'diff'];return tb[sub.r]!=null?tb[sub.r]:.5}
 var XQ={1:{l:'Poco',d:'un assaggio: 2 biscotti, un quadratino di cioccolato',p:8},2:{l:'Medio',d:'uno spuntino vero: patatine, una fetta di torta, un panino',p:18},3:{l:'Tanto',d:'quasi un pasto in più, o un\'abbuffata',p:35}};
 var XC={dolce:'Dolci',salato:'Snack salati',carbo:'Pane, pizza, pasta',formaggi:'Formaggi, salumi',fruttasecca:'Frutta secca',condimento:'Olio o condimenti extra',alcol:'Alcol',bibita:'Bibite zuccherate',altro:'Altro'};
 var MSTATE=[['plan','✓ Da piano'],['detail','Con differenze'],['skip','Saltato'],['off','Fuori piano']];
@@ -845,7 +851,7 @@ function xpen(list,div){return (list||[]).reduce(function(s,x){return s+xpen1(x)
 function mealScore(iso,slot,src,dd){if(!dd)return null;var t=dd.t&&dd.t[slot];if(!t||!t.s){if(dd.a&&typeof dd.a[slot]==='number')return Math.round(dd.a[slot]*100);return null}
  var pen=xpen(t.x);if(t.s==='skip')return 50;if(t.s==='off')return 0;if(t.s==='lib1')return Math.max(0,100-pen);if(t.s==='lib2')return 60;if(t.s==='lib3')return 25;
  var base=100;if(t.s==='detail'){var its=mealItems(iso,src,dd);var wsum=0,vsum=0;pen=0;
-  var rows=its.map(function(it){var st=(t.it&&t.it[it.key])||'ok';var cl=foodCls(it);var v=(it.g==='VEG'&&st==='piu')?1:(ST[st]?ST[st].v:1);return {it:it,cl:cl,st:st,v:v}});
+  var rows=its.map(function(it){var st=(t.it&&t.it[it.key])||'ok';var cl=foodCls(it);var v=(it.g==='VEG'&&st==='piu')?1:(st==='off'?offVal(t.sub&&t.sub[it.key],cl):(ST[st]?ST[st].v:1));return {it:it,cl:cl,st:st,v:v}});
   (t.x||[]).forEach(function(x){var cl=XCLS[x.c];var hit=cl&&rows.filter(function(r){return r.cl===cl&&(r.st==='no'||r.st==='alt')&&!r.used})[0];if(hit){hit.used=1;hit.v=Math.max(hit.v,.85)}else pen+=xpen1(x)});
   rows.forEach(function(r){var w=CLW[r.cl]||1.5;wsum+=w;vsum+=w*r.v});base=wsum?vsum/wsum*100:100}
  return Math.max(0,Math.min(100,Math.round(base-pen)))}
@@ -859,7 +865,7 @@ function deviations(iso,dd){var out=[];if(!dd)return out;slots(dd).forEach(funct
  if(t.s==='skip')out.push({slot:slot,k:'skip',txt:M+': pasto saltato'});
  if(t.s==='off')out.push({slot:slot,k:'off',txt:M+': tutto fuori piano'});
  if(t.s==='lib2'||t.s==='lib3')out.push({slot:slot,k:'lib',txt:M+' libera: esagerato '+(t.s==='lib2'?'un po\'':'tanto')});
- if(t.s==='detail')mealItems(iso,src,dd).forEach(function(it){var st=t.it&&t.it[it.key];if(!st||st==='ok'||(it.g==='VEG'&&st==='piu'))return;out.push({slot:slot,k:'item',st:st,f:it.f,txt:M+': '+fname(it.f)+', '+ST[st].s})});
+ if(t.s==='detail')mealItems(iso,src,dd).forEach(function(it){var st=t.it&&t.it[it.key];if(!st||st==='ok'||(it.g==='VEG'&&st==='piu'))return;out.push({slot:slot,k:'item',st:st,f:it.f,txt:M+': '+fname(it.f)+', '+ST[st].s+(st==='off'&&t.sub&&t.sub[it.key]&&t.sub[it.key].w?' ('+t.sub[it.key].w+')':'')})});
  (t.x||[]).forEach(function(x){out.push({slot:slot,k:'x',c:x.c,q:x.q,txt:M+': + '+xtxt(x)})})});
  (dd.xo||[]).forEach(function(x){out.push({slot:'xo',k:'x',c:x.c,q:x.q,txt:'Fuori pasto: + '+xtxt(x)})});return out}
 
@@ -976,12 +982,14 @@ function itemRow(it,dd,src,slot,detail,iso){var t=(dd.t&&dd.t[slot])||{};var st=
  var btn=it.g&&G[it.g]?'<button class="swap'+(it.sw?' on':'')+'" data-act="alt" data-key="'+it.key+'" aria-label="Alternative a '+esc(fname(it.f))+'">⇄</button>':'';
  var ey=eyeTxt(it.f,it.q);return '<li class="it"><div class="it-main"><span class="it-n">'+esc(fname(it.f))+note+'</span><span class="it-q">'+esc(it.q)+hint+'</span>'+(ey?'<span class="eye">👁 ≈ '+esc(ey)+'</span>':'')+was+'</div>'+btn+chip+'</li>'}
 function openIst(slot,key){var iso=S.day;var dd=dayData(iso)||{};var src=key[0];var it=mealItems(iso,src,dd).filter(function(x){return x.key===key})[0];if(!it)return;var cur=(dd.t&&dd.t[slot]&&dd.t[slot].it&&dd.t[slot].it[key])||'ok';var veg=it.g==='VEG';
- sheet('<h3>'+esc(veg?'Verdure':fname(it.f))+' · '+esc(it.q)+'</h3><div class="opts">'+Object.keys(ST).map(function(k){var l=ST[k].l;if(veg&&k==='piu')l='Di più (va benissimo)';if(veg&&(k==='alt'||k==='eq'))return '';return '<button class="opt'+(cur===k?' on':'')+'" data-act="istset" data-slot="'+slot+'" data-key="'+key+'" data-v="'+k+'"><span>'+esc(l)+'</span></button>'}).join('')+'</div><p class="muted small">"Simile" vale per lo stesso tipo di alimento (pane al posto del riso, un altro legume). Se hai mangiato anche altro, aggiungilo con "Ho aggiunto qualcosa fuori piano".</p>')}
+ sheet('<h3>'+esc(veg?'Verdure':fname(it.f))+' · '+esc(it.q)+'</h3><div class="opts">'+Object.keys(ST).map(function(k){var l=ST[k].l;if(veg&&k==='piu')l='Di più (va benissimo)';if(veg&&(k==='alt'||k==='eq'||k==='off'))return '';if((k==='alt'||k==='eq')&&cur!==k)return '';return '<button class="opt'+(cur===k?' on':'')+'" data-act="'+(k==='off'?'offopen':'istset')+'" data-slot="'+slot+'" data-key="'+key+'" data-v="'+k+'"><span>'+esc(l)+'</span></button>'}).join('')+'</div><p class="muted small">"Simile" vale per lo stesso tipo di alimento (pane al posto del riso, un altro legume). Se hai mangiato anche altro, aggiungilo con "Ho aggiunto qualcosa fuori piano".</p>')}
 function openX(slot){S.xd={slot:slot,c:null,q:2};sheet('<h3>'+(slot==='xo'?'Mangiato fuori dai pasti':'Aggiunta a '+MEALS[slot].it.toLowerCase())+'</h3><label class="lbl" for="x-w">Cosa</label><input id="x-w" class="inp" maxlength="60" placeholder="Es. biscotti, patatine, un bicchiere di vino"><div class="lbl">Che tipo</div><div class="xopt" id="x-c">'+Object.keys(XC).map(function(k){return '<button data-act="xc" data-v="'+k+'">'+XC[k]+'</button>'}).join('')+'</div><div class="lbl">Quanto</div><div class="opts" id="x-q">'+[1,2,3].map(function(q){return '<button class="opt'+(q===2?' on':'')+'" data-act="xq" data-v="'+q+'"><span><b>'+XQ[q].l+'</b><br><span class="muted small">'+XQ[q].d+'</span></span></button>'}).join('')+'</div><button class="btn block" style="margin-top:12px" data-act="xsave">Aggiungi</button>')}
 
 function openAlt(key){var iso=S.day;var dd=dayData(iso)||{};var src=key[0],i=+key.slice(1);var it=PLAN[dowOf(iso)][src][i];var f=it[0],q=it[1],g=it[2];
  var opts=[[f,q]].concat(G[g].filter(function(a){return a[0]!==f}));var cur=(dd.sw&&dd.sw[key])||resolve(it,key,dd,iso).f;var mo=parseIso(iso).getMonth()+1;
- sheet('<h3>Al posto di '+esc(fname(f))+' '+esc(q)+'</h3><p class="muted small" style="margin:0">Le alternative del nutrizionista, già con la grammatura giusta.</p><div class="opts">'+opts.map(function(o){var st=FRUITSEASON[o[0]]&&inSeason(FRUITSEASON[o[0]],mo)?'<span class="tag ok">di stagione</span>':'';return '<button class="opt'+(o[0]===cur?' on':'')+'" data-act="pick" data-key="'+key+'" data-f="'+o[0]+'"><span>'+esc(fname(o[0]))+(o[2]?'<span class="tag">'+esc(o[2])+'</span>':'')+st+'</span><b>'+esc(o[1])+'</b></button>'}).join('')+'</div>')}
+ sheet('<h3>Al posto di '+esc(fname(f))+' '+esc(q)+'</h3><p class="muted small" style="margin:0">Le alternative del nutrizionista, già con la grammatura giusta.</p><div class="opts">'+opts.map(function(o){var st=FRUITSEASON[o[0]]&&inSeason(FRUITSEASON[o[0]],mo)?'<span class="tag ok">di stagione</span>':'';return '<button class="opt'+(o[0]===cur?' on':'')+'" data-act="pick" data-key="'+key+'" data-f="'+o[0]+'"><span>'+esc(fname(o[0]))+(o[2]?'<span class="tag">'+esc(o[2])+'</span>':'')+st+'</span><b>'+esc(o[1])+'</b></button>'}).join('')+'</div><button class="btn ghost block" style="margin-top:10px" data-act="offopen" data-key="'+key+'">Ho mangiato altro, non è in elenco</button>')}
+function openOff(key){var iso=S.day;var dd=dayData(iso)||{};var src=key[0];var slot=slotOf(dd,src);var it=mealItems(iso,src,dd).filter(function(x){return x.key===key})[0];if(!it)return;var cl=foodCls(it);var cur=(dd.t&&dd.t[slot]&&dd.t[slot].sub&&dd.t[slot].sub[key])||{};S.off={key:key,slot:slot,c:cur.c||cl,r:cur.r||'pari'};
+ sheet('<h3>Al posto di '+esc(fname(it.f))+' '+esc(it.q)+'</h3><p class="muted small" style="margin:0">Dì cosa hai mangiato e quanto ci va vicino. Stesso tipo e quantità simile pesa quasi come da piano.</p><label class="lbl" for="off-w">Cosa (facoltativo)</label><input id="off-w" class="inp" maxlength="60" value="'+esc(cur.w||'')+'" placeholder="Es. pane integrale, pizza avanzata"><div class="lbl">Che tipo</div><div class="xopt" id="off-c">'+OFFC.map(function(o){return '<button class="'+(o[0]===S.off.c?'on':'')+'" data-act="offc" data-v="'+o[0]+'">'+o[1]+(o[0]===cl?' (come il piano)':'')+'</button>'}).join('')+'</div><div class="lbl">Quanto, rispetto al piano</div><div class="opts" id="off-r">'+OFFR.map(function(o){return '<button class="opt'+(o[0]===S.off.r?' on':'')+'" data-act="offr" data-v="'+o[0]+'"><span>'+o[1]+'</span></button>'}).join('')+'</div><button class="btn block" style="margin-top:12px" data-act="offsave">Segna</button>')}
 function openVeg(src){S.vegSrc=src;var iso=S.day;var dd=dayData(iso)||{};var cur=(dd.veg&&dd.veg[src])||[];var mo=parseIso(iso).getMonth()+1;
  var seas=VEG.filter(function(v){return inSeason(v[2],mo)}),other=VEG.filter(function(v){return !inSeason(v[2],mo)});
  var lc=cur.map(function(s){return s.toLowerCase()});var known=VEG.map(function(v){return v[0].toLowerCase()});
@@ -1976,6 +1984,10 @@ function act(a,b){var ds=b.dataset;
  case 'out':var d2=dayEdit(S.day);d2.out=d2.out||{};if(d2.out[ds.slot])delete d2.out[ds.slot];else d2.out[ds.slot]=1;saveDay(S.day);render();break;
  case 'mstate':if(ds.v==='detail')S.open[ds.slot+S.day]=1;mstate(ds.slot,ds.v);break;
  case 'ist':openIst(ds.slot,ds.key);break;
+ case 'offopen':openOff(ds.key);break;
+ case 'offc':S.off.c=ds.v;Array.prototype.forEach.call(document.querySelectorAll('#off-c button'),function(x){x.classList.toggle('on',x===b)});break;
+ case 'offr':S.off.r=ds.v;Array.prototype.forEach.call(document.querySelectorAll('#off-r button'),function(x){x.classList.toggle('on',x===b)});break;
+ case 'offsave':{var ow=(($('#off-w')||{}).value||'').trim().slice(0,60);var d7=dayEdit(S.day);d7.t=d7.t||{};var t7=d7.t[S.off.slot]||(d7.t[S.off.slot]={s:'detail'});t7.s='detail';t7.it=t7.it||{};t7.it[S.off.key]='off';t7.sub=t7.sub||{};t7.sub[S.off.key]={w:ow,c:S.off.c,r:S.off.r};saveDay(S.day);closeSheet();render();break}
  case 'istset':var d5=dayEdit(S.day);d5.t=d5.t||{};var t5=d5.t[ds.slot]||(d5.t[ds.slot]={s:'detail'});t5.s='detail';t5.it=t5.it||{};if(ds.v==='ok')delete t5.it[ds.key];else t5.it[ds.key]=ds.v;saveDay(S.day);closeSheet();render();break;
  case 'addx':openX(ds.slot);break;
  case 'xc':S.xd.c=ds.v;Array.prototype.forEach.call(document.querySelectorAll('#x-c button'),function(x){x.classList.toggle('on',x===b)});break;
