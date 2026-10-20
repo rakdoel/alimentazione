@@ -990,15 +990,14 @@ function portIdeas(iso,src,dd){if(src!=='p'&&src!=='n')return '';var ctx=dishCtx
 function outIdeas(items,slot,src,iso,dd){if(typeof S!=='undefined'&&S.mode==='nonna')return '';var T={carb:0,prot:0,veg:0,fat:0,fruit:0};items.forEach(function(it){var c=foodCls(it);if(T[c]!=null)T[c]+=parseFloat(it.q)||0});
  var ck=T.carb,size=ck<=45?'piccola':ck<=75?'media':'abbondante',bread=Math.max(30,Math.round(ck*1.3/10)*10),o=[],tip='';
  var P=function(t,x){o.push('<p style="margin:0 0 7px"><b>'+t+'.</b> '+x+'</p>')};
- if(src==='c'){P('Al bar','Cappuccino o caffè con uno yogurt bianco o greco e un frutto. Se prendi il cornetto, scegli quello vuoto o integrale: conta come carbo e dolce insieme, quindi niente altro dolce.');
+ if(src==='c'){P('Al bar','Cappuccino o caffè con uno yogurt bianco o greco e un frutto.');
   P('Bar con cucina','Pane tostato o toast con ricotta, marmellata o formaggio fresco, più un caffè. Lo zucchero lo metti tu, poco.');
   P('Al volo','Yogurt, frutta e una manciata di frutta secca dal supermercato o dal bar.')}
  else if(src==='m'){P('Al bar','Un frutto e uno yogurt bianco o greco.');P('Al supermercato','Frutta fresca più uno skyr, un kefir o un vasetto di ricotta. Barrette e snack confezionati solo se non hai altro.')}
  else{P('Ristorante o trattoria','Un primo di pasta o riso, porzione '+size+' (al pomodoro, alle verdure o al pesto, senza panna), più un contorno di verdure. Come proteina uova, legumi o un formaggio fresco. Il pane del cestino conta come carbo: o il primo o il pane.');
-  P('Pizzeria','Una margherita sola, senza fritti prima. Metti all\'inizio un\'insalata o le verdure grigliate. La mozzarella sopra conta già come proteina.');
-  P('Poke o bowl','Riso, tofu o edamame o ceci, molta verdura, salsa a parte e poca. Evita tempura e maionese.');
+   P('Poke o bowl','Riso, tofu o edamame o ceci, molta verdura, salsa a parte e poca. Senza tempura e senza maionese.');
   P('Panino o bar','Un panino da circa '+bread+' g di pane con mozzarella, ricotta, hummus o uova e verdure. Meglio un\'insalatona con ceci o uova e una fetta di pane.');
-  P('Self service o mensa','Una porzione '+size+' di cereali, un legume o delle uova, e verdure doppie. Il dolce no.')}
+  P('Self service o mensa','Una porzione '+size+' di cereali, un legume o delle uova, e verdure doppie. Frutta o yogurt come fine pasto.')}
  var parts=[];if(ck)parts.push('carbo '+Math.round(ck)+' g (secchi, come nel piano)');if(T.veg)parts.push('verdure '+Math.round(T.veg)+' g, un contorno abbondante');if(T.fruit)parts.push('un frutto medio');if(T.fat&&src!=='c'&&src!=='m')parts.push('olio '+Math.round(T.fat)+' g, un cucchiaio');
  var pi=portIdeas(iso,src,dd);return '<div class="outbox">'+(pi||'<div class="lbl" style="margin:0 0 6px">Cosa prendere fuori</div>')+o.join('')+(parts.length?'<p class="small muted" style="margin:4px 0 0">Il piano qui prevede: '+parts.join(', ')+'. Poi segna sotto come è andata.</p>':'')+'</div>'}
 function mealCard(iso,slot,src,dd,plan){var items=mealItems(iso,src,dd);var t=(dd.t&&dd.t[slot])||{};var out=dd.out&&dd.out[slot];var lib=plan.libera&&src==='n';var sc=mealScore(iso,slot,src,dd);var qv=S.quick&&!S.open[slot+iso]&&t.s!=='detail';
