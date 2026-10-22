@@ -365,6 +365,8 @@ details.bimby.nn summary{font-size:18px}
 
 .outbox{background:var(--ochre-soft);border-radius:12px;padding:12px 14px;margin:2px 0 10px;font-size:14.5px;line-height:1.45}
 .outbox .cook{background:rgba(255,255,255,.6);margin-top:6px}
+
+.opt b.acc1{color:var(--olive)}.opt b.acc2{color:var(--ochre)}.opt b.acc3{color:var(--red)}
 </style>
 <div id="app"><div class="splash"><p class="muted" style="font-size:28px">…</p></div></div>
 <script type="application/json" id="nonna-data">{"u":null,"days":{}}</script>
@@ -1911,6 +1913,83 @@ function sbOff(){lsDel('leo:sb');lsDel('leo:sbAt');sbDirty().forEach(function(n)
  var ss=setSync;setSync=function(s){ss(s);var el=$('#sync');if(el&&sbOn()){var st=sbState();el.className='sync '+(st==='ok'?(s==='err'?'err':'ok'):st==='err'?'err':'saving');el.title=st==='ok'?'Salvato sul telefono e su Supabase':st==='err'?(SB.err==='login'?'Copia su Supabase: entra di nuovo':'Copia su Supabase non riuscita'):'Salvato sul telefono, copia su Supabase in attesa'}};
  window.addEventListener('online',function(){sbPush()});document.addEventListener('visibilitychange',function(){if(!document.hidden)sbPush()});setTimeout(sbPush,4000)})();
 
+/* ---------- sostituzioni accettabili: non sono nel piano, ma vanno bene ----------
+   Ogni voce ha la classe dell'alimento che sostituisce e un grado: 1 equivalente, 2 quasi, 3 così così.
+   Il grado può cambiare a seconda di cosa sostituisce (gr, per id dell'alimento del piano).
+   Si salva nella voce del pasto come {c, q:'pari', w:nome, a:grado}; la percentuale perde ACCPEN[grado]. */
+var ACCG={1:'equivalente',2:'quasi',3:'così così'};
+var ACCPEN={1:3,2:8,3:15};
+var ACC=[
+{id:'hiprodrink',it:'HiPRO drink, bottiglia 330 ml',c:'prot',g:1,n:'25 g di proteine, come il budino da 200 g',gr:{yog:2,hipro:2,latte:2,whey:2}},
+{id:'milkpro250',it:'Milk Pro High Protein, mezza bottiglia (250 ml)',c:'prot',g:1,n:'20 g di proteine, 130 kcal',gr:{yog:2,hipro:2}},
+{id:'milkpro500',it:'Milk Pro High Protein, bottiglia intera (500 ml)',c:'prot',g:3,n:'40 g di proteine e 265 kcal, il doppio del budino'},
+{id:'wheyacqua',it:'Proteine in polvere in acqua (30 g)',c:'prot',g:1,n:'circa 24 g di proteine, quasi niente altro',gr:{whey:1}},
+{id:'wheylatte',it:'Proteine in polvere nel latte (30 g + 200 ml)',c:'prot',g:2,n:'il latte aggiunge zuccheri e calorie',gr:{latte:1}},
+{id:'skyr',it:'Skyr naturale, 150 g',c:'prot',g:1,n:'come lo yogurt greco 0%',gr:{bud:2}},
+{id:'yogprot',it:'Yogurt proteico in vasetto (YoPRO, Müller, Lindahls), 150-200 g',c:'prot',g:1,n:'15-20 g di proteine',gr:{bud:2}},
+{id:'barretta',it:'Barretta proteica (50-60 g)',c:'prot',g:2,n:'proteine simili, ma più grassi e zuccheri'},
+{id:'uovasode',it:'2 uova sode',c:'prot',g:1,n:'al posto di hummus, tofu o legumi a pranzo e cena'},
+{id:'legpronti',it:'Zuppa di legumi pronta (1 vaschetta)',c:'prot',g:2,n:'se ha cereali o pasta conta anche come carboidrato'},
+{id:'affveg',it:'Affettato vegetale (100 g)',c:'prot',g:3,n:'poche proteine, molto sale'},
+{id:'formspalm',it:'Formaggio spalmabile light (100 g)',c:'prot',g:3,n:'poche proteine rispetto a mozzarella o ricotta'},
+{id:'gallette',it:'Gallette di riso o mais (40 g)',c:'carb',g:1,n:'come 40 g di riso'},
+{id:'panealtro',it:'Pane di altro tipo, stessa quantità',c:'carb',g:1,n:''},
+{id:'patateprec',it:'Patate precotte o al microonde (200 g)',c:'carb',g:1,n:'come le patate del piano'},
+{id:'crackers',it:'Crackers (40 g)',c:'carb',g:2,n:'hanno più grassi del pane'},
+{id:'piadina',it:'Piadina piccola (60 g)',c:'carb',g:2,n:'come le tortillas, ma più grassa'},
+{id:'burroar',it:'Burro di arachidi (15 g)',c:'fat',g:2,n:'al posto dell\'olio o della frutta secca'},
+{id:'fruttaltra',it:'Altra frutta fresca, una porzione',c:'fruit',g:1,n:''},
+{id:'succo',it:'Succo di frutta 100% (200 ml)',c:'fruit',g:3,n:'zuccheri senza fibra'},
+{id:'cremaprot',it:'Crema spalmabile proteica (20 g)',c:'sweet',g:1,n:'al posto della Nutella'}
+];
+var ACCMAP={};ACC.forEach(function(a){ACCMAP[a.id]=a});
+function accFor(it){var cl=foodCls(it);return ACC.filter(function(a){return a.c===cl}).map(function(a){var g=(a.gr&&a.gr[it.f])||a.g;return {id:a.id,it:a.it,n:a.n,g:g}})}
+function accPen(t,items){var p=0;items.forEach(function(it){var v=t&&t.it&&t.it[it.key];if(v&&typeof v==='object'&&v.a)p+=ACCPEN[v.a]||0});return p}
+
+/* la voce registrata porta con sé il grado */
+var _itemRecAcc=itemRec;
+itemRec=function(t,it){var r=_itemRecAcc(t,it);var v=t&&t.it&&t.it[it.key];if(v&&typeof v==='object'&&v.a)r.a=v.a;return r};
+var _recLabAcc=recLab;
+recLab=function(r,it){if(r.a)return (r.q==='pari'?'':AMTS[r.q]+' · ')+ACCG[r.a];return _recLabAcc(r,it)};
+var _recClsAcc=recCls;
+recCls=function(r,it){if(r.a)return r.a===1&&r.q!=='much'&&r.q!=='none'?'ok':'warn';return _recClsAcc(r,it)};
+var _recDescAcc=recDesc;
+recDesc=function(r,it){if(r.a){var d=['al posto suo '+(r.w||'un\'alternativa accettabile')+' ('+ACCG[r.a]+')'];if(r.q!=='pari')d.push(AMTS[r.q]);return d.join(', ')}return _recDescAcc(r,it)};
+
+/* punteggio del pasto: come prima, più la piccola penalità delle sostituzioni accettabili */
+mealScore=function(iso,slot,src,dd){if(!dd)return null;var t=dd.t&&dd.t[slot];if(!t||!t.s){if(dd.a&&typeof dd.a[slot]==='number')return Math.round(dd.a[slot]*100);return null}
+ if(t.s==='off')return 0;if(t.s==='lib1')return Math.max(0,100-xpen(t.x));if(t.s==='lib2')return 60;if(t.s==='lib3')return 25;
+ var P={},E={},pen=0;var items=mealItems(iso,src,dd);
+ items.forEach(function(it){var cl=foodCls(it);var r=t.s==='skip'?{c:cl,q:'none'}:itemRec(t,it);P[cl]=(P[cl]||0)+1;E[r.c]=(E[r.c]||0)+AMTR[r.q]});
+ (t.x||[]).forEach(function(x){var c=XTOCLS[x.c];if(c)E[c]=(E[c]||0)+(UNP[x.q]||0);else pen+=xpen1(x)});
+ if(t.s!=='skip')pen+=accPen(t,items);
+ var ws=0,vs=0;Object.keys(P).forEach(function(c){var w=CLW[c]||1.5;ws+=w;vs+=w*clsScore(c,(E[c]||0)/P[c])});
+ Object.keys(E).forEach(function(c){if(!P[c])pen+=E[c]*22*(c==='other'?1:.8)});
+ var base=ws?vs/ws*100:100;return Math.max(0,Math.min(100,Math.round(base-pen)))};
+
+/* foglio "Al posto di": alternative del nutrizionista, poi le accettabili; c'è anche per le voci senza alternative */
+openAlt=function(key){var iso=S.day;var dd=dayData(iso)||{};var src=key[0],i=+key.slice(1);var it=PLAN[dowOf(iso)][src][i];var f=it[0],q=it[1],g=it[2];
+ var opts=[[f,q]].concat(g&&G[g]?G[g].filter(function(a){return a[0]!==f}):[]);var res=resolve(it,key,dd,iso);var cur=(dd.sw&&dd.sw[key])||res.f;var mo=parseIso(iso).getMonth()+1;
+ var t=(dd.t&&dd.t[slotOf(dd,src)])||{};var rec=t.it&&t.it[key];var curA=rec&&typeof rec==='object'&&rec.a?rec.w:'';
+ var acc=accFor({f:f,g:g,key:key});
+ var h='<h3>Al posto di '+esc(fname(f))+' '+esc(q)+'</h3>';
+ if(opts.length>1)h+='<p class="muted small" style="margin:0">Le alternative del nutrizionista, già con la grammatura giusta.</p><div class="opts">'+opts.map(function(o){var st=FRUITSEASON[o[0]]&&inSeason(FRUITSEASON[o[0]],mo)?'<span class="tag ok">di stagione</span>':'';return '<button class="opt'+(o[0]===cur&&!curA?' on':'')+'" data-act="pick" data-key="'+key+'" data-f="'+o[0]+'"><span>'+esc(fname(o[0]))+(o[2]?'<span class="tag">'+esc(o[2])+'</span>':'')+st+'</span><b>'+esc(o[1])+'</b></button>'}).join('')+'</div>';
+ else h+='<p class="muted small" style="margin:0">Per questa voce il nutrizionista non ha dato alternative.</p>';
+ if(acc.length)h+='<div class="lbl" style="margin-top:14px">Non da piano, ma accettabili</div><p class="muted small" style="margin:0 0 6px">Cose che usi davvero. Contano come la voce del piano, con una piccola penalità a seconda di quanto si somigliano.</p><div class="opts">'+acc.map(function(a){return '<button class="opt'+(curA===a.it?' on':'')+'" data-act="accpick" data-key="'+key+'" data-id="'+a.id+'"><span>'+esc(a.it)+(a.n?'<br><span class="muted small">'+esc(a.n)+'</span>':'')+'</span><b class="acc'+a.g+'">'+ACCG[a.g]+'</b></button>'}).join('')+'</div>';
+ h+='<button class="btn ghost block" style="margin-top:10px" data-act="itopen" data-key="'+key+'">Ho mangiato altro, non è in elenco</button>';
+ sheet(h)};
+function accPick(key,id){var iso=S.day;var a=ACCMAP[id];if(!a)return;var src=key[0],i=+key.slice(1);var it=PLAN[dowOf(iso)][src][i];var g=(a.gr&&a.gr[it[0]])||a.g;var d=dayEdit(iso);var slot=slotOf(d,src);
+ d.t=d.t||{};var t=d.t[slot]||(d.t[slot]={s:'detail'});t.s='detail';t.it=t.it||{};t.it[key]={c:a.c,q:'pari',w:a.it,a:g};if(t.sub)delete t.sub[key];if(d.sw)delete d.sw[key];
+ saveDay(iso);closeSheet();render();var v=mealScore(iso,slot,src,dayData(iso));toast(ACCG[g].charAt(0).toUpperCase()+ACCG[g].slice(1)+': il pasto vale circa '+v+'%')}
+
+/* nella riga del pasto si vede cosa c'è al posto della voce */
+var _itemRowAcc=itemRow;
+itemRow=function(it,dd,src,slot,detail,iso){var h=_itemRowAcc(it,dd,src,slot,detail,iso);var t=(dd.t&&dd.t[slot])||{};var v=t.it&&t.it[it.key];
+ if(v&&typeof v==='object'&&v.a&&it.g!=='VEG'){h=h.replace('</div><button class="swap','<span class="was">al posto suo '+esc(v.w)+' · '+ACCG[v.a]+'</span></div><button class="swap on');
+  if(h.indexOf('data-act="alt"')<0)h=h.replace('</div>'+(detail?'<button class="ist':'</li>'),'</div><button class="swap on" data-act="alt" data-key="'+it.key+'" aria-label="Alternative">⇄</button>'+(detail?'<button class="ist':'</li>'))}
+ else if(h.indexOf('data-act="alt"')<0&&it.g!=='VEG'&&accFor(it).length)h=h.replace('</div>'+(detail?'<button class="ist':'</li>'),'</div><button class="swap" data-act="alt" data-key="'+it.key+'" aria-label="Alternative">⇄</button>'+(detail?'<button class="ist':'</li>'));
+ return h};
+
 
 /* ---------- vista nonna ---------- */
 var T={it:{title:'Il menu di L.',week:'Settimana',thisW:'Questa settimana',nextW:'Prossima',today:'oggi',out:'Fuori casa',free:'Cena libera: fuori o quello che si preferisce',msg:'Messaggio di L.',veg:'Verdure',vegAny:'a scelta',atLeast:'almeno',upd:'Aggiornato',std:'Menu standard del nutrizionista',back:'L.? Apri il tuo diario',menu:'Menu',shop:'Spesa',help:'Aiuto',dish:'Idea',shopNote:'Tutto quello che serve per la settimana, pasti fuori esclusi.'},
@@ -2087,6 +2166,7 @@ function act(a,b){var ds=b.dataset;
  case 'xsave':var w=(($('#x-w')||{}).value||'').trim().slice(0,60);if(!w&&!S.xd.c){toast('Scrivi cosa o scegli il tipo');break}var x={w:w,c:S.xd.c||'altro',q:S.xd.q||2};var d6=dayEdit(S.day);if(S.xd.slot==='xo'){(d6.xo=d6.xo||[]).push(x)}else{d6.t=d6.t||{};var t6=d6.t[S.xd.slot]||(d6.t[S.xd.slot]={});(t6.x=t6.x||[]).push(x)}saveDay(S.day);closeSheet();render();break;
  case 'delx':var d7=dayEdit(S.day);if(ds.slot==='xo'){d7.xo.splice(+ds.i,1);if(!d7.xo.length)delete d7.xo}else{var t7=d7.t[ds.slot];t7.x.splice(+ds.i,1);if(!t7.x.length)delete t7.x;if(!t7.s&&!t7.x)delete d7.t[ds.slot]}saveDay(S.day);render();break;
  case 'alt':openAlt(ds.key);break;
+ case 'accpick':accPick(ds.key,ds.id);break;
  case 'pick':var d4=dayEdit(S.day);d4.sw=d4.sw||{};var base=PLAN[dowOf(S.day)][ds.key[0]][+ds.key.slice(1)][0];var g4=PLAN[dowOf(S.day)][ds.key[0]][+ds.key.slice(1)][2];var isFr=(g4==='FRUIT'&&fruitAuto())||(AUTOP.indexOf(g4)>=0&&autoOn('prot'));if(ds.f===base&&!isFr)delete d4.sw[ds.key];else d4.sw[ds.key]=ds.f;if(d4.dish)delete d4.dish[ds.key[0]];saveDay(S.day);closeSheet();render();break;
  case 'veg':openVeg(ds.src);break;
  case 'vegt':toggleVeg(ds.name);break;
