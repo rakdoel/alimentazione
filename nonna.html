@@ -383,6 +383,9 @@ details.bimby.nn summary{font-size:18px}
 .nonna .n-ch button.on{border-color:var(--olive);background:var(--olive-soft)}
 .nonna .n-ch-foot{margin-top:18px;display:flex;flex-direction:column;gap:10px}.nonna .n-ch-foot .btn{font-size:20px;padding:14px}
 .nonna .small.muted a,.nonna p.small{font-size:17px}
+
+.hdu{list-style:none;margin:4px 0 0 10px;padding:0;border-left:3px solid var(--line,#e5d9ea)}.hdu li{background:none;padding:3px 0 3px 10px;margin:0;font-size:13.5px}.hdup{margin-top:6px;padding:6px 12px;font-size:13.5px}
+.hdl .xoi{display:flex;align-items:center;gap:8px}.hdl .xoi .xdel{border:0;background:none;font-size:18px;color:var(--muted);padding:0 4px}
 </style>
 <div id="app"><div class="splash"><p class="muted" style="font-size:28px">…</p></div></div>
 <script type="application/json" id="nonna-data">{"u":null,"days":{}}</script>
@@ -900,7 +903,7 @@ function dayScore(iso,dd){if(!dd)return null;var ws=0,vs=0;slots(dd).forEach(fun
 function marked(iso,dd){if(!dd)return 0;return slots(dd).filter(function(s){return mealScore(iso,s[0],s[1],dd)!=null}).length}
 function cls(p){return p==null?'':p>=80?'g':p>=50?'y':'r'}
 function pctCol(p){return p==null?'var(--line)':p>=80?'var(--olive)':p>=50?'var(--ochre)':'var(--red)'}
-function xtxt(x){return (x.w?x.w+' · ':'')+(XC[x.c]||'Altro').toLowerCase()+' · '+XQ[x.q].l.toLowerCase()}
+function xtxt(x){return (x.h?x.h+' · ':'')+(x.w?x.w+' · ':'')+(XC[x.c]||'Altro').toLowerCase()+' · '+XQ[x.q].l.toLowerCase()}
 function deviations(iso,dd){var out=[];if(!dd)return out;slots(dd).forEach(function(s){var slot=s[0],src=s[1];var t=dd.t&&dd.t[slot];if(!t)return;var M=MEALS[slot].it;
  if(t.s==='skip')out.push({slot:slot,k:'skip',txt:M+': pasto saltato'});
  if(t.s==='off')out.push({slot:slot,k:'off',txt:M+': tutto fuori piano'});
@@ -990,9 +993,8 @@ function tabOggi(){var iso=S.day;if(needMonths([iso]))return '<p class="muted">C
  var r=nonnaRange();if(!ISGH&&iso>=r[0]&&iso<=r[13])h+=nonnaBanner(true);
  h+='<section class="card"><div class="score">'+ring(p)+'<div style="flex:1"><div class="score-t">'+(p==null?'Nessun pasto segnato':'Giornata al '+p+'%')+'</div><div class="muted small">'+marked(iso,dd)+'/4 pasti segnati'+(dev.length?' · '+dev.length+(dev.length===1?' cosa diversa':' cose diverse'):'')+'</div></div></div>';
  if(dev.length)h+='<details style="margin-top:8px"><summary class="small" style="cursor:pointer;font-weight:700">Dove non hai seguito</summary><ul class="dev">'+dev.map(function(d){return '<li>'+esc(d.txt)+'</li>'}).join('')+'</ul></details>';
- if(dd.xo&&dd.xo.length)h+='<div class="lbl" style="margin:10px 0 0">Fuori dai pasti</div><ul class="xl">'+dd.xo.map(function(x,i){return '<li><span>+ '+esc(xtxt(x))+'</span><button data-act="delx" data-slot="xo" data-i="'+i+'" aria-label="Togli">×</button></li>'}).join('')+'</ul>';
  var nm=marked(iso,dd);if(nm<4&&iso<=todayIso())h+='<button class="btn ghost block" style="margin-top:10px" data-act="allplan">✓ Segna da piano i pasti che mancano</button>';
- h+='<button class="addx" data-act="addx" data-slot="xo">+ Qualcosa mangiato fuori dai pasti</button></section>';
+ h+='</section>';
  if(ISGH&&iso===todayIso()){var lb=lsGet('leo:bk');var started=lsGet('leo:start');if(!started)lsSet('leo:start',Date.now());var ref=lb||started||Date.now();if((Date.now()-ref)/864e5>14)h+='<div class="banner todo"><span>È da più di due settimane che non fai il backup. I dati stanno solo su questo telefono.</span><button class="btn" data-act="tab" data-tab="prog">Fai backup</button></div>'}
  if(ISGH&&!NPAGE&&iso===todayIso()&&typeof sbOn==='function'&&!sbOn()&&!lsGet('leo:sbskip'))h+='<div class="banner todo"><span>Copia dei dati su Supabase non ancora collegata.</span><span style="display:flex;gap:6px"><button class="btn" data-act="sblogin">Collega</button><button class="btn ghost" data-act="sbskip">Non ora</button></span></div>'
  h+='<div class="chips"><button class="chip '+(S.quick?'on':'')+'" data-act="quick">'+(S.quick?'Vista rapida':'Vista completa')+'</button><button class="chip '+(dd.inv?'on':'')+'" data-act="inv">⇅ Inverti pranzo e cena</button></div>';
@@ -1000,6 +1002,7 @@ function tabOggi(){var iso=S.day;if(needMonths([iso]))return '<p class="muted">C
  slots(dd).forEach(function(s){h+=mealCard(iso,s[0],s[1],dd,plan)});
  h+='<div class="lbl" style="margin:18px 0 6px">Se serve</div>';
  var sosT=(dd.sos||[]).length;if(iso===todayIso())h+='<button class="sosb" data-act="sosopen"><span aria-hidden="true" style="font-size:20px">🫶</span><span><b>SOS fame o voglia improvvisa</b><small>'+(sosT?'Oggi '+sosT+(sosT===1?' volta':' volte')+' · ':'')+'due minuti per capire e scegliere</small></span></button>';
+ h+=xoCard(iso);
  h+=hdCard(iso);
  h+='<section class="card"><label class="lbl" for="f-note">Note della giornata</label><textarea id="f-note" class="inp" rows="3" data-field="note" placeholder="Com\'è andata, come ti senti…">'+esc(dd.note||'')+'</textarea></section>';
  return h}
@@ -1093,7 +1096,7 @@ function openCalDay(iso){var dd=dayData(iso)||{};var sc=dayScore(iso,dd);var dev
  if(dev.length)h+='<div class="lbl" style="margin-top:10px">Cosa è andato diverso</div><ul class="dev">'+dev.map(function(d){return '<li>'+esc(d.txt)+'</li>'}).join('')+'</ul>';
  if(mv.length)h+='<div class="lbl" style="margin-top:10px">Movimento</div><ul class="dev">'+mv.map(function(m){return '<li>'+esc(moveLabel(m))+'</li>'}).join('')+'</ul>';
  if(dd.sos&&dd.sos.length)h+='<div class="lbl" style="margin-top:10px">Attacchi di fame</div><ul class="dev">'+dd.sos.map(function(e){return '<li>'+esc(e.h+' · intensità '+e.int+' · '+SOS_OUT[e.out].toLowerCase()+((e.em||[]).length?' · '+e.em.join(', ').toLowerCase():'')+(e.n?' · '+e.n:''))+'</li>'}).join('')+'</ul>';
- if(dd.hd&&dd.hd.length)h+='<div class="lbl" style="margin-top:10px">Mal di testa</div><ul class="dev">'+dd.hd.map(function(e){return '<li>'+esc(hdTxt(e))+'</li>'}).join('')+'</ul>';
+ if(dd.hd&&dd.hd.length)h+='<div class="lbl" style="margin-top:10px">Mal di testa</div><ul class="dev">'+dd.hd.map(function(e){return '<li>'+esc(hdTxtAll(e))+'</li>'}).join('')+'</ul>';
  if(dd.note)h+='<p class="small"><b>Note:</b> '+esc(dd.note)+'</p>';
  h+='<button class="btn block" style="margin-top:12px" data-act="goday" data-iso="'+iso+'">Apri il giorno</button>';sheet(h)}
 function weekAvg(mon){var v=[];for(var i=0;i<7;i++){var d=addDays(mon,i);var p=dayScore(d,dayData(d));if(p!=null)v.push(p)}return v.length?Math.round(v.reduce(function(a,b){return a+b},0)/v.length):null}
@@ -1437,6 +1440,8 @@ var HD_EFF={si:'Passato',poco:'Un po\' meglio',no:'Non ha funzionato',boh:'Da ve
 var HD_TR=['Dormito poco','Bevuto poco','Pasto saltato o in ritardo','Tanto schermo','Stress','Caffè','Alcol','Collo e postura','Dopo l\'allenamento','Cambio di tempo','Non lo so'];
 function hdMedTxt(m,e){var x=HD_MED[m.n];var nm=m.n==='altro'?(e&&e.alt?e.alt:'altro farmaco'):x.n;return nm+(m.d?' '+m.d+' mg':'')}
 function hdTxt(e){var p=[e.h,HD_I[e.i].toLowerCase()];if(e.loc&&e.loc.length)p.push(e.loc.join(', ').toLowerCase());p.push(e.med&&e.med.length?e.med.map(function(m){return hdMedTxt(m,e)}).join(' + '):'senza farmaci');if(e.med&&e.med.length&&e.eff)p.push(HD_EFF[e.eff].toLowerCase());if(e.tr&&e.tr.length)p.push('forse '+e.tr.join(', ').toLowerCase());if(e.n)p.push(e.n);return p.join(' · ')}
+function hdMeds(e){var L=(e.med||[]).slice();(e.u||[]).forEach(function(u){(u.med||[]).forEach(function(m){L.push({n:m.n,d:m.d,alt:u.alt})})});return L}
+function hdPeak(e){var m=e.i;(e.u||[]).forEach(function(u){if(u.i>m)m=u.i});return m}
 function hdRead(){var d=S.hd;if(!d)return;var a=$('#hd-h'),n=$('#hd-n'),al=$('#hd-alt');if(a&&a.value)d.h=a.value;if(n)d.n=n.value.slice(0,200);if(al)d.alt=al.value.slice(0,40)}
 function openHd(iso,i){if(iso!=null){var dd=dayData(iso)||{};var e=i!=null&&dd.hd?dd.hd[+i]:null;S.hd=e?JSON.parse(JSON.stringify(e)):{h:iso===todayIso()?nowHM():'',i:2,loc:[],sym:[],med:[],eff:null,tr:[],n:'',alt:''};S.hd.iso=iso;S.hd.ix=e?+i:null;['loc','sym','med','tr'].forEach(function(k){S.hd[k]=S.hd[k]||[]})}
  var d=S.hd;if(!d)return;var ch=function(k,v,l,on){return '<button class="'+(on?'on':'')+'" data-act="hd" data-k="'+k+'" data-v="'+esc(v)+'">'+esc(l)+'</button>'};var has=function(m){return d.med.some(function(x){return x.n===m})};
@@ -1466,15 +1471,15 @@ function hdSave(){var d=S.hd;if(!d)return;hdRead();var iso=d.iso;
   var md=hdMedDays(30);toast('Segnato.');render();
   if(e.med&&md>=8&&d.ix==null)setTimeout(function(){sheet('<h3>Una cosa da tenere d\'occhio</h3><p>Negli ultimi 30 giorni hai preso antidolorifici in '+md+' giorni.</p><p>Quando succede 10 o più giorni al mese per qualche mese, gli antidolorifici stessi possono mantenere il mal di testa (si chiama cefalea da uso eccessivo di farmaci). Vale la pena parlarne con il medico: in Calendario trovi il riepilogo già pronto da mostrargli.</p><button class="btn block" data-act="close">Ok</button>')},400)})}
 function hdDel(){var d=S.hd;if(!d||d.ix==null)return;var dd=dayEdit(d.iso);dd.hd.splice(d.ix,1);if(!dd.hd.length)delete dd.hd;saveDay(d.iso);S.hd=null;closeSheet();render()}
-function hdMedDays(n){var c=0;for(var k=0;k<n;k++){var dd=dayData(addDays(todayIso(),-k));if(dd&&dd.hd&&dd.hd.some(function(e){return e.med&&e.med.length}))c++}return c}
+function hdMedDays(n){var c=0;for(var k=0;k<n;k++){var dd=dayData(addDays(todayIso(),-k));if(dd&&dd.hd&&dd.hd.some(function(e){return hdMeds(e).length}))c++}return c}
 function hdCard(iso){var dd=dayData(iso)||{};var L=dd.hd||[];if(iso>todayIso())return '';
  var h='<section class="card hd"><div class="hd-top"><div><b>🤕 Mal di testa</b><small>'+(L.length?(L.length===1?'1 volta':L.length+' volte')+(iso===todayIso()?' oggi':' questo giorno'):'Niente segnato')+'</small></div><button class="btn ghost" data-act="hdopen" data-iso="'+iso+'">+ Segna</button></div>';
- if(L.length)h+='<ul class="hdl">'+L.map(function(e,i){return '<li><button class="link" style="text-align:left" data-act="hdedit" data-iso="'+iso+'" data-i="'+i+'">'+esc(hdTxt(e))+'</button></li>'}).join('')+'</ul>';
+ if(L.length)h+='<ul class="hdl">'+L.map(function(e,i){return '<li><button class="link" style="text-align:left" data-act="hdedit" data-iso="'+iso+'" data-i="'+i+'">'+esc(hdTxt(e))+'</button>'+(e.u&&e.u.length?'<ul class="hdu">'+e.u.map(function(u,j){return '<li><button class="link" style="text-align:left" data-act="huedit" data-iso="'+iso+'" data-i="'+i+'" data-u="'+j+'">'+esc(huTxt(u))+'</button></li>'}).join('')+'</ul>':'')+'<button class="btn ghost hdup" data-act="huopen" data-iso="'+iso+'" data-i="'+i+'">+ Aggiorna (ora)</button></li>'}).join('')+'</ul>';
  return h+'</section>'}
 function hdStats(isos){var s={ep:0,days:0,mdays:0,fdays:0,i:{1:0,2:0,3:0,4:0},med:{},eff:{},tr:{},sym:{},loc:{},fas:{'mattina':0,'pomeriggio':0,'sera':0,'notte':0},none:0};
- isos.forEach(function(iso){var dd=dayData(iso);if(!dd||!dd.hd||!dd.hd.length)return;s.days++;var md=false,fd=false;dd.hd.forEach(function(e){s.ep++;s.i[e.i]++;var hh=+String(e.h||'12').slice(0,2);s.fas[hh<6?'notte':hh<12?'mattina':hh<18?'pomeriggio':'sera']++;
+ isos.forEach(function(iso){var dd=dayData(iso);if(!dd||!dd.hd||!dd.hd.length)return;s.days++;var md=false,fd=false;dd.hd.forEach(function(e){s.ep++;s.i[hdPeak(e)]++;var hh=+String(e.h||'12').slice(0,2);s.fas[hh<6?'notte':hh<12?'mattina':hh<18?'pomeriggio':'sera']++;
   (e.tr||[]).forEach(function(x){if(x!=='Non lo so')s.tr[x]=(s.tr[x]||0)+1});(e.sym||[]).forEach(function(x){s.sym[x]=(s.sym[x]||0)+1});(e.loc||[]).forEach(function(x){s.loc[x]=(s.loc[x]||0)+1});
-  if(e.med&&e.med.length){md=true;e.med.forEach(function(m){var k=m.n==='altro'?(e.alt||'Altro'):HD_MED[m.n].n;var o=s.med[k]=s.med[k]||{n:0,mg:0,ok:0,tot:0};o.n++;o.mg+=m.d||0;if(HD_MED[m.n]&&HD_MED[m.n].fans)fd=true;if(e.eff&&e.eff!=='boh'){o.tot++;if(e.eff==='si')o.ok++}})}else s.none++});if(md)s.mdays++;if(fd)s.fdays++});return s}
+  var ML=hdMeds(e);if(ML.length){md=true;ML.forEach(function(m){var k=m.n==='altro'?(m.alt||e.alt||'Altro'):HD_MED[m.n].n;var o=s.med[k]=s.med[k]||{n:0,mg:0,ok:0,tot:0};o.n++;o.mg+=m.d||0;if(HD_MED[m.n]&&HD_MED[m.n].fans)fd=true;if(e.eff&&e.eff!=='boh'){o.tot++;if(e.eff==='si')o.ok++}})}else s.none++});if(md)s.mdays++;if(fd)s.fdays++});return s}
 function hdHtml(isos){var s=hdStats(isos);
  if(!s.ep)return '<section class="card"><div class="lbl" style="margin:0">Mal di testa</div><p class="small muted" style="margin:6px 0 0">Nessuno segnato questo mese. Quando ti viene, segnalo in Oggi: qui vedi quante volte, quanti antidolorifici prendi e cosa li scatena.</p></section>';
  var top=function(o){return Object.keys(o).filter(function(k){return o[k]}).sort(function(a,b){return o[b]-o[a]})};
@@ -1494,14 +1499,60 @@ function openHdMd(){var end=todayIso(),start=addDays(end,-89);var yms=[];for(var
  var lines=['Mal di testa dal '+f(start)+' al '+f(end)];
  if(!s.ep)lines.push('Nessun episodio segnato.');
  else{lines.push('Episodi: '+s.ep+' in '+s.days+(s.days===1?' giorno':' giorni'));
-  var pm={};isos.forEach(function(iso){var dd=dayData(iso);var y=ymOf(iso);pm[y]=pm[y]||{d:0,m:0};if(dd&&dd.hd&&dd.hd.length){pm[y].d++;if(dd.hd.some(function(e){return e.med&&e.med.length}))pm[y].m++}});
+  var pm={};isos.forEach(function(iso){var dd=dayData(iso);var y=ymOf(iso);pm[y]=pm[y]||{d:0,m:0};if(dd&&dd.hd&&dd.hd.length){pm[y].d++;if(dd.hd.some(function(e){return hdMeds(e).length}))pm[y].m++}});
   lines.push('Per mese: '+Object.keys(pm).sort().map(function(y){return MESI[+y.slice(5)-1].toLowerCase()+' '+pm[y].d+(pm[y].d===1?' giorno':' giorni')+' con mal di testa, '+pm[y].m+' con antidolorifici'}).join('; '));
   lines.push('Intensità: lieve '+s.i[1]+', medio '+s.i[2]+', forte '+s.i[3]+', fortissimo '+s.i[4]);
   var mk=Object.keys(s.med);lines.push('Farmaci: '+(mk.length?mk.map(function(k){var o=s.med[k];return k+' '+o.n+(o.n===1?' volta':' volte')+(o.tot?' (efficace '+o.ok+' su '+o.tot+')':'')}).join(', '):'nessuno')+(s.none?'; senza farmaci '+s.none+(s.none===1?' volta':' volte'):''));
   var tl=function(o){return Object.keys(o).sort(function(a,b){return o[b]-o[a]}).map(function(k){return k.toLowerCase()+' '+o[k]}).join(', ')};
   if(Object.keys(s.loc).length)lines.push('Dove: '+tl(s.loc));if(Object.keys(s.sym).length)lines.push('Sintomi: '+tl(s.sym));if(Object.keys(s.tr).length)lines.push('Possibili cause: '+tl(s.tr));
-  lines.push('Elenco:');isos.forEach(function(iso){var dd=dayData(iso);if(dd&&dd.hd)dd.hd.forEach(function(e){lines.push('- '+f(iso)+' '+hdTxt(e))})})}
+  lines.push('Elenco:');isos.forEach(function(iso){var dd=dayData(iso);if(dd&&dd.hd)dd.hd.forEach(function(e){lines.push('- '+f(iso)+' '+hdTxtAll(e))})})}
  sheet('<h3>Riepilogo per il medico</h3><p class="small muted" style="margin:0 0 8px">Ultimi 90 giorni. Puoi copiarlo e mandarlo, o mostrarlo dal telefono.</p><textarea id="sumtxt" class="inp" rows="14" readonly>'+esc(lines.join('\n'))+'</textarea><button class="btn block" data-act="copy">Copia</button>')}
+
+/* ---------- mal di testa: aggiornamenti con l'ora, senza riaprire la prima segnalazione ---------- */
+var HU_I={0:'Passato',1:'Lieve',2:'Medio',3:'Forte',4:'Fortissimo'};
+function huTxt(u){var p=[u.t||'',HU_I[u.i].toLowerCase()];if(u.med&&u.med.length)p.push('preso '+u.med.map(function(m){return hdMedTxt(m,u)}).join(' + '));if(u.n)p.push(u.n);return p.filter(Boolean).join(' · ')}
+function hdTxtAll(e){var s=hdTxt(e);if(e.u&&e.u.length)s+=' · poi '+e.u.map(huTxt).join(' · ');return s}
+function huDayTot(iso,skipEp,skipU,draft){var t={ibu:0,para:0},dd=dayData(iso)||{};
+ var add=function(m){if(m&&t[m.n]!=null)t[m.n]+=m.d||0};
+ (dd.hd||[]).forEach(function(e,i){(e.med||[]).forEach(add);(e.u||[]).forEach(function(u,j){if(i===skipEp&&j===skipU)return;(u.med||[]).forEach(add)})});
+ (draft||[]).forEach(add);return t}
+function huRead(){var d=S.hu;if(!d)return;var a=$('#hu-t'),n=$('#hu-n'),al=$('#hu-alt');if(a&&a.value)d.t=a.value;if(n)d.n=n.value.slice(0,200);if(al)d.alt=al.value.slice(0,40)}
+function openHu(iso,ix,ux){if(iso!=null){var dd=dayData(iso)||{};var e=dd.hd&&dd.hd[+ix];if(!e)return;var u=ux!=null&&e.u?e.u[+ux]:null;var last=e.u&&e.u.length?e.u[e.u.length-1].i:e.i;
+  S.hu=u?JSON.parse(JSON.stringify(u)):{t:iso===todayIso()?nowHM():'',i:last===0?1:last,med:[],n:'',alt:''};S.hu.med=S.hu.med||[];S.hu.iso=iso;S.hu.ix=+ix;S.hu.ux=u?+ux:null;S.hu.start=e.h||''}
+ var d=S.hu;if(!d)return;var ch=function(k,v,l,on){return '<button class="'+(on?'on':'')+'" data-act="hu" data-k="'+k+'" data-v="'+esc(v)+'">'+esc(l)+'</button>'};var has=function(m){return d.med.some(function(x){return x.n===m})};
+ var h='<h3>Come va il mal di testa</h3><p class="small muted" style="margin:0 0 10px">'+esc(fmtDay(d.iso))+(d.start?', iniziato alle '+esc(d.start):'')+'. Questo si aggiunge alla segnalazione, non la sostituisce.</p>';
+ h+='<label class="lbl" for="hu-t">A che ora</label><input id="hu-t" class="inp" type="time" value="'+esc(d.t||'')+'" style="max-width:150px">';
+ h+='<div class="lbl">Com\'è adesso</div><div class="xopt">'+[0,1,2,3,4].map(function(n){return ch('i',String(n),HU_I[n],d.i===n)}).join('')+'</div>';
+ h+='<div class="lbl">Hai preso qualcosa</div><div class="xopt">'+ch('med','none','Niente',!d.med.length)+Object.keys(HD_MED).map(function(k){return ch('med',k,HD_MED[k].n,has(k))}).join('')+'</div>';
+ d.med.forEach(function(m,j){var x=HD_MED[m.n];if(m.n==='altro'){h+='<input id="hu-alt" class="inp" maxlength="40" placeholder="Nome del farmaco e dose" value="'+esc(d.alt||'')+'">';return}
+  h+='<div class="small muted">'+x.n+', dose</div><div class="xopt">'+x.d.map(function(v){return '<button class="'+(m.d===v?'on':'')+'" data-act="hu" data-k="dose" data-j="'+j+'" data-v="'+v+'">'+v+' mg</button>'}).join('')+'</div>'});
+ var tot=huDayTot(d.iso,d.ix,d.ux,d.med);
+ if(tot.ibu>1200||tot.para>3000)h+='<p class="small" style="background:var(--ochre-soft);border-radius:12px;padding:8px 12px">Oggi, con questa, sei a '+(tot.ibu>1200?tot.ibu+' mg di ibuprofene (senza ricetta il massimo al giorno è 1200)':tot.para+' mg di paracetamolo (il massimo al giorno è di solito 3000)')+'. Meglio aspettare, e se il mal di testa non passa sentire il medico.</p>';
+ if(has('ibu')&&has('oki'))h+='<p class="small" style="background:var(--ochre-soft);border-radius:12px;padding:8px 12px">Ibuprofene e Oki sono della stessa famiglia: meglio non prenderli insieme.</p>';
+ h+='<label class="lbl" for="hu-n">Note</label><input id="hu-n" class="inp" maxlength="200" placeholder="Es. dopo il caffè va meglio" value="'+esc(d.n||'')+'">';
+ h+='<button class="btn block" data-act="husave" style="margin-top:6px">Salva</button>'+(d.ux!=null?'<button class="btn ghost block" data-act="hudel" style="margin-top:8px">Elimina questo aggiornamento</button>':'');
+ sheet(h)}
+function huToggle(ds){var d=S.hu;if(!d)return;huRead();var k=ds.k,v=ds.v;
+ if(k==='i')d.i=+v;
+ else if(k==='med'){if(v==='none')d.med=[];else{var ix=-1;d.med.forEach(function(m,j){if(m.n===v)ix=j});if(ix>=0)d.med.splice(ix,1);else d.med.push({n:v,d:HD_MED[v].def})}}
+ else if(k==='dose'){var m=d.med[+ds.j];if(m)m.d=+v}
+ var sh=$('#sheet .sheet'),sc=sh?sh.scrollTop:0;openHu();sh=$('#sheet .sheet');if(sh)sh.scrollTop=sc}
+function huSave(){var d=S.hu;if(!d)return;huRead();var iso=d.iso;
+ ensureMonth(ymOf(iso)).then(function(){var dd=dayEdit(iso);var e=dd.hd&&dd.hd[d.ix];if(!e){S.hu=null;closeSheet();return}
+  var u={t:d.t||'',i:d.i};if(d.med.length){u.med=d.med.map(function(m){return {n:m.n,d:m.d||null}});if(d.med.some(function(m){return m.n==='altro'})&&d.alt)u.alt=d.alt.trim()}if(d.n&&d.n.trim())u.n=d.n.trim();
+  e.u=e.u||[];if(d.ux!=null)e.u[d.ux]=u;else e.u.push(u);e.u.sort(function(a,b){return String(a.t).localeCompare(String(b.t))});
+  saveDay(iso);S.hu=null;closeSheet();toast('Aggiornato.');render()})}
+function huDel(){var d=S.hu;if(!d||d.ux==null)return;var dd=dayEdit(d.iso);var e=dd.hd&&dd.hd[d.ix];if(e&&e.u){e.u.splice(d.ux,1);if(!e.u.length)delete e.u}saveDay(d.iso);S.hu=null;closeSheet();render()}
+
+/* ---------- fuori pasto: scheda come il mal di testa, con l'ora ---------- */
+function xoSorted(dd){return (dd.xo||[]).map(function(x,i){return {x:x,i:i}}).sort(function(a,b){return String(a.x.h||'99').localeCompare(String(b.x.h||'99'))})}
+function xoCard(iso){if(iso>todayIso())return '';var dd=dayData(iso)||{};var L=xoSorted(dd);
+ var h='<section class="card hd xo"><div class="hd-top"><div><b>🍫 Fuori pasto</b><small>'+(L.length?(L.length===1?'1 cosa':L.length+' cose')+(iso===todayIso()?' oggi':' questo giorno'):'Niente segnato')+'</small></div><button class="btn ghost" data-act="addx" data-slot="xo">+ Segna</button></div>';
+ if(L.length)h+='<ul class="hdl">'+L.map(function(o){return '<li class="xoi"><button class="link" style="text-align:left;flex:1" data-act="xoedit" data-i="'+o.i+'">'+esc(xtxt(o.x))+'</button><button class="xdel" data-act="delx" data-slot="xo" data-i="'+o.i+'" aria-label="Togli">×</button></li>'}).join('')+'</ul>';
+ return h+'</section>'}
+function openX(slot,ix){var iso=S.day;var dd=dayData(iso)||{};var ex=slot==='xo'&&ix!=null&&dd.xo?dd.xo[+ix]:null;
+ S.xd={slot:slot,c:ex?ex.c:null,q:ex?ex.q:2,ix:ex?+ix:null};var hv=ex?(ex.h||''):(iso===todayIso()?nowHM():'');var on=function(b){return b?' on':''};
+ sheet('<h3>'+(slot==='xo'?(ex?'Modifica':'Mangiato fuori dai pasti'):'Aggiunta a '+MEALS[slot].it.toLowerCase())+'</h3>'+(slot==='xo'?'<label class="lbl" for="x-h">A che ora</label><input id="x-h" class="inp" type="time" value="'+esc(hv)+'" style="max-width:150px">':'')+'<label class="lbl" for="x-w">Cosa</label><input id="x-w" class="inp" maxlength="60" placeholder="Es. biscotti, patatine, un bicchiere di vino" value="'+esc(ex?ex.w||'':'')+'"><div class="lbl">Che tipo</div><div class="xopt" id="x-c">'+Object.keys(XC).map(function(k){return '<button class="'+on(ex&&ex.c===k).trim()+'" data-act="xc" data-v="'+k+'">'+XC[k]+'</button>'}).join('')+'</div><div class="lbl">Quanto</div><div class="opts" id="x-q">'+[1,2,3].map(function(q){return '<button class="opt'+on(S.xd.q===q)+'" data-act="xq" data-v="'+q+'"><span><b>'+XQ[q].l+'</b><br><span class="muted small">'+XQ[q].d+'</span></span></button>'}).join('')+'</div>'+(slot==='xo'?'':'<p class="small" id="x-prev" style="background:var(--surface2);border-radius:12px;padding:8px 12px;margin:10px 0 0"></p>')+'<button class="btn block" style="margin-top:12px" data-act="xsave">'+(ex?'Salva':'Aggiungi')+'</button>');xPrev()}
 
 /* ---------- menu di nonna sincronizzato via GitHub ---------- */
 var GHREPO='rakdoel/alimentazione',GHFILE='menu.json';
@@ -1949,6 +2000,7 @@ var ACC=[
 {id:'legpronti',it:'Zuppa di legumi pronta (1 vaschetta)',c:'prot',g:2,n:'se ha cereali o pasta conta anche come carboidrato'},
 {id:'affveg',it:'Affettato vegetale (100 g)',c:'prot',g:3,n:'poche proteine, molto sale'},
 {id:'formspalm',it:'Formaggio spalmabile light (100 g)',c:'prot',g:3,n:'poche proteine rispetto a mozzarella o ricotta'},
+{id:'krokiety',it:'Krokiety al forno, 2 pezzi (crêpe sottili fatte in casa, ripieno di funghi e cavolo o di lenticchie)',c:'carb',g:3,n:'al posto del carboidrato di pranzo o cena; farina, uova e latte nell\'impasto, ricetta in Cucina → Ricette'},
 {id:'gallette',it:'Gallette di riso o mais (40 g)',c:'carb',g:1,n:'come 40 g di riso'},
 {id:'panealtro',it:'Pane di altro tipo, stessa quantità',c:'carb',g:1,n:''},
 {id:'patateprec',it:'Patate precotte o al microonde (200 g)',c:'carb',g:1,n:'come le patate del piano'},
@@ -2164,6 +2216,14 @@ var RC=[
      pl:['Ryż ugotuj 5 minut krócej niż zwykle, soczewicę 15 minut (z puszki tylko odsącz).','Cebulę, pora i startą marchewkę zeszklij na połowie oleju; pieczarki posiekane podsmaż osobno, aż będą suche. Wszystko wymieszaj z ryżem, soczewicą, jajkiem, przyprawami i solą.','Kapustę w całości bez głąba obgotuj 10 minut i oddziel liście; wytnij twardy nerw.','Farsz nałóż na każdy liść, zawiń boki i zroluj. Ułóż gołąbki ciasno w garnku, zalej wrzącym bulionem i gotuj pod przykryciem 30 minut.','Sos: bulion z gotowania, passata, koncentrat, koperek; wylej na gołąbki i gotuj jeszcze 10 minut. Reszta oleju na surowo.']},
  tip:{it:'Ricetta lunga, da nonna: se ne fanno tanti e si congelano.',pl:'Przepis długi, babciny: robi się dużo i mrozi.'}},
 /* ===== uova, formaggi, tofu, seitan, legumi ===== */
+{id:'krokiety',k:'piatto',port:2,t:{it:'Krokiety al forno con funghi e cavolo (o lenticchie)',pl:'Krokiety z kapustą i grzybami pieczone w piekarniku'},src:{s:'Kwestia Smaku',u:'https://www.kwestiasmaku.com/przepis/krokiety-z-kapusta-i-grzybami'},
+ c:['*'],p:['lenticchie','borlotti','ceci','uova','ricotta','fiocprot','fiocmagro','mozzp','primosale'],v:['Cavolo cappuccio','Funghi','Carote','Cipolle'],vq:150,mo:[10,11,12,1,2,3],min:60,
+ ing:{it:['Crêpe (per 2 krokiety): 40 g di farina, 1 uovo piccolo, 60 ml di latte, 40 ml di acqua gassata, un pizzico di sale','{P} (se sono lenticchie vanno nel ripieno, altrimenti a parte)','150 g di cavolo cappuccio (o crauti strizzati), una manciata di funghi champignon, mezza cipolla, mezza carota','alloro, 2 grani di pimento, sale, pepe','{O}, un velo spennellato sopra','Questo piatto sostituisce {C}: nel diario si segna come sostituzione accettabile'],pl:['Naleśniki (na 2 krokiety): 40 g mąki, 1 małe jajko, 60 ml mleka, 40 ml wody gazowanej, szczypta soli','{P} (jeśli to soczewica, idzie do farszu, inaczej osobno)','150 g kapusty białej (lub odciśniętej kiszonej), garść pieczarek, pół cebuli, pół marchewki','liść laurowy, 2 ziarna ziela angielskiego, sól, pieprz','{O}, cienko posmarowane na wierzchu','To danie zastępuje {C}']},
+ st:{it:['Ripieno: stufa il cavolo tagliato fine con la carota grattugiata, alloro, pimento e un dito d\'acqua per 30 minuti. Appassisci la cipolla con un cucchiaino dell\'olio, aggiungi i funghi a fettine e cuoci finché asciutti, poi tritali e uniscili al cavolo. Sale e pepe. Con le lenticchie: cotte e scolate, schiacciate nel ripieno.','Crêpe: mescola farina, uovo, latte, acqua e sale fino a un impasto liscio. Padella antiaderente ben calda appena unta, due crêpe sottili.','Metti il ripieno su ogni crêpe, piega i lati e arrotola stretto.','Su carta forno, spennella con il resto dell\'olio. Forno a 200° per 15-20 minuti, girando a metà, finché sono dorati.','Il contorno: surówka di carote o barbabietole, o un po\' del cavolo stufato tenuto da parte.'],
+     pl:['Farsz: cienko pokrojoną kapustę duś ze startą marchewką, liściem laurowym, zielem angielskim i odrobiną wody 30 minut. Cebulę zeszklij na łyżeczce oleju, dodaj pieczarki w plasterkach i smaż, aż będą suche, potem posiekaj i dodaj do kapusty. Sól i pieprz. Z soczewicą: ugotowaną i odsączoną rozgnieć do farszu.','Naleśniki: wymieszaj mąkę, jajko, mleko, wodę i sól na gładkie ciasto. Dobrze rozgrzana, lekko natłuszczona patelnia, dwa cienkie naleśniki.','Na każdy naleśnik nałóż farsz, zawiń boki i zroluj ciasno.','Na papierze do pieczenia, posmaruj resztą oleju. Piekarnik 200° przez 15-20 minut, w połowie obróć, aż się zrumienią.','Dodatek: surówka z marchewki lub buraków, albo trochę duszonej kapusty odłożonej na bok.']},
+ tip:{it:'Nell\'originale sono impanati e fritti nel burro chiarificato: al forno, senza panatura, restano leggeri. Si preparano in quantità e si congelano crudi.',pl:'W oryginale są panierowane i smażone na maśle klarowanym: z piekarnika, bez panierki, są lżejsze. Robi się dużo i mrozi na surowo.'},
+ keep:{it:'In frigo 2-3 giorni, al lavoro 1-2 minuti di microonde.',pl:'W lodówce 2-3 dni, w pracy 1-2 minuty w mikrofali.'}},
+
 {id:'jajkakoperek',k:'piatto',t:{it:'Uova sode in salsa all\'aneto',pl:'Jajka w sosie koperkowym'},src:{s:'Przepisy.pl',u:'https://www.przepisy.pl/przepis/jajka-w-sosie-koperkowym'},
  c:['patate','riso','paneb','panei'],p:['uova'],v:['Barbabietole','Broccoli','Carote','Cavolo cappuccio'],vq:150,mo:[10,11,12,1,2,3,4],min:25,
  ing:{it:['{P}','{C}','un mazzetto di aneto tritato','1 cucchiaino di farina, 3 cucchiai di yogurt greco (al posto della panna acida)','mezzo bicchiere di brodo vegetale','{O}','il contorno scelto a parte (buraczki, broccoli al vapore o una surówka)'],pl:['{P}','{C}','pęczek posiekanego koperku','1 łyżeczka mąki, 3 łyżki jogurtu greckiego (zamiast śmietany)','pół szklanki bulionu warzywnego','{O}','wybrany dodatek osobno (buraczki, brokuły na parze lub surówka)']},
@@ -2487,7 +2547,7 @@ function rcPortOpen(iso,src,id){ensureMonth(ymOf(iso)).then(function(){var d=day
 /* ricettario in Cucina */
 var RCCAT=[['zuppe','Zuppe e minestre',function(r){return r.k==='piatto'&&/^(grochowka|fasolowa|soczewica|krupnik|kapusniak|pomidorowa|jarzynowa|kremdyni|minestrone|pastaceci|pastafagioli|ribollita|orzolent|cavoloneroceci|minestraverza)$/.test(r.id)}],
  ['primi','Pasta, riso, kasza, polenta',function(r){return r.k==='piatto'&&/^(orecchiette|pastabroccoli|pastazucca|risozucca|kaszagrzyby|kaszawarzywa|polentafunghi|gnocchizucca|couscousverdure|golabki)$/.test(r.id)}],
- ['secondi','Uova, formaggi, tofu, legumi',function(r){return r.k==='piatto'&&/^(jajkakoperek|pastajajeczna|frittataspinaci|uovapurgatorio|kotlety|twarozek|tofumarinato|seitanpizzaiola|straccetti|hummusbowl|cecizimino|cicoriacannellini|finocchiarance|verzauova)$/.test(r.id)}],
+ ['secondi','Uova, formaggi, tofu, legumi',function(r){return r.k==='piatto'&&/^(krokiety|jajkakoperek|pastajajeczna|frittataspinaci|uovapurgatorio|kotlety|twarozek|tofumarinato|seitanpizzaiola|straccetti|hummusbowl|cecizimino|cicoriacannellini|finocchiarance|verzauova)$/.test(r.id)}],
  ['contorni','Contorni e surówki',function(r){return r.k==='contorno'}],
  ['basi','Basi e proteine semplici',function(r){return r.k==='base'||r.k==='prot'}],
  ['porta','Si porta al lavoro',function(r){return !!r.port&&r.k==='piatto'}]];
@@ -2720,10 +2780,10 @@ function act(a,b){var ds=b.dataset;
  case 'itq':S.itm.q=ds.v;Array.prototype.forEach.call(document.querySelectorAll('#it-q button'),function(x){x.classList.toggle('on',x===b)});itPrev();break;
  case 'itsave':{var mI=S.itm,wI=(($('#it-w')||{}).value||'').trim().slice(0,60);var dE=dayEdit(S.day);dE.t=dE.t||{};var tE=dE.t[mI.slot]||(dE.t[mI.slot]={s:'detail'});tE.s='detail';tE.it=tE.it||{};var itI=mealItems(S.day,mI.src,dE).filter(function(x){return x.key===mI.key})[0];var rI={c:mI.c,q:mI.q,w:wI};if(itI&&isPlanRec(rI,itI))delete tE.it[mI.key];else{var oI={c:rI.c,q:rI.q};if(wI)oI.w=wI;tE.it[mI.key]=oI}if(tE.sub)delete tE.sub[mI.key];saveDay(S.day);closeSheet();render();break}
  case 'itreset':{var dR=dayEdit(S.day);var tR=dR.t&&dR.t[S.itm.slot];if(tR&&tR.it)delete tR.it[S.itm.key];if(tR&&tR.sub)delete tR.sub[S.itm.key];saveDay(S.day);closeSheet();render();break}
- case 'addx':openX(ds.slot);break;
+ case 'addx':openX(ds.slot);break;case 'xoedit':openX('xo',ds.i);break;
  case 'xc':S.xd.c=ds.v;Array.prototype.forEach.call(document.querySelectorAll('#x-c button'),function(x){x.classList.toggle('on',x===b)});xPrev();break;
  case 'xq':S.xd.q=+ds.v;Array.prototype.forEach.call(document.querySelectorAll('#x-q button'),function(x){x.classList.toggle('on',x===b)});xPrev();break;
- case 'xsave':var w=(($('#x-w')||{}).value||'').trim().slice(0,60);if(!w&&!S.xd.c){toast('Scrivi cosa o scegli il tipo');break}var x={w:w,c:S.xd.c||'altro',q:S.xd.q||2};var d6=dayEdit(S.day);if(S.xd.slot==='xo'){(d6.xo=d6.xo||[]).push(x)}else{d6.t=d6.t||{};var t6=d6.t[S.xd.slot]||(d6.t[S.xd.slot]={});(t6.x=t6.x||[]).push(x)}saveDay(S.day);closeSheet();render();break;
+ case 'xsave':var w=(($('#x-w')||{}).value||'').trim().slice(0,60);if(!w&&!S.xd.c){toast('Scrivi cosa o scegli il tipo');break}var x={w:w,c:S.xd.c||'altro',q:S.xd.q||2};var d6=dayEdit(S.day);if(S.xd.slot==='xo'){var xh=($('#x-h')||{}).value;if(xh)x.h=xh;d6.xo=d6.xo||[];if(S.xd.ix!=null)d6.xo[S.xd.ix]=x;else d6.xo.push(x);d6.xo.sort(function(a,b){return String(a.h||'99').localeCompare(String(b.h||'99'))})}else{d6.t=d6.t||{};var t6=d6.t[S.xd.slot]||(d6.t[S.xd.slot]={});(t6.x=t6.x||[]).push(x)}saveDay(S.day);closeSheet();render();break;
  case 'delx':var d7=dayEdit(S.day);if(ds.slot==='xo'){d7.xo.splice(+ds.i,1);if(!d7.xo.length)delete d7.xo}else{var t7=d7.t[ds.slot];t7.x.splice(+ds.i,1);if(!t7.x.length)delete t7.x;if(!t7.s&&!t7.x)delete d7.t[ds.slot]}saveDay(S.day);render();break;
  case 'alt':openAlt(ds.key);break;
  case 'accpick':accPick(ds.key,ds.id);break;
@@ -2738,7 +2798,7 @@ function act(a,b){var ds=b.dataset;
  case 'vegt':toggleVeg(ds.name);break;
  case 'vegadd':var inp=$('#vegfree');var nm=inp&&inp.value.trim().slice(0,30);if(nm){var cap=nm.charAt(0).toUpperCase()+nm.slice(1);var dv=dayEdit(S.day);dv.veg=dv.veg||{};var l=dv.veg[S.vegSrc]||[];if(l.map(function(x){return x.toLowerCase()}).indexOf(cap.toLowerCase())<0)l.push(cap);dv.veg[S.vegSrc]=l;saveDay(S.day);openVeg(S.vegSrc)}break;
  case 'recipe':openRecipe(ds.id);break;
- case 'dish':openDish(ds.iso,ds.src);break;case 'volo':openVolo(ds.iso,ds.src);break;case 'vosel':if(S.vo){S.vo.sel[ds.key]=ds.v;var shv=$('#sheet .sheet'),scv=shv?shv.scrollTop:0;openVolo(S.vo.iso,S.vo.src,true);shv=$('#sheet .sheet');if(shv)shv.scrollTop=scv}break;case 'vouse':voUse();break;case 'ghlink':openGhLink();break;case 'ghsave':ghSave();break;case 'ghnow':lsDel('leo:synced');nonnaSync(true).then(function(ok){toast(ok?'Menu inviato a nonna':'Invio non riuscito');render()});break;case 'ghoff':lsDel('leo:ghtoken');lsDel('leo:synced');closeSheet();toast('Scollegato');render();break;case 'exportai':openExportAI();break;case 'bkmake':openBkMake();break;case 'bkgo':bkMake();break;case 'bkrestore':bkRestore();break;case 'dnpaste':openDnPaste();break;case 'dnapply':var mm=((($('#dn-t')||{}).value)||'').match(/#dn=([A-Za-z0-9_-]+)/);if(mm)applyDn(mm[1]);else toast('Non trovo il codice nel messaggio');break;case 'nch':openNChange(ds.iso,ds.src);break;case 'npick':if(ds.id)nPickDo(ds);else openNPick(ds.iso,ds.src);break;case 'nchdish':case 'nchsw':case 'nchveg':case 'nchreset':case 'nchsend':nchAct(a,ds);break;case 'npanc':openNPanc();break;case 'hdopen':openHd(ds.iso);break;case 'hdedit':openHd(ds.iso,ds.i);break;case 'hd':hdToggle(ds);break;case 'hdsave':hdSave();break;case 'hddel':hdDel();break;case 'hdmd':openHdMd();break;case 'nrecipe':openNRecipe(ds.iso,ds.src);break;
+ case 'dish':openDish(ds.iso,ds.src);break;case 'volo':openVolo(ds.iso,ds.src);break;case 'vosel':if(S.vo){S.vo.sel[ds.key]=ds.v;var shv=$('#sheet .sheet'),scv=shv?shv.scrollTop:0;openVolo(S.vo.iso,S.vo.src,true);shv=$('#sheet .sheet');if(shv)shv.scrollTop=scv}break;case 'vouse':voUse();break;case 'ghlink':openGhLink();break;case 'ghsave':ghSave();break;case 'ghnow':lsDel('leo:synced');nonnaSync(true).then(function(ok){toast(ok?'Menu inviato a nonna':'Invio non riuscito');render()});break;case 'ghoff':lsDel('leo:ghtoken');lsDel('leo:synced');closeSheet();toast('Scollegato');render();break;case 'exportai':openExportAI();break;case 'bkmake':openBkMake();break;case 'bkgo':bkMake();break;case 'bkrestore':bkRestore();break;case 'dnpaste':openDnPaste();break;case 'dnapply':var mm=((($('#dn-t')||{}).value)||'').match(/#dn=([A-Za-z0-9_-]+)/);if(mm)applyDn(mm[1]);else toast('Non trovo il codice nel messaggio');break;case 'nch':openNChange(ds.iso,ds.src);break;case 'npick':if(ds.id)nPickDo(ds);else openNPick(ds.iso,ds.src);break;case 'nchdish':case 'nchsw':case 'nchveg':case 'nchreset':case 'nchsend':nchAct(a,ds);break;case 'npanc':openNPanc();break;case 'hdopen':openHd(ds.iso);break;case 'hdedit':openHd(ds.iso,ds.i);break;case 'hd':hdToggle(ds);break;case 'hdsave':hdSave();break;case 'hddel':hdDel();break;case 'hdmd':openHdMd();break;case 'huopen':openHu(ds.iso,ds.i);break;case 'huedit':openHu(ds.iso,ds.i,ds.u);break;case 'hu':huToggle(ds);break;case 'husave':huSave();break;case 'hudel':huDel();break;case 'nrecipe':openNRecipe(ds.iso,ds.src);break;
  case 'dishnext':var at=S.dishAt;if(!at)break;var dd8=dayData(at[0])||{};var pd=pickDish(at[0],at[1],dd8);if(!pd)break;var ix=pd.opts.indexOf(pd.t);var nx=pd.opts[(ix+1)%pd.opts.length];ensureMonth(ymOf(at[0])).then(function(){var de=dayEdit(at[0]);de.dish=de.dish||{};de.dish[at[1]]=nx.id;saveDay(at[0]);openDish(at[0],at[1]);render()});break;
  case 'calm':S.cal=addMonth(S.cal,+ds.n);render();break;
  case 'calnow':S.cal=ymOf(todayIso());render();break;
