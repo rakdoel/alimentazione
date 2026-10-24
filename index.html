@@ -2299,6 +2299,13 @@ function miniDone(id){var iso=todayIso();var d=dayEdit(iso);var sk=d.mini&&d.min
 function miniAlt(id){var iso=todayIso();var d=dayEdit(iso);var sk=(d.mini&&d.mini.skip)||[];if(sk.indexOf(id)<0)sk.push(id);d.mini={skip:sk};d.mini.id=miniPick(iso,d);saveDay(iso);render()}
 function miniCount(isos){var n=0;isos.forEach(function(iso){var d=dayData(iso);if(d&&d.mini&&d.mini.ok)n++});return n}
 
+/* finestre orarie: niente "prepara la merenda" alle sette di sera */
+var MINIWHEN={vmeta:[0,21],vprima:[0,21],lento:[0,21],noschermo:[0,21],acqua1:[0,20],acqua8:[0,16],protcol:[0,10],etichetta:[0,20],dolcivista:[0,23],merpronta:[0,22],frutta:[0,21],votofame:[0,22],cenapresto:[0,20],denti:[17,24],integrale:[0,20],piatto:[0,20],pentola:[0,20],legumi:[0,13],colori:[0,19],diariovoglia:[0,23],noalcol:[0,22],dopopranzo:[0,15],scale:[0,17],fermata:[0,16],telefono:[0,19],alzati:[0,17],stretch:[0,24],piumille:[0,19],seracammina:[0,21],squat:[0,22],plank:[0,22],borsa:[16,24],respiro:[0,24]};
+function miniOk(id,iso){if(iso!==todayIso())return true;var w=MINIWHEN[id];if(!w)return true;var h=new Date().getHours();return h>=w[0]&&h<w[1]}
+var _miniPickW=miniPick;miniPick=function(iso,dd){var tries=0,sk=((dd.mini&&dd.mini.skip)||[]).slice();var d2=JSON.parse(JSON.stringify(dd||{}));var id=_miniPickW(iso,d2);
+ while(!miniOk(id,iso)&&tries<12){sk.push(id);d2.mini={skip:sk};id=_miniPickW(iso,d2);tries++}return id};
+var _miniCurW=miniCur;miniCur=function(iso,dd){if(dd.mini&&dd.mini.id&&MINIM[dd.mini.id]&&(dd.mini.ok||miniOk(dd.mini.id,iso)))return dd.mini.id;return miniPick(iso,dd)};
+
 /* ---------- Home: tutto a portata di un tocco, i pasti in una pagina a parte ---------- */
 function homeTiles(iso,dd,riep){var nm=marked(iso,dd),xo=(dd.xo||[]).length,hd=(dd.hd||[]).length,so=(dd.sos||[]).length,mo=(dd.mood||[]);
  var T=[['sub','pasti','🍽️','Pasti di oggi',nm+'/4 segnati'],['photo','','📷','Foto al piatto','il coach la valuta'],['addx','xo','🍫','Fuori pasto',xo?xo+(xo===1?' segnato':' segnati'):'con l\'ora'],
@@ -2316,7 +2323,7 @@ function banners(iso){var h='';if(ISGH&&iso===todayIso()){var lb=lsGet('leo:bk')
 tabOggi=function(){var iso=S.day;if(needMonths([iso,addDays(todayIso(),-35)]))return '<p class="muted">Carico…</p>';
  var dd=dayData(iso)||{};var isToday=iso===todayIso();var plan=PLAN[dowOf(iso)];var sub=isToday?(S.sub||'riep'):'pasti';if(sub==='home')sub='riep';var h='';
  var r=nonnaRange();var nb=!ISGH&&iso>=r[0]&&iso<=r[13]?nonnaBanner(true):'';
- if(sub==='riep'){calFetch();h+=nb+scoreCard(iso,dd,true)+homeTiles(iso,dd,true)+calCard(iso);sfCheckEnd();h+=sfCardHtml(true)+miniCard(iso);if(dd.xo&&dd.xo.length)h+=xoCard(iso);if(dd.hd&&dd.hd.length)h+=hdCard(iso);return h+banners(iso)}
+ if(sub==='riep'){calFetch();h+=nb+scoreCard(iso,dd,true)+homeTiles(iso,dd,true)+calCard(iso);sfCheckEnd();h+=sfCardHtml(true);if(dd.xo&&dd.xo.length)h+=xoCard(iso);if(dd.hd&&dd.hd.length)h+=hdCard(iso);return h+banners(iso)}
  if(sub==='stai')return h+staiCard(iso,dd);
  h+='<div class="daynav"><button class="icon" data-act="day" data-n="-1" aria-label="Giorno prima">‹</button><div class="dn-mid"><div class="dn-date serif">'+fmtDay(iso)+'</div>'+(isToday?'<span class="pill">oggi</span>':'<button class="link" data-act="today">torna a oggi</button>')+'</div><button class="icon" data-act="day" data-n="1" aria-label="Giorno dopo">›</button></div>'+nb;
  h+=scoreCard(iso,dd,false);
