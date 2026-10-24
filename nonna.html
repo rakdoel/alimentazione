@@ -386,6 +386,27 @@ details.bimby.nn summary{font-size:18px}
 
 .hdu{list-style:none;margin:4px 0 0 10px;padding:0;border-left:3px solid var(--line,#e5d9ea)}.hdu li{background:none;padding:3px 0 3px 10px;margin:0;font-size:13.5px}.hdup{margin-top:6px;padding:6px 12px;font-size:13.5px}
 .hdl .xoi{display:flex;align-items:center;gap:8px}.hdl .xoi .xdel{border:0;background:none;font-size:18px;color:var(--muted);padding:0 4px}
+.opts.fol{max-height:300px;overflow:auto;margin-top:6px}.opt.fo{padding:10px 12px;min-height:0}.opt.fo span{font-weight:600;font-size:14.5px}
+.xsel{margin-top:12px;padding:12px;border-radius:14px;background:var(--accent-soft)}.xsel b{font-size:15.5px}
+.sheet.xauto .xman{display:none}
+
+/* tavolozze dell'app di L. */
+:root[data-pal="petrolio"]{--bg:#f2f5f6;--surface:#ffffff;--surface2:#e6edef;--ink:#152126;--muted:#56676e;--line:#d5e0e3;--accent:#1d6f86;--accent-soft:#d6ebf1;--olive:#3a8a45;--olive-soft:#dbeedc;--ochre:#b0761a;--ochre-soft:#f8ebcf;--red:#c2443a;--red-soft:#f7dbd7;--shadow:0 1px 2px rgba(15,40,50,.05),0 6px 18px rgba(15,40,50,.07);color-scheme:light}
+@media (prefers-color-scheme:dark){:root[data-pal="petrolio"]:not([data-theme="light"]){--bg:#0f1719;--surface:#172124;--surface2:#203035;--ink:#e9f1f3;--muted:#98abb1;--line:#2a3b40;--accent:#5cb8d1;--accent-soft:#16343d;--olive:#7fc98a;--olive-soft:#1c3522;--ochre:#e6b75a;--ochre-soft:#3b2f15;--red:#f08a7e;--red-soft:#432420;--shadow:none;color-scheme:dark}}
+:root[data-pal="petrolio"][data-theme="dark"]{--bg:#0f1719;--surface:#172124;--surface2:#203035;--ink:#e9f1f3;--muted:#98abb1;--line:#2a3b40;--accent:#5cb8d1;--accent-soft:#16343d;--olive:#7fc98a;--olive-soft:#1c3522;--ochre:#e6b75a;--ochre-soft:#3b2f15;--red:#f08a7e;--red-soft:#432420;--shadow:none;color-scheme:dark}
+:root[data-pal="salvia"]{--bg:#f4f5f0;--surface:#fffffd;--surface2:#e9ece2;--ink:#1d221b;--muted:#606a5c;--line:#dce1d4;--accent:#4b7a52;--accent-soft:#e0ecdc;--olive:#2f8a57;--olive-soft:#d7eedf;--ochre:#b47a1c;--ochre-soft:#f6ead0;--red:#bf4a3c;--red-soft:#f5dcd6;--shadow:0 1px 2px rgba(30,40,25,.05),0 6px 18px rgba(30,40,25,.07);color-scheme:light}
+@media (prefers-color-scheme:dark){:root[data-pal="salvia"]:not([data-theme="light"]){--bg:#131611;--surface:#1b1f19;--surface2:#262b23;--ink:#eef1ea;--muted:#a2ab9c;--line:#323a2e;--accent:#93c08f;--accent-soft:#25351f;--olive:#6fcf95;--olive-soft:#1b3326;--ochre:#e3b65c;--ochre-soft:#3b3017;--red:#ee8b7c;--red-soft:#432520;--shadow:none;color-scheme:dark}}
+:root[data-pal="salvia"][data-theme="dark"]{--bg:#131611;--surface:#1b1f19;--surface2:#262b23;--ink:#eef1ea;--muted:#a2ab9c;--line:#323a2e;--accent:#93c08f;--accent-soft:#25351f;--olive:#6fcf95;--olive-soft:#1b3326;--ochre:#e3b65c;--ochre-soft:#3b3017;--red:#ee8b7c;--red-soft:#432520;--shadow:none;color-scheme:dark}
+:root[data-pal="indaco"]{--bg:#f3f4f8;--surface:#ffffff;--surface2:#e8eaf3;--ink:#181b2b;--muted:#5d6278;--line:#dadded;--accent:#4450c4;--accent-soft:#e1e3f8;--olive:#2f8a52;--olive-soft:#d8eedf;--ochre:#b5781c;--ochre-soft:#f7ebd0;--red:#c4433f;--red-soft:#f7dada;--shadow:0 1px 2px rgba(20,25,60,.05),0 6px 18px rgba(20,25,60,.07);color-scheme:light}
+@media (prefers-color-scheme:dark){:root[data-pal="indaco"]:not([data-theme="light"]){--bg:#11131c;--surface:#191c27;--surface2:#232736;--ink:#ecedf5;--muted:#9da1b8;--line:#2e3245;--accent:#8f99f2;--accent-soft:#252a4c;--olive:#78cc93;--olive-soft:#1b3424;--ochre:#e6b65a;--ochre-soft:#3b3016;--red:#f08b85;--red-soft:#452424;--shadow:none;color-scheme:dark}}
+:root[data-pal="indaco"][data-theme="dark"]{--bg:#11131c;--surface:#191c27;--surface2:#232736;--ink:#ecedf5;--muted:#9da1b8;--line:#2e3245;--accent:#8f99f2;--accent-soft:#252a4c;--olive:#78cc93;--olive-soft:#1b3424;--ochre:#e6b65a;--ochre-soft:#3b3016;--red:#f08b85;--red-soft:#452424;--shadow:none;color-scheme:dark}
+.pdot{display:inline-block;width:22px;height:22px;border-radius:50%;margin:6px}
+.qa{display:grid;gap:8px;margin:0 0 12px}
+.qa button{display:flex;flex-direction:column;align-items:center;gap:2px;border:1px solid var(--line);background:var(--surface);border-radius:16px;padding:12px 4px 10px;color:var(--ink);box-shadow:var(--shadow);text-align:center}
+.qa button .e{font-size:26px;line-height:1.1}.qa button b{font-size:14px}.qa button small{font-size:11.5px;color:var(--muted);font-weight:600;line-height:1.2}
+.qa button:active{transform:scale(.97)}
+.tb{border:1px solid var(--line);background:var(--surface2)}
+.card.meal .sum{margin:2px 0 4px;color:var(--muted);font-size:14.5px}
 </style>
 <div id="app"><div class="splash"><p class="muted" style="font-size:28px">…</p></div></div>
 <script type="application/json" id="nonna-data">{"u":null,"days":{}}</script>
@@ -886,14 +907,14 @@ var FCL={carb:'riso pasta pastai paneb panei pizzab pizzap pizzapm couscous quin
 var FCLM={};Object.keys(FCL).forEach(function(c){FCL[c].split(' ').forEach(function(f){FCLM[f]=c})});
 var CLW={carb:3,prot:3,veg:2,fruit:1.5,fat:1,sweet:1,drink:.4,other:1.5};
 function foodCls(it){if(it.g==='VEG')return 'veg';if(it.g==='FRUIT')return 'fruit';return FCLM[it.f]||'other'}
-function xpen1(x){return (XQ[x.q]?XQ[x.q].p:0)*(XF[x.c]!=null?XF[x.c]:.8)}
+function xpen1(x){var f=XF[x.c]!=null?XF[x.c]:.8;if(x.k)return Math.min(100,x.k/12*f);return (XQ[x.q]?XQ[x.q].p:0)*f}
 function xpen(list,div){return (list||[]).reduce(function(s,x){return s+xpen1(x)},0)/(div||1)}
 function clsScore(cl,r){if(r<1)return 1-.85*(1-r);if(cl==='veg')return 1;return Math.max(.1,1-.5*(r-1))}
 function mealScore(iso,slot,src,dd){if(!dd)return null;var t=dd.t&&dd.t[slot];if(!t||!t.s){if(dd.a&&typeof dd.a[slot]==='number')return Math.round(dd.a[slot]*100);return null}
  if(t.s==='off')return 0;if(t.s==='lib1')return Math.max(0,100-xpen(t.x));if(t.s==='lib2')return 60;if(t.s==='lib3')return 25;
  var P={},E={},pen=0;
  mealItems(iso,src,dd).forEach(function(it){var cl=foodCls(it);var r=t.s==='skip'?{c:cl,q:'none'}:itemRec(t,it);P[cl]=(P[cl]||0)+1;E[r.c]=(E[r.c]||0)+AMTR[r.q]});
- (t.x||[]).forEach(function(x){var c=XTOCLS[x.c];if(c)E[c]=(E[c]||0)+(UNP[x.q]||0);else pen+=xpen1(x)});
+ (t.x||[]).forEach(function(x){var c=XTOCLS[x.c];if(c)E[c]=(E[c]||0)+(x.k?Math.min(2.5,x.k/400):(UNP[x.q]||0));else pen+=xpen1(x)});
  var ws=0,vs=0;Object.keys(P).forEach(function(c){var w=CLW[c]||1.5;ws+=w;vs+=w*clsScore(c,(E[c]||0)/P[c])});
  Object.keys(E).forEach(function(c){if(!P[c])pen+=E[c]*22*(c==='other'?1:.8)});
  var base=ws?vs/ws*100:100;return Math.max(0,Math.min(100,Math.round(base-pen)))}
@@ -980,7 +1001,7 @@ function render(){var app=$('#app');document.body.classList.toggle('nonna',S.mod
  else if(S.tab==='mov'){title=S.wo?'Allenamento in corso':'Allenamento';body=S.wo?tabWo():tabMov()}
  else {title='Progressi';body=tabProg()}
  var woBan=S.wo&&S.tab!=='mov'?'<div class="banner todo"><span>Allenamento in corso</span><button class="btn" data-act="tab" data-tab="mov">Torna</button></div>':'';
- app.innerHTML='<div class="wrap"><header class="top"><div><div class="eyebrow">Diario</div><h1>'+esc(title)+'</h1></div><div style="display:flex;align-items:center;gap:10px"><button class="chip sm" data-act="preview" title="Come la vede nonna">👵 Vista nonna</button><span id="sync" class="sync '+S.sync+'"></span></div></header>'+woBan+body+'</div><nav class="tabs" aria-label="Sezioni"><div class="in">'+tabs.map(function(t){return '<button class="'+(S.tab===t[0]?'on':'')+'" data-act="tab" data-tab="'+t[0]+'" aria-current="'+(S.tab===t[0]?'page':'false')+'">'+ico(t[2])+t[1]+'</button>'}).join('')+'</div></nav>';
+ app.innerHTML='<div class="wrap"><header class="top"><div><div class="eyebrow">Diario</div><h1>'+esc(title)+'</h1></div><div style="display:flex;align-items:center;gap:10px"><button class="chip sm" data-act="pal" aria-label="Colori">🎨</button><button class="chip sm" data-act="preview" title="Come la vede nonna">👵 Vista nonna</button><span id="sync" class="sync '+S.sync+'"></span></div></header>'+woBan+body+'</div><nav class="tabs" aria-label="Sezioni"><div class="in">'+tabs.map(function(t){return '<button class="'+(S.tab===t[0]?'on':'')+'" data-act="tab" data-tab="'+t[0]+'" aria-current="'+(S.tab===t[0]?'page':'false')+'">'+ico(t[2])+t[1]+'</button>'}).join('')+'</div></nav>';
  setSync(S.sync);paintTimer();
  if(S.tab==='prog'&&S.unlocked)fillPhotos();
 }
@@ -995,15 +1016,12 @@ function tabOggi(){var iso=S.day;if(needMonths([iso]))return '<p class="muted">C
  if(dev.length)h+='<details style="margin-top:8px"><summary class="small" style="cursor:pointer;font-weight:700">Dove non hai seguito</summary><ul class="dev">'+dev.map(function(d){return '<li>'+esc(d.txt)+'</li>'}).join('')+'</ul></details>';
  var nm=marked(iso,dd);if(nm<4&&iso<=todayIso())h+='<button class="btn ghost block" style="margin-top:10px" data-act="allplan">✓ Segna da piano i pasti che mancano</button>';
  h+='</section>';
+ h+=quickTiles(iso,dd);if(dd.xo&&dd.xo.length)h+=xoCard(iso);if(dd.hd&&dd.hd.length)h+=hdCard(iso);
  if(ISGH&&iso===todayIso()){var lb=lsGet('leo:bk');var started=lsGet('leo:start');if(!started)lsSet('leo:start',Date.now());var ref=lb||started||Date.now();if((Date.now()-ref)/864e5>14)h+='<div class="banner todo"><span>È da più di due settimane che non fai il backup. I dati stanno solo su questo telefono.</span><button class="btn" data-act="tab" data-tab="prog">Fai backup</button></div>'}
  if(ISGH&&!NPAGE&&iso===todayIso()&&typeof sbOn==='function'&&!sbOn()&&!lsGet('leo:sbskip'))h+='<div class="banner todo"><span>Copia dei dati su Supabase non ancora collegata.</span><span style="display:flex;gap:6px"><button class="btn" data-act="sblogin">Collega</button><button class="btn ghost" data-act="sbskip">Non ora</button></span></div>'
  h+='<div class="chips"><button class="chip '+(S.quick?'on':'')+'" data-act="quick">'+(S.quick?'Vista rapida':'Vista completa')+'</button><button class="chip '+(dd.inv?'on':'')+'" data-act="inv">⇅ Inverti pranzo e cena</button></div>';
  h+='<details class="card"><summary>Note del nutrizionista</summary><p>'+esc(NOTE_PC)+'</p><p>'+esc(NOTE_MER)+'</p></details>';
  slots(dd).forEach(function(s){h+=mealCard(iso,s[0],s[1],dd,plan)});
- h+='<div class="lbl" style="margin:18px 0 6px">Se serve</div>';
- var sosT=(dd.sos||[]).length;if(iso===todayIso())h+='<button class="sosb" data-act="sosopen"><span aria-hidden="true" style="font-size:20px">🫶</span><span><b>SOS fame o voglia improvvisa</b><small>'+(sosT?'Oggi '+sosT+(sosT===1?' volta':' volte')+' · ':'')+'due minuti per capire e scegliere</small></span></button>';
- h+=xoCard(iso);
- h+=hdCard(iso);
  h+='<section class="card"><label class="lbl" for="f-note">Note della giornata</label><textarea id="f-note" class="inp" rows="3" data-field="note" placeholder="Com\'è andata, come ti senti…">'+esc(dd.note||'')+'</textarea></section>';
  return h}
 function mealSum(iso,src,dd){var x=mealItems(iso,src,dd).filter(function(it){var c=foodCls(it);return c!=='drink'&&c!=='other'&&c!=='sweet'}).map(function(it){if(it.g==='VEG'){return 'verdure '+it.q}return (SHORT[it.f]||fname(it.f).toLowerCase())+' '+it.q}).join(' · ');return x.charAt(0).toUpperCase()+x.slice(1)}
@@ -1023,7 +1041,7 @@ function outIdeas(items,slot,src,iso,dd){if(!RCON)return '';if(typeof S!=='undef
   P('Self service o mensa','Una porzione '+size+' di cereali, un legume o delle uova, e verdure doppie. Frutta o yogurt come fine pasto.')}
  var parts=[];if(ck)parts.push('carbo '+Math.round(ck)+' g (secchi, come nel piano)');if(T.veg)parts.push('verdure '+Math.round(T.veg)+' g, un contorno abbondante');if(T.fruit)parts.push('un frutto medio');if(T.fat&&src!=='c'&&src!=='m')parts.push('olio '+Math.round(T.fat)+' g, un cucchiaio');
  var pi=portIdeas(iso,src,dd);return '<div class="outbox">'+(pi||('<div class="lbl" style="margin:0 0 6px">Cosa prendere fuori</div>'+o.join('')))+(parts.length?'<p class="small muted" style="margin:4px 0 0">Il piano qui prevede: '+parts.join(', ')+'. Poi segna sotto come è andata.</p>':'')+'</div>'}
-function mealCard(iso,slot,src,dd,plan){var items=mealItems(iso,src,dd);var t=(dd.t&&dd.t[slot])||{};var out=dd.out&&dd.out[slot];var lib=plan.libera&&src==='n';var sc=mealScore(iso,slot,src,dd);var qv=S.quick&&!S.open[slot+iso]&&t.s!=='detail';
+function mealCard(iso,slot,src,dd,plan){var items=mealItems(iso,src,dd);var t=(dd.t&&dd.t[slot])||{};var out=dd.out&&dd.out[slot];var lib=plan.libera&&src==='n';var sc=mealScore(iso,slot,src,dd);var qv=(S.quick||!!t.s)&&!S.open[slot+iso]&&t.s!=='detail';
  var h='<section class="card meal'+(sc!=null&&!out?' ms-'+cls(sc):'')+'"><div class="meal-h"><h2>'+MEALS[slot].it+(dd.nb&&dd.nb[src]?' <span class="nbb" title="Cambiato da nonna">👵 nonna</span>':'')+(sc!=null?'<span class="sc '+cls(sc)+'">'+sc+'%</span>':'')+(slot!==src?' <span class="muted small" style="font-family:inherit">(menu della '+MEALS[src].it.toLowerCase()+')</span>':'')+'</h2><button class="chip sm out '+(out?'on':'')+'" data-act="out" data-slot="'+slot+'" aria-pressed="'+(out?'true':'false')+'">'+(out?'Fuori casa':'A casa')+'</button></div>';
  if(out)h+=outIdeas(items,slot,src,iso,dd);
  if(lib)h+='<p class="free"><b>Cena libera.</b> Le quantità qui sotto sono solo l\'esempio del nutrizionista.</p><details class="small" style="margin-bottom:6px"><summary class="muted" style="cursor:pointer">Cosa dice il nutrizionista</summary><p>'+esc(NOTE_LIB)+'</p></details>';
@@ -1035,7 +1053,7 @@ function mealCard(iso,slot,src,dd,plan){var items=mealItems(iso,src,dd);var t=(d
  var opts=lib?LSTATE:MSTATE;h+='<div class="tlbl">Com\'è andato?</div><div class="track'+(lib?' lib':'')+'" role="group" aria-label="Com\'è andato il pasto">'+opts.map(function(o){return '<button class="tb '+o[0]+(t.s===o[0]?' on':'')+'" data-act="mstate" data-slot="'+slot+'" data-v="'+o[0]+'" aria-pressed="'+(t.s===o[0])+'">'+o[1]+'</button>'}).join('')+'</div>';
  if(t.s==='detail')h+='<p class="small muted" style="margin:6px 0 0">Tocca il bollino accanto a ogni alimento per dire cosa è cambiato.</p>';
  if(!lib)h+='<button class="addx" data-act="addx" data-slot="'+slot+'">+ Ho aggiunto qualcosa fuori piano</button>';
- if(S.quick&&t.s!=='detail')h+='<p style="text-align:center;margin:8px 0 0"><button class="link" data-act="mopen" data-k="'+slot+iso+'">'+(qv?'Dettagli e scambi ›':'Chiudi i dettagli')+'</button></p>';
+ if((S.quick||t.s)&&t.s!=='detail')h+='<p style="text-align:center;margin:8px 0 0"><button class="link" data-act="mopen" data-k="'+slot+iso+'">'+(qv?'Dettagli e scambi ›':'Chiudi i dettagli')+'</button></p>';
  return h+'</section>'}
 function itemRow(it,dd,src,slot,detail,iso){var t=(dd.t&&dd.t[slot])||{};var rc=itemRec(t,it);var chip=detail?'<button class="ist '+recCls(rc,it)+'" data-act="ist" data-slot="'+slot+'" data-key="'+it.key+'">'+esc(recLab(rc,it))+'</button>':'';
  if(it.g==='VEG'){var ve=(dd.veg&&dd.veg[src])||[];var v=vegOf(iso||S.day,src,dd);var au=!ve.length&&v.length;return '<li class="it"><div class="it-main"><span class="it-n">Verdure'+(v.length?': '+esc(v.join(', ')):'')+'</span><span class="it-q">almeno '+esc(it.q)+(au?' · scelte in automatico':(v.length?'':' · scegli tu'))+'</span><span class="eye">👁 ≈ un piatto pieno di cotta o una ciotola grande di insalata</span></div><button class="swap'+(ve.length?' on':'')+'" data-act="veg" data-src="'+src+'">'+(v.length?'cambia':'scegli')+'</button>'+chip+'</li>'}
@@ -1554,28 +1572,106 @@ function openX(slot,ix){var iso=S.day;var dd=dayData(iso)||{};var ex=slot==='xo'
  S.xd={slot:slot,c:ex?ex.c:null,q:ex?ex.q:2,ix:ex?+ix:null};var hv=ex?(ex.h||''):(iso===todayIso()?nowHM():'');var on=function(b){return b?' on':''};
  sheet('<h3>'+(slot==='xo'?(ex?'Modifica':'Mangiato fuori dai pasti'):'Aggiunta a '+MEALS[slot].it.toLowerCase())+'</h3>'+(slot==='xo'?'<label class="lbl" for="x-h">A che ora</label><input id="x-h" class="inp" type="time" value="'+esc(hv)+'" style="max-width:150px">':'')+'<label class="lbl" for="x-w">Cosa</label><input id="x-w" class="inp" maxlength="60" placeholder="Es. biscotti, patatine, un bicchiere di vino" value="'+esc(ex?ex.w||'':'')+'"><div class="lbl">Che tipo</div><div class="xopt" id="x-c">'+Object.keys(XC).map(function(k){return '<button class="'+on(ex&&ex.c===k).trim()+'" data-act="xc" data-v="'+k+'">'+XC[k]+'</button>'}).join('')+'</div><div class="lbl">Quanto</div><div class="opts" id="x-q">'+[1,2,3].map(function(q){return '<button class="opt'+on(S.xd.q===q)+'" data-act="xq" data-v="'+q+'"><span><b>'+XQ[q].l+'</b><br><span class="muted small">'+XQ[q].d+'</span></span></button>'}).join('')+'</div>'+(slot==='xo'?'':'<p class="small" id="x-prev" style="background:var(--surface2);border-radius:12px;padding:8px 12px;margin:10px 0 0"></p>')+'<button class="btn block" style="margin-top:12px" data-act="xsave">'+(ex?'Salva':'Aggiungi')+'</button>');xPrev()}
 
-/* ---------- cibi comuni con le calorie per porzione: servono solo a scegliere poco/medio/tanto, non si mostrano mai ---------- */
+/* ---------- cibi fuori piano con le calorie per porzione ----------
+   Le calorie non si mostrano mai: servono solo a calcolare quanto pesa una cosa sulla giornata.
+   Valori indicativi da etichette e tabelle dei produttori (porzione standard italiana). */
+XC={dolce:'Dolci',salato:'Snack salati',fast:'Fast food, pizza, rosticceria',carbo:'Pane, pasta',formaggi:'Formaggi, salumi',fruttasecca:'Frutta secca',condimento:'Condimenti, salse',alcol:'Alcol',bibita:'Bibite, bar',altro:'Altro'};
+XF.fast=1;
+var MC='McDonald\'s · ',BK='Burger King · ',KF='KFC · ';
 var XFOODS=[
-['dolce','Biscotti secchi, 3 (30 g)',130],['dolce','Cioccolato, 2 quadretti (20 g)',110],['dolce','Cioccolato, mezza tavoletta (50 g)',270],['dolce','Cioccolato, tavoletta intera (100 g)',540],['dolce','Cornetto o brioche',300],['dolce','Fetta di torta',350],['dolce','Gelato, 2 palline',220],['dolce','Merendina confezionata',170],['dolce','Nutella, un cucchiaio (15 g)',80],['dolce','Caramelle o gommose, una manciata (30 g)',100],['dolce','Biscotti al cioccolato, 4 (50 g)',240],['dolce','Dolce al cucchiaio o budino',180],
-['salato','Patatine, sacchetto piccolo (25 g)',135],['salato','Patatine, sacchetto grande (100 g)',530],['salato','Popcorn, una ciotola (30 g)',130],['salato','Crackers, una manciata (30 g)',130],['salato','Rustico o pizzetta',250],['salato','Salatini o taralli, una manciata (30 g)',140],
-['carbo','Fetta di pane (30 g)',80],['carbo','Panino (60 g)',170],['carbo','Pizza, un trancio (150 g)',380],['carbo','Pizza intera',800],['carbo','Pasta, un piatto (80 g crudi)',290],['carbo','Patatine fritte, porzione',350],
-['formaggi','Parmigiano, 30 g',120],['formaggi','Mozzarella, 125 g',290],['formaggi','Salame o prosciutto, 50 g',160],['formaggi','Formaggio spalmabile, 30 g',90],
-['fruttasecca','Mandorle o noci, una manciata (30 g)',185],['fruttasecca','Burro di arachidi, un cucchiaio (15 g)',95],['fruttasecca','Arachidi o pistacchi, una ciotolina (50 g)',300],
-['condimento','Olio, un cucchiaio (10 g)',90],['condimento','Maionese o salse, un cucchiaio',100],
-['alcol','Birra, 330 ml',140],['alcol','Birra, 500 ml',215],['alcol','Vino, un bicchiere (125 ml)',90],['alcol','Spritz',170],['alcol','Amaro o liquore, un bicchierino',90],['alcol','Cocktail',220],
-['bibita','Cola o aranciata, lattina (330 ml)',140],['bibita','Succo di frutta (200 ml)',90],['bibita','Cappuccino',90],['bibita','Caffè con zucchero',20],['bibita','Tè freddo (330 ml)',110]
+/* Kinder */
+['dolce','Kinder Bueno, confezione (2 barrette)',244],['dolce','Kinder Bueno, 1 barretta',122],['dolce','Kinder Bueno White, confezione (2 barrette)',225],['dolce','Kinder Cioccolato, 1 barretta',69],['dolce','Kinder Cioccolato, 4 barrette',276],['dolce','Kinder Maxi, 1 barretta',116],['dolce','Kinder Country, 1 barretta',126],['dolce','Kinder Cereali, 1 barretta',117],['dolce','Kinder Délice',180],['dolce','Kinder Fetta al Latte',117],['dolce','Kinder Pinguì',134],['dolce','Kinder Paradiso',131],['dolce','Kinder Brioss',120],['dolce','Kinder Colazione Più',125],['dolce','Kinder Panecioc',120],['dolce','Kinder Choco Fresh',116],['dolce','Kinder Happy Hippo',113],['dolce','Kinder Cards, confezione (2 biscotti)',131],['dolce','Kinder Tronky',98],['dolce','Kinder Sorpresa, 1 ovetto',110],['dolce','Kinder Schoko-Bons, 5 pezzi',165],['dolce','Uovo di cioccolato, 100 g',550,'pasqua kinder'],
+/* creme spalmabili */
+['dolce','Nutella, un cucchiaino (5 g)',27,'crema spalmabile'],['dolce','Nutella, un cucchiaio (15 g)',80,'crema spalmabile'],['dolce','Nutella, 2 cucchiai abbondanti (40 g)',215,'crema spalmabile'],['dolce','Fetta di pane con Nutella',190,'crema spalmabile'],['dolce','Nutella B-ready, 1 pezzo',114],['dolce','Nutella Biscuits, 2 biscotti',137],['dolce','Nutella Biscuits, 5 biscotti',345],['dolce','Crema Pan di Stelle, un cucchiaio (15 g)',85,'crema spalmabile'],['dolce','Crema al pistacchio, un cucchiaio (15 g)',85,'crema spalmabile'],['dolce','Crema Lotus Biscoff, un cucchiaio (15 g)',88,'crema spalmabile'],['dolce','Crema di nocciole (Nocciolata e simili), un cucchiaio (15 g)',82,'crema spalmabile'],['dolce','Crema spalmabile dal barattolo, tanti cucchiai (60 g)',320,'nutella'],
+/* crêpes, waffle */
+['dolce','Crêpe alla Nutella',480,'crepes crepe'],['dolce','Crêpe Nutella e banana',540,'crepes crepe'],['dolce','Crêpe con zucchero o marmellata',280,'crepes crepe'],['dolce','Waffle con Nutella',500,'gaufre'],['dolce','Pancake con sciroppo, 3 pezzi',520],
+/* cioccolato e barrette */
+['dolce','Cioccolato, 2 quadretti (20 g)',110,'cioccolata'],['dolce','Cioccolato, mezza tavoletta (50 g)',270,'cioccolata'],['dolce','Cioccolato, tavoletta intera (100 g)',540,'cioccolata'],['dolce','Snickers',250],['dolce','Twix, confezione',250],['dolce','Mars',230],['dolce','KitKat, 4 dita',210],['dolce','Bounty, confezione',270],['dolce','M&M\'s, sacchetto',225,'mms'],['dolce','Ferrero Rocher, 3 pezzi',220],['dolce','Raffaello, 3 pezzi',180],['dolce','Baci Perugina, 2 pezzi',130],['dolce','Lindor, 3 pezzi',220,'lindt'],['dolce','Pocket Coffee, 2 pezzi',110],['dolce','Cioccolatini assortiti, 5 pezzi',250],
+/* biscotti e merendine */
+['dolce','Biscotti secchi, 3',130,'frollini'],['dolce','Biscotti frollini (Gocciole, Macine, Abbracci), 4',200,'gocciole macine abbracci mulino bianco'],['dolce','Pan di Stelle, 4 biscotti',190,'mulino bianco'],['dolce','Oreo, 4 biscotti',210],['dolce','Ringo, 1 confezione',260],['dolce','Biscotti, mezzo pacco (175 g)',850,'abbuffata'],['dolce','Merendina (Buondì, Tegolino, Saccottino, Fiesta, plumcake)',160,'merendine'],['dolce','Wafer, confezione (45 g)',230,'loacker'],
+/* bar e pasticceria */
+['dolce','Cornetto vuoto',250,'brioche croissant'],['dolce','Cornetto alla crema, cioccolato o Nutella',330,'brioche croissant'],['dolce','Bombolone o krapfen',330],['dolce','Maritozzo con la panna',450],['dolce','Ciambella o donut',270],['dolce','Muffin',400],['dolce','Cannolo siciliano',350],['dolce','Tiramisù, porzione',400],['dolce','Fetta di torta',350],['dolce','Cheesecake, fetta',400],['dolce','Panna cotta',250],['dolce','Pasticcini, 3',250],['dolce','Panettone o pandoro, fetta (80 g)',330],['dolce','Budino o yogurt alla frutta',150],
+/* gelato */
+['dolce','Gelato, coppetta piccola',180],['dolce','Gelato, cono 2 gusti',250],['dolce','Gelato, cono 3 gusti con panna',380],['dolce','Magnum',260,'algida'],['dolce','Cornetto Algida',230],['dolce','Ghiacciolo',70],['dolce','Gelato dalla vaschetta (250 g)',550],
+/* caramelle */
+['dolce','Caramelle o gommose, una manciata (30 g)',100,'haribo'],['dolce','Haribo, sacchetto intero (100 g)',340,'caramelle gommose'],
+/* snack salati */
+['salato','Patatine, sacchetto piccolo (25 g)',135,'san carlo chips'],['salato','Patatine, sacchetto medio (50 g)',270,'san carlo chips'],['salato','Patatine, sacchetto grande (150 g)',800,'san carlo chips'],['salato','Pringles, mezzo tubo',480],['salato','Pringles, tubo intero',880],['salato','Fonzies, sacchetto',125],['salato','Tortilla chips, 50 g',250,'nachos'],['salato','Popcorn, una ciotola',130],['salato','Popcorn del cinema, medio',550],['salato','Crackers, un pacchetto',130],['salato','Taralli o salatini, una manciata',140],['salato','Olive, 10',60],
+/* rosticceria e bar */
+['fast','Supplì',230],['fast','Arancino',400,'arancina'],['fast','Crocchetta di patate',150],['fast','Olive ascolane, 6',300],['fast','Mozzarella in carrozza',350],['fast','Panzerotto fritto',450],['fast','Pizzetta o rustico',250],['fast','Tramezzino',300],['fast','Toast prosciutto e formaggio',320],['fast','Piadina farcita',550],['fast','Crêpe salata prosciutto e formaggio',450,'crepes crepe'],['fast','Panino con salame o prosciutto',380],['fast','Panino con la porchetta',500],['fast','Hot dog',300],['fast','Kebab, panino',650,'kebap'],['fast','Kebab, piadina o wrap',700,'kebap'],['fast','Focaccia, trancio',300],['fast','Focaccia farcita',600],
+/* pizza */
+['fast','Pizza al taglio rossa, un trancio',230],['fast','Pizza al taglio bianca, un trancio',270],['fast','Pizza al taglio farcita, un trancio',320],['fast','Pizza, una fetta (di una intera)',140],['fast','Pizza, mezza',420],['fast','Pizza margherita, intera',800],['fast','Pizza marinara, intera',650],['fast','Pizza diavola, intera',950,'salame piccante'],['fast','Pizza capricciosa, intera',950],['fast','Pizza quattro formaggi, intera',1050],['fast','Pizza prosciutto e funghi, intera',900],['fast','Pizza con la bufala, intera',900],['fast','Pizza con le verdure, intera',800,'ortolana'],['fast','Pizza wurstel e patatine, intera',1050],['fast','Calzone',1000],['fast','Pizza fritta o montanara',500],['fast','Pinsa',600],
+/* McDonald's */
+['fast',MC+'Big Mac',503,'mcdonalds mac mc'],['fast',MC+'Cheeseburger',301,'mcdonalds mc'],['fast',MC+'Hamburger',250,'mcdonalds mc'],['fast',MC+'Double Cheeseburger',445,'mcdonalds mc'],['fast',MC+'McChicken',400,'mcdonalds mc'],['fast',MC+'Crispy McBacon',520,'mcdonalds mc'],['fast',MC+'Gran Crispy McBacon',780,'mcdonalds mc'],['fast',MC+'McRoyal Deluxe',540,'mcdonalds mc'],['fast',MC+'Filet-O-Fish',330,'mcdonalds mc'],['fast',MC+'McWrap',550,'mcdonalds mc'],['fast',MC+'Chicken McNuggets, 6',250,'mcdonalds mc'],['fast',MC+'Chicken McNuggets, 9',380,'mcdonalds mc'],['fast',MC+'Chicken McNuggets, 20',840,'mcdonalds mc'],['fast',MC+'Patatine piccole',230,'mcdonalds mc'],['fast',MC+'Patatine medie',330,'mcdonalds mc'],['fast',MC+'Patatine grandi',440,'mcdonalds mc'],['fast',MC+'Menu Big Mac medio (con patatine e bibita)',1000,'mcdonalds mc'],['fast',MC+'Menu McChicken medio (con patatine e bibita)',900,'mcdonalds mc'],['fast',MC+'Happy Meal',450,'mcdonalds mc'],['dolce',MC+'McFlurry',340,'mcdonalds mc'],['dolce',MC+'Sundae',300,'mcdonalds mc'],['dolce',MC+'Tortina di mele',230,'mcdonalds mc'],['bibita',MC+'Milkshake medio',400,'mcdonalds mc'],
+/* Burger King */
+['fast',BK+'Whopper',660,'bk'],['fast',BK+'Whopper Jr',330,'bk'],['fast',BK+'Double Whopper',900,'bk'],['fast',BK+'Big King',520,'bk'],['fast',BK+'Cheeseburger',300,'bk'],['fast',BK+'Chicken Royale',600,'bk'],['fast',BK+'Crispy Chicken',520,'bk'],['fast',BK+'King Nuggets, 6',270,'bk'],['fast',BK+'Patatine medie',320,'bk'],['fast',BK+'Patatine grandi',420,'bk'],['fast',BK+'Onion rings, medi',330,'bk anelli cipolla'],['fast',BK+'Menu Whopper medio (con patatine e bibita)',1150,'bk'],
+/* KFC */
+['fast',KF+'Pollo Original Recipe, 1 pezzo',250,'kentucky'],['fast',KF+'Pollo Original Recipe, 3 pezzi',750,'kentucky'],['fast',KF+'Hot Wings, 4',320,'kentucky ali'],['fast',KF+'Zinger burger',450,'kentucky'],['fast',KF+'Tower burger',600,'kentucky'],['fast',KF+'Strips o boneless, 3',300,'kentucky'],['fast',KF+'Popcorn chicken',300,'kentucky'],['fast',KF+'Bucket in compagnia, la tua parte',1100,'kentucky secchiello'],['fast',KF+'Patatine medie',300,'kentucky'],['fast',KF+'Menu Zinger (con patatine e bibita)',1000,'kentucky'],
+/* hamburgeria, sushi, altro fuori */
+['fast','Hamburger da hamburgeria con patatine',1200,'burger old wild west'],['fast','Hamburger da hamburgeria, solo panino',800,'burger'],['fast','Patatine fritte, porzione',350],['fast','Sushi, 8 pezzi',350],['fast','Sushi all you can eat',1300],['fast','Poke bowl',600],['fast','Nachos con formaggio fuso',600],
+/* pane e pasta */
+['carbo','Fetta di pane (30 g)',80],['carbo','Panino (60 g)',170],['carbo','Pasta, un piatto (80 g crudi)',290],['carbo','Pasta, piatto abbondante (130 g crudi)',470],['carbo','Carbonara o amatriciana, piatto',750],['carbo','Lasagna, porzione',600],['carbo','Riso o risotto, piatto',450],['carbo','Gnocchi, piatto',450],
+/* formaggi e salumi */
+['formaggi','Parmigiano, 30 g',120],['formaggi','Mozzarella, 125 g',290],['formaggi','Burrata, 125 g',330],['formaggi','Scamorza o provola, 50 g',170],['formaggi','Salame o prosciutto, 50 g',160],['formaggi','Tagliere salumi e formaggi, a persona',600],['formaggi','Formaggio spalmabile, 30 g',90],
+/* frutta secca */
+['fruttasecca','Mandorle o noci, una manciata (30 g)',185],['fruttasecca','Nocciole o anacardi, una manciata (30 g)',180],['fruttasecca','Arachidi o pistacchi, una ciotolina (50 g)',300],['fruttasecca','Burro di arachidi, un cucchiaio (15 g)',95],
+/* condimenti */
+['condimento','Olio, un cucchiaio (10 g)',90],['condimento','Maionese o salse, un cucchiaio',100],['condimento','Ketchup o salsa del fast food, una bustina',30],['condimento','Panna, un cucchiaio',50],
+/* alcol */
+['alcol','Birra piccola (200 ml)',85],['alcol','Birra, 330 ml',140],['alcol','Birra media (400 ml)',170],['alcol','Birra, 500 ml',215],['alcol','Vino, un bicchiere',90],['alcol','Prosecco, un flûte',90],['alcol','Spritz',170,'aperol'],['alcol','Gin tonic',200],['alcol','Negroni',200],['alcol','Mojito',240],['alcol','Cocktail',220],['alcol','Amaro o liquore, un bicchierino',90],['alcol','Shot',80,'cicchetto'],['alcol','Sangria, un bicchiere',150],
+/* bibite e bar */
+['bibita','Coca-Cola o aranciata, lattina',140,'cola fanta'],['bibita','Bibita del fast food, media',170,'cola'],['bibita','Coca-Cola Zero o light',2,'cola'],['bibita','Red Bull o energy drink',115],['bibita','Succo di frutta (200 ml)',90],['bibita','Estathé o tè freddo',100],['bibita','Cappuccino',90],['bibita','Caffè con zucchero',20],['bibita','Cioccolata calda',250],['bibita','Frappè o milkshake',400],['bibita','Ginseng o caffè speciale',100]
 ];
+function xNorm(s){return String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,' ').trim()}
+var XFIDX=XFOODS.map(function(f){return xNorm(f[1]+' '+(f[3]||'')+' '+XC[f[0]])});
+function xSearch(q){q=xNorm(q);if(q.length<2)return [];var w=q.split(' ');var out=[];XFIDX.forEach(function(s,i){if(w.every(function(x){return s.indexOf(x)>=0}))out.push(i)});
+ out.sort(function(a,b){var sa=XFIDX[a].indexOf(w[0]),sb=XFIDX[b].indexOf(w[0]);return (sa===0?0:1)-(sb===0?0:1)});return out.slice(0,30)}
 function xKcalQ(k){return k<=130?1:k<=330?2:3}
-function xFoods(){var el=$('#x-f');if(!el||!S.xd)return;var c=S.xd.c;if(!c){el.innerHTML='';return}
- el.innerHTML='<div class="lbl" style="margin-top:12px">Scegli dalla lista (decide l\'app quanto pesa)</div><div class="xopt">'+XFOODS.map(function(f,i){return f[0]===c?'<button class="'+(S.xd.f===i?'on':'')+'" data-act="xf" data-v="'+i+'">'+esc(f[1])+'</button>':''}).join('')+'</div>'+
- (S.xd.f!=null?'<div class="row" style="margin-top:8px;align-items:center;gap:10px"><span class="small muted" style="flex:1">Quante porzioni</span><button class="btn ghost" data-act="xn" data-v="-1" style="flex:none">−</button><b id="x-nn" style="min-width:34px;text-align:center">'+xNfmt(S.xd.n)+'</b><button class="btn ghost" data-act="xn" data-v="1" style="flex:none">+</button></div>':'')}
 function xNfmt(n){return n===.5?'½':n===1.5?'1½':String(n)}
-function xApply(){var d=S.xd;if(!d||d.f==null)return;var f=XFOODS[d.f];var k=Math.round(f[2]*d.n);d.k=k;d.q=xKcalQ(k);
+function xFoodBtn(i){var d=S.xd||{};return '<button class="opt fo'+(d.f===i?' on':'')+'" data-act="xf" data-v="'+i+'"><span>'+esc(XFOODS[i][1])+'</span></button>'}
+function xFoods(){var el=$('#x-f');if(!el||!S.xd)return;var d=S.xd;var h='';
+ if(d.f!=null)h+='<div class="xsel"><b>'+esc(XFOODS[d.f][1])+'</b><div class="row" style="margin-top:8px;align-items:center;gap:10px"><span class="small muted" style="flex:1">Quante porzioni</span><button class="btn ghost" data-act="xn" data-v="-1" style="flex:none">−</button><b style="min-width:34px;text-align:center">'+xNfmt(d.n)+'</b><button class="btn ghost" data-act="xn" data-v="1" style="flex:none">+</button></div><div class="row" style="gap:14px;margin-top:6px"><button class="link small" data-act="xf" data-v="'+d.f+'">Cambia cibo</button><button class="link small" data-act="xman">Correggi tipo o quantità</button></div></div>';
+ else if(d.c){var L=[];XFOODS.forEach(function(f,i){if(f[0]===d.c)L.push(i)});if(L.length)h+='<div class="lbl" style="margin-top:12px">'+esc(XC[d.c])+'</div><div class="opts fol">'+L.map(xFoodBtn).join('')+'</div>'}
+ el.innerHTML=h;var sh=document.querySelector('#sheet .sheet');if(sh)sh.classList.toggle('xauto',d.f!=null&&!d.man)}
+function xSearchShow(){var el=$('#x-r'),inp=$('#x-s');if(!el||!inp||!S.xd)return;var r=xSearch(inp.value);
+ el.innerHTML=inp.value.trim().length<2?'':(r.length?'<div class="opts fol">'+r.map(xFoodBtn).join('')+'</div>':'<p class="small muted" style="margin:6px 0 0">Non c\'è in lista: scrivilo sotto e scegli tipo e quanto.</p>')}
+function xApply(){var d=S.xd;if(!d||d.f==null)return;var f=XFOODS[d.f];var k=Math.round(f[2]*d.n);d.k=k;d.q=xKcalQ(k);d.c=f[0];
  Array.prototype.forEach.call(document.querySelectorAll('#x-q button'),function(x){x.classList.toggle('on',+x.dataset.v===d.q)});
- var w=$('#x-w');if(w)w.value=f[1].replace(/,.*$|\(.*$/,'').trim()+(d.n!==1?' ×'+xNfmt(d.n):'');xFoods();xPrev()}
-function xFoodPick(i){var d=S.xd;if(!d)return;d.f=d.f===i?null:i;d.n=1;if(d.f==null){d.k=null;xFoods();return}xApply()}
-function xPortion(dir){var d=S.xd;if(!d||d.f==null)return;var L=[.5,1,1.5,2,3,4];var j=L.indexOf(d.n);if(j<0)j=1;j=Math.max(0,Math.min(L.length-1,j+dir));d.n=L[j];xApply()}
-var _openXk=openX;openX=function(slot,ix){_openXk(slot,ix);var q=$('#x-q');if(q){var holder=document.createElement('div');holder.id='x-f';q.parentNode.insertBefore(holder,q.previousElementSibling);if(S.xd.c)xFoods()}};
+ Array.prototype.forEach.call(document.querySelectorAll('#x-c button'),function(x){x.classList.toggle('on',x.dataset.v===d.c)});
+ var w=$('#x-w');if(w)w.value=f[1]+(d.n!==1?' ×'+xNfmt(d.n):'');var r=$('#x-r');if(r)r.innerHTML='';var s=$('#x-s');if(s)s.value='';xFoods();xPrev()}
+function xMan(){if(!S.xd)return;S.xd.man=true;xFoods()}
+function xFoodPick(i){var d=S.xd;if(!d)return;d.man=false;if(d.f===i){d.f=null;d.k=null;xFoods();xPrev();return}d.f=i;d.n=1;xApply()}
+function xPortion(dir){var d=S.xd;if(!d||d.f==null)return;var L=[.5,1,2,3,4,5,6];var j=L.indexOf(d.n);if(j<0)j=1;j=Math.max(0,Math.min(L.length-1,j+dir));d.n=L[j];xApply()}
+/* il foglio: ricerca in cima, poi tipo, lista, quanto; per il fuori pasto anche l'effetto sulla giornata */
+var _openXk=openX;openX=function(slot,ix){_openXk(slot,ix);var sh=$('#sheet .sheet')||document;var w=$('#x-w');if(!w)return;
+ var lab=w.previousElementSibling;var box=document.createElement('div');box.innerHTML='<label class="lbl" for="x-s">Cerca</label><input id="x-s" class="inp" type="search" autocomplete="off" placeholder="Kinder Bueno, Big Mac, pizza, birra…"><div id="x-r"></div>';
+ var top=$('#x-h')?$('#x-h').previousElementSibling:lab;top.parentNode.insertBefore(box,top);lab.textContent='Oppure scrivi tu cosa';lab.classList.add('xclab');w.classList.add('xclab');var cl=$('#x-c');cl.classList.add('xman');cl.previousElementSibling.classList.add('xman');
+ $('#x-s').addEventListener('input',xSearchShow);
+ var q=$('#x-q');var holder=document.createElement('div');holder.id='x-f';q.parentNode.insertBefore(holder,q.previousElementSibling);q.previousElementSibling.textContent='Quanto';q.previousElementSibling.classList.add('xman');q.classList.add('xman');
+ if(slot==='xo'&&!$('#x-prev')){var pv=document.createElement('p');pv.id='x-prev';pv.className='small';pv.style.cssText='background:var(--surface2);border-radius:12px;padding:8px 12px;margin:10px 0 0';q.parentNode.insertBefore(pv,q.nextSibling)}
+ var ex=S.xd.ix!=null&&(dayData(S.day)||{}).xo?(dayData(S.day).xo[S.xd.ix]):null;
+ if(ex&&ex.k){var fi=-1;XFOODS.forEach(function(f,i){if(fi<0&&ex.w&&ex.w.indexOf(f[1])===0)fi=i});if(fi>=0){S.xd.f=fi;S.xd.n=Math.round(ex.k/XFOODS[fi][2]*2)/2||1;S.xd.k=ex.k}}
+ xFoods();xPrev()};
+var _xPrevK=xPrev;xPrev=function(){var m=S.xd;if(!m||m.slot!=='xo')return _xPrevK();var el=$('#x-prev');if(!el)return;var iso=S.day;var dd=dayData(iso)||{};
+ var x={c:m.c||'altro',q:m.q||2};if(m.k)x.k=m.k;var L=(dd.xo||[]).slice();if(m.ix!=null)L.splice(m.ix,1);var d0={},d1={};Object.keys(dd).forEach(function(k){d0[k]=dd[k];d1[k]=dd[k]});d0.xo=L;d1.xo=L.concat([x]);
+ var a=dayScore(iso,d0),b=dayScore(iso,d1);var pts=Math.round(xpen1(x)/2);
+ el.innerHTML=a!=null?'La giornata passa da <b>'+a+'%</b> a <b>'+b+'%</b>.':'Toglie circa <b>'+pts+' punti</b> alla giornata, quando segni i pasti.'};
+
+/* ---------- colori dell'app di L. (la pagina di nonna resta com'è) ---------- */
+var PALS=[['petrolio','Petrolio','#1d6f86','#f2f5f6'],['salvia','Salvia','#4b7a52','#f4f5f0'],['indaco','Indaco','#4450c4','#f3f4f8'],['fiori','Fiori (quella di prima)','#c94f7c','#f7f3f9']];
+function curPal(){var p=lsGet('leo:pal');return PALS.some(function(x){return x[0]===p})?p:'petrolio'}
+function applyPal(){var p=S.mode==='nonna'?'':curPal();var el=document.documentElement;if(p&&p!=='fiori')el.setAttribute('data-pal',p);else el.removeAttribute('data-pal');
+ var m=document.querySelector('meta[name=theme-color]');if(m&&S.mode!=='nonna'){var x=PALS.filter(function(z){return z[0]===curPal()})[0];m.setAttribute('content',x[2])}}
+function openPal(){var c=curPal();sheet('<h3>Colori</h3><p class="small muted" style="margin:0 0 10px">Cambia solo la tua app. La pagina di nonna resta uguale.</p><div class="opts">'+PALS.map(function(p){return '<button class="opt'+(p[0]===c?' on':'')+'" data-act="palset" data-v="'+p[0]+'"><span style="display:flex;align-items:center;gap:12px"><i class="pdot" style="background:'+p[2]+';box-shadow:0 0 0 5px '+p[3]+',0 0 0 6px rgba(0,0,0,.12)"></i><b>'+p[1]+'</b></span></button>'}).join('')+'</div>')}
+function palSet(v){lsSet('leo:pal',v);applyPal();closeSheet();render()}
+var _renderPal=render;render=function(){applyPal();return _renderPal.apply(this,arguments)};
+
+/* ---------- Oggi: le cose da segnare al volo stanno in alto ---------- */
+function quickTiles(iso,dd){var today=iso===todayIso();if(iso>todayIso())return '';var xo=(dd.xo||[]).length,hd=(dd.hd||[]).length,so=(dd.sos||[]).length;
+ var t=[['addx','xo','🍫','Fuori pasto',xo?xo+(xo===1?' segnato':' segnati'):'segna con l\'ora']];
+ t.push(['hdopen','','🤕','Mal di testa',hd?hd+(hd===1?' volta':' volte'):'segna con l\'ora']);
+ if(today)t.push(['sosopen','','🫶','Fame o voglia',so?so+(so===1?' volta':' volte'):'2 minuti per scegliere']);
+ return '<div class="qa" style="grid-template-columns:repeat('+t.length+',1fr)">'+t.map(function(x){return '<button data-act="'+x[0]+'"'+(x[1]?' data-slot="'+x[1]+'"':'')+' data-iso="'+iso+'"><span class="e" aria-hidden="true">'+x[2]+'</span><b>'+x[3]+'</b><small>'+x[4]+'</small></button>'}).join('')+'</div>'}
 
 /* ---------- menu di nonna sincronizzato via GitHub ---------- */
 var GHREPO='rakdoel/alimentazione',GHFILE='menu.json';
@@ -2053,7 +2149,7 @@ mealScore=function(iso,slot,src,dd){if(!dd)return null;var t=dd.t&&dd.t[slot];if
  if(t.s==='off')return 0;if(t.s==='lib1')return Math.max(0,100-xpen(t.x));if(t.s==='lib2')return 60;if(t.s==='lib3')return 25;
  var P={},E={},pen=0;var items=mealItems(iso,src,dd);
  items.forEach(function(it){var cl=foodCls(it);var r=t.s==='skip'?{c:cl,q:'none'}:itemRec(t,it);P[cl]=(P[cl]||0)+1;E[r.c]=(E[r.c]||0)+AMTR[r.q]});
- (t.x||[]).forEach(function(x){var c=XTOCLS[x.c];if(c)E[c]=(E[c]||0)+(UNP[x.q]||0);else pen+=xpen1(x)});
+ (t.x||[]).forEach(function(x){var c=XTOCLS[x.c];if(c)E[c]=(E[c]||0)+(x.k?Math.min(2.5,x.k/400):(UNP[x.q]||0));else pen+=xpen1(x)});
  if(t.s!=='skip')pen+=accPen(t,items);
  var ws=0,vs=0;Object.keys(P).forEach(function(c){var w=CLW[c]||1.5;ws+=w;vs+=w*clsScore(c,(E[c]||0)/P[c])});
  Object.keys(E).forEach(function(c){if(!P[c])pen+=E[c]*22*(c==='other'?1:.8)});
@@ -2804,8 +2900,8 @@ function act(a,b){var ds=b.dataset;
  case 'itsave':{var mI=S.itm,wI=(($('#it-w')||{}).value||'').trim().slice(0,60);var dE=dayEdit(S.day);dE.t=dE.t||{};var tE=dE.t[mI.slot]||(dE.t[mI.slot]={s:'detail'});tE.s='detail';tE.it=tE.it||{};var itI=mealItems(S.day,mI.src,dE).filter(function(x){return x.key===mI.key})[0];var rI={c:mI.c,q:mI.q,w:wI};if(itI&&isPlanRec(rI,itI))delete tE.it[mI.key];else{var oI={c:rI.c,q:rI.q};if(wI)oI.w=wI;tE.it[mI.key]=oI}if(tE.sub)delete tE.sub[mI.key];saveDay(S.day);closeSheet();render();break}
  case 'itreset':{var dR=dayEdit(S.day);var tR=dR.t&&dR.t[S.itm.slot];if(tR&&tR.it)delete tR.it[S.itm.key];if(tR&&tR.sub)delete tR.sub[S.itm.key];saveDay(S.day);closeSheet();render();break}
  case 'addx':openX(ds.slot);break;case 'xoedit':openX('xo',ds.i);break;
- case 'xc':S.xd.c=ds.v;S.xd.f=null;S.xd.k=null;Array.prototype.forEach.call(document.querySelectorAll('#x-c button'),function(x){x.classList.toggle('on',x===b)});xFoods();xPrev();break;case 'xf':xFoodPick(+ds.v);break;case 'xn':xPortion(+ds.v);break;
- case 'xq':S.xd.q=+ds.v;S.xd.k=null;Array.prototype.forEach.call(document.querySelectorAll('#x-q button'),function(x){x.classList.toggle('on',x===b)});xPrev();break;
+ case 'xc':S.xd.c=ds.v;S.xd.f=null;S.xd.k=null;Array.prototype.forEach.call(document.querySelectorAll('#x-c button'),function(x){x.classList.toggle('on',x===b)});xFoods();xPrev();break;case 'xf':xFoodPick(+ds.v);break;case 'xman':xMan();break;case 'xn':xPortion(+ds.v);break;
+ case 'xq':S.xd.q=+ds.v;S.xd.k=null;S.xd.f=null;xFoods();Array.prototype.forEach.call(document.querySelectorAll('#x-q button'),function(x){x.classList.toggle('on',x===b)});xPrev();break;
  case 'xsave':var w=(($('#x-w')||{}).value||'').trim().slice(0,60);if(!w&&!S.xd.c){toast('Scrivi cosa o scegli il tipo');break}var x={w:w,c:S.xd.c||'altro',q:S.xd.q||2};if(S.xd.k)x.k=S.xd.k;var d6=dayEdit(S.day);if(S.xd.slot==='xo'){var xh=($('#x-h')||{}).value;if(xh)x.h=xh;d6.xo=d6.xo||[];if(S.xd.ix!=null)d6.xo[S.xd.ix]=x;else d6.xo.push(x);d6.xo.sort(function(a,b){return String(a.h||'99').localeCompare(String(b.h||'99'))})}else{d6.t=d6.t||{};var t6=d6.t[S.xd.slot]||(d6.t[S.xd.slot]={});(t6.x=t6.x||[]).push(x)}saveDay(S.day);closeSheet();render();break;
  case 'delx':var d7=dayEdit(S.day);if(ds.slot==='xo'){d7.xo.splice(+ds.i,1);if(!d7.xo.length)delete d7.xo}else{var t7=d7.t[ds.slot];t7.x.splice(+ds.i,1);if(!t7.x.length)delete t7.x;if(!t7.s&&!t7.x)delete d7.t[ds.slot]}saveDay(S.day);render();break;
  case 'alt':openAlt(ds.key);break;
@@ -2821,7 +2917,7 @@ function act(a,b){var ds=b.dataset;
  case 'vegt':toggleVeg(ds.name);break;
  case 'vegadd':var inp=$('#vegfree');var nm=inp&&inp.value.trim().slice(0,30);if(nm){var cap=nm.charAt(0).toUpperCase()+nm.slice(1);var dv=dayEdit(S.day);dv.veg=dv.veg||{};var l=dv.veg[S.vegSrc]||[];if(l.map(function(x){return x.toLowerCase()}).indexOf(cap.toLowerCase())<0)l.push(cap);dv.veg[S.vegSrc]=l;saveDay(S.day);openVeg(S.vegSrc)}break;
  case 'recipe':openRecipe(ds.id);break;
- case 'dish':openDish(ds.iso,ds.src);break;case 'volo':openVolo(ds.iso,ds.src);break;case 'vosel':if(S.vo){S.vo.sel[ds.key]=ds.v;var shv=$('#sheet .sheet'),scv=shv?shv.scrollTop:0;openVolo(S.vo.iso,S.vo.src,true);shv=$('#sheet .sheet');if(shv)shv.scrollTop=scv}break;case 'vouse':voUse();break;case 'ghlink':openGhLink();break;case 'ghsave':ghSave();break;case 'ghnow':lsDel('leo:synced');nonnaSync(true).then(function(ok){toast(ok?'Menu inviato a nonna':'Invio non riuscito');render()});break;case 'ghoff':lsDel('leo:ghtoken');lsDel('leo:synced');closeSheet();toast('Scollegato');render();break;case 'exportai':openExportAI();break;case 'bkmake':openBkMake();break;case 'bkgo':bkMake();break;case 'bkrestore':bkRestore();break;case 'dnpaste':openDnPaste();break;case 'dnapply':var mm=((($('#dn-t')||{}).value)||'').match(/#dn=([A-Za-z0-9_-]+)/);if(mm)applyDn(mm[1]);else toast('Non trovo il codice nel messaggio');break;case 'nch':openNChange(ds.iso,ds.src);break;case 'npick':if(ds.id)nPickDo(ds);else openNPick(ds.iso,ds.src);break;case 'nchdish':case 'nchsw':case 'nchveg':case 'nchreset':case 'nchsend':nchAct(a,ds);break;case 'npanc':openNPanc();break;case 'hdopen':openHd(ds.iso);break;case 'hdedit':openHd(ds.iso,ds.i);break;case 'hd':hdToggle(ds);break;case 'hdsave':hdSave();break;case 'hddel':hdDel();break;case 'hdmd':openHdMd();break;case 'huopen':openHu(ds.iso,ds.i);break;case 'huedit':openHu(ds.iso,ds.i,ds.u);break;case 'hu':huToggle(ds);break;case 'husave':huSave();break;case 'hudel':huDel();break;case 'nrecipe':openNRecipe(ds.iso,ds.src);break;
+ case 'dish':openDish(ds.iso,ds.src);break;case 'volo':openVolo(ds.iso,ds.src);break;case 'vosel':if(S.vo){S.vo.sel[ds.key]=ds.v;var shv=$('#sheet .sheet'),scv=shv?shv.scrollTop:0;openVolo(S.vo.iso,S.vo.src,true);shv=$('#sheet .sheet');if(shv)shv.scrollTop=scv}break;case 'vouse':voUse();break;case 'ghlink':openGhLink();break;case 'ghsave':ghSave();break;case 'ghnow':lsDel('leo:synced');nonnaSync(true).then(function(ok){toast(ok?'Menu inviato a nonna':'Invio non riuscito');render()});break;case 'ghoff':lsDel('leo:ghtoken');lsDel('leo:synced');closeSheet();toast('Scollegato');render();break;case 'exportai':openExportAI();break;case 'bkmake':openBkMake();break;case 'bkgo':bkMake();break;case 'bkrestore':bkRestore();break;case 'dnpaste':openDnPaste();break;case 'dnapply':var mm=((($('#dn-t')||{}).value)||'').match(/#dn=([A-Za-z0-9_-]+)/);if(mm)applyDn(mm[1]);else toast('Non trovo il codice nel messaggio');break;case 'nch':openNChange(ds.iso,ds.src);break;case 'npick':if(ds.id)nPickDo(ds);else openNPick(ds.iso,ds.src);break;case 'nchdish':case 'nchsw':case 'nchveg':case 'nchreset':case 'nchsend':nchAct(a,ds);break;case 'npanc':openNPanc();break;case 'hdopen':openHd(ds.iso);break;case 'pal':openPal();break;case 'palset':palSet(ds.v);break;case 'hdedit':openHd(ds.iso,ds.i);break;case 'hd':hdToggle(ds);break;case 'hdsave':hdSave();break;case 'hddel':hdDel();break;case 'hdmd':openHdMd();break;case 'huopen':openHu(ds.iso,ds.i);break;case 'huedit':openHu(ds.iso,ds.i,ds.u);break;case 'hu':huToggle(ds);break;case 'husave':huSave();break;case 'hudel':huDel();break;case 'nrecipe':openNRecipe(ds.iso,ds.src);break;
  case 'dishnext':var at=S.dishAt;if(!at)break;var dd8=dayData(at[0])||{};var pd=pickDish(at[0],at[1],dd8);if(!pd)break;var ix=pd.opts.indexOf(pd.t);var nx=pd.opts[(ix+1)%pd.opts.length];ensureMonth(ymOf(at[0])).then(function(){var de=dayEdit(at[0]);de.dish=de.dish||{};de.dish[at[1]]=nx.id;saveDay(at[0]);openDish(at[0],at[1]);render()});break;
  case 'calm':S.cal=addMonth(S.cal,+ds.n);render();break;
  case 'calnow':S.cal=ymOf(todayIso());render();break;
