@@ -412,6 +412,8 @@ details.bimby.nn summary{font-size:18px}
 .evc .e{font-size:24px}.evc small{display:block;font-size:11.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--accent)}.evc b{display:block;font-size:14.5px;line-height:1.35;margin-top:2px}.evc .ar{margin-left:auto;font-size:20px;color:var(--muted)}
 .seg{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;background:var(--surface2);border-radius:12px;padding:4px}.seg button{border:0;background:none;border-radius:9px;padding:8px 4px;font-weight:700;font-size:14px;color:var(--muted)}.seg button.on{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
 .evl{margin:6px 0 12px;padding-left:20px}.evl li{margin-bottom:8px;line-height:1.45}.evl.ok li::marker{color:var(--olive)}
+.evv{border-radius:16px;padding:14px;margin:0 0 12px;border:1px solid}.evv b{display:block;font-size:18px;line-height:1.3}.evv span{display:block;margin-top:6px;font-size:15px;line-height:1.45}
+.evv.g{background:var(--olive-soft);border-color:var(--olive)}.evv.g b{color:var(--olive)}.evv.y{background:var(--ochre-soft);border-color:var(--ochre)}.evv.y b{color:var(--ochre)}.evv.r{background:var(--red-soft);border-color:var(--red)}.evv.r b{color:var(--red)}
 </style>
 <div id="app"><div class="splash"><p class="muted" style="font-size:28px">…</p></div></div>
 <script type="application/json" id="nonna-data">{"u":null,"days":{}}</script>
@@ -1719,7 +1721,7 @@ function evStats(isos){var s={days:0,sc:[],slot:{c:[],p:[],m:[],n:[]},skip:0,xo:
  s.avg=s.sc.length?Math.round(s.sc.reduce(function(a,b){return a+b},0)/s.sc.length):null;
  Object.keys(s.slot).forEach(function(k){var L=s.slot[k];s.slot[k]=L.length>=2?Math.round(L.reduce(function(a,b){return a+b},0)/L.length):null});
  return s}
-var EVSLOT={c:'colazione',p:'pranzo',m:'merenda',n:'cena'};
+var EVSLOT={c:'colazione',p:'pranzo',m:'merenda',n:'cena'};var EVART={c:'la ',p:'il ',m:'la ',n:'la '};
 var EVSLOTTIP={c:'Prepara la sera prima quello che serve (yogurt in vista, pancake già pronti): la mattina si segue quello che è già lì.',
  p:'Se sei fuori, porta il pranzo da casa: in Cucina → Ricette c\'è la sezione "Si porta al lavoro", si scalda al microonde.',
  m:'La merenda è il pasto che regge il pomeriggio: tienine una pronta in borsa (yogurt, frutta, un HiPRO) e falla a orario fisso.',
@@ -1739,57 +1741,69 @@ var EVMOODTIP={Annoiato:'La noia è un tuo innesco. Quando la segni, prima del c
  'Dormito male':'Dopo una notte storta hai più fame di dolce: è fisiologico. In quei giorni prepara prima la merenda e non tenere dolci a vista.',
  'Fame nervosa':'Quando segni fame nervosa usa il riquadro Fame o voglia: due minuti per capire se è fame vera.'};
 var EVNOUN={Annoiato:'noia',Ansia:'ansia',Nervoso:'nervosismo',Stressato:'stress',Triste:'tristezza',Stanco:'stanchezza',Arrabbiato:'rabbia',Solo:'solitudine','Dormito male':'sonno scarso','Fame nervosa':'fame nervosa'};
+var EVTK={mattina:'i fuori pasto della mattina',pomeriggio:'i fuori pasto del pomeriggio',sera:'i fuori pasto della sera','tarda sera':'i fuori pasto dopo cena'};
 function evRate(a,b){return b?a/b:0}
 function evAnalyse(n){var isos=evDays(n),prev=evDays(n,addDays(todayIso(),-n));var s=evStats(isos),p=evStats(prev);var good=[],todo=[],links=[];
  if(s.days<2)return {s:s,p:p,good:good,todo:todo,links:links,few:true};
  /* andamento */
- if(s.avg!=null&&p.avg!=null){var d=s.avg-p.avg;if(d>=5)good.push('Stai migliorando: media al '+s.avg+'%, prima eri al '+p.avg+'%.');else if(d<=-5)todo.push({w:3,t:'Media al '+s.avg+'%, prima eri al '+p.avg+'%. Non è un fallimento: riparti dal pasto che ti viene più facile e segui quello per bene.'})}
+ if(s.avg!=null&&p.avg!=null){var d=s.avg-p.avg;if(d>=5)good.push('Stai migliorando: media al '+s.avg+'%, prima eri al '+p.avg+'%.');else if(d<=-5)todo.push({w:3,k:'tornare a seguire il piano un pasto alla volta',t:'Media al '+s.avg+'%, prima eri al '+p.avg+'%. Non è un fallimento: riparti dal pasto che ti viene più facile e segui quello per bene.'})}
  if(s.good>=Math.max(2,Math.ceil(s.sc.length*.6)))good.push(s.good+' giorni su '+s.sc.length+' sopra l\'80%.');
  /* pasto più debole */
  var ks=Object.keys(s.slot).filter(function(k){return s.slot[k]!=null});ks.sort(function(a,b){return s.slot[a]-s.slot[b]});
- if(ks.length){var w=ks[0],best=ks[ks.length-1];if(s.slot[w]<75)todo.push({w:2+(75-s.slot[w])/25,t:'Il pasto che segui meno è la '+EVSLOT[w]+' (in media '+s.slot[w]+'%). '+EVSLOTTIP[w]});if(s.slot[best]>=85)good.push('La '+EVSLOT[best]+' la segui bene ('+s.slot[best]+'%).')}
+ if(ks.length){var w=ks[0],best=ks[ks.length-1];if(s.slot[w]<75)todo.push({w:2+(75-s.slot[w])/25,k:EVART[w]+EVSLOT[w],t:'Il pasto che segui meno è '+EVART[w]+EVSLOT[w]+' (in media '+s.slot[w]+'%). '+EVSLOTTIP[w]});if(s.slot[best]>=85)good.push((EVART[best]==='il '?'Il ':'La ')+EVSLOT[best]+(EVART[best]==='il '?' lo':' la')+' segui bene ('+s.slot[best]+'%).')}
  /* fuori pasto: quando e cosa */
- if(s.xo>=2){var tk=Object.keys(s.xoT).sort(function(a,b){return s.xoT[b]-s.xoT[a]});if(tk.length&&s.xoT[tk[0]]>=Math.max(2,s.xo*.5))todo.push({w:2.5,t:EVTTIP[tk[0]]});
+ if(s.xo>=2){var tk=Object.keys(s.xoT).sort(function(a,b){return s.xoT[b]-s.xoT[a]});if(tk.length&&s.xoT[tk[0]]>=Math.max(2,s.xo*.5))todo.push({w:2.5,k:EVTK[tk[0]],t:EVTTIP[tk[0]]});
   var ck=Object.keys(s.xoC).sort(function(a,b){return s.xoC[b]-s.xoC[a]});var c0=ck[0];
-  if(c0==='dolce'&&s.xoC[c0]>=2)todo.push({w:1.5,t:'Quasi sempre è dolce. Tieni pronta un\'alternativa che ti piace: yogurt greco con cacao amaro, crema proteica, un quadratino di fondente invece della tavoletta.'});
-  if(c0==='fast'&&s.xoC[c0]>=2)todo.push({w:1.5,t:'Spesso è fast food o pizza. Quando sai che mangerai fuori, segna il pasto come Fuori casa in Oggi: ti propone cosa scegliere lì.'});
-  if(c0==='alcol'&&s.xoC[c0]>=2)todo.push({w:1.2,t:'L\'alcol torna spesso. Alterna ogni bicchiere con acqua frizzante: si beve la metà senza sentirsi esclusi.'})}
+  if(c0==='dolce'&&s.xoC[c0]>=2)todo.push({w:1.5,k:'i dolci fuori pasto',t:'Quasi sempre è dolce. Tieni pronta un\'alternativa che ti piace: yogurt greco con cacao amaro, crema proteica, un quadratino di fondente invece della tavoletta.'});
+  if(c0==='fast'&&s.xoC[c0]>=2)todo.push({w:1.5,k:'fast food e pizza fuori programma',t:'Spesso è fast food o pizza. Quando sai che mangerai fuori, segna il pasto come Fuori casa in Oggi: ti propone cosa scegliere lì.'});
+  if(c0==='alcol'&&s.xoC[c0]>=2)todo.push({w:1.2,k:'l\'alcol',t:'L\'alcol torna spesso. Alterna ogni bicchiere con acqua frizzante: si beve la metà senza sentirsi esclusi.'})}
  else if(s.xo===0&&s.days>=4)good.push('Niente fuori pasto in questo periodo.');
+ if(s.skip>=Math.max(3,s.days*.5)&&!(s.skipD>=2&&s.okD>=2))todo.push({w:3,k:'i pasti saltati',t:'Salti spesso dei pasti: '+s.skip+' in '+s.days+' giorni. Un pasto piccolo, anche al volo, è meglio di niente e tiene lontana la fame della sera.'});
  /* collegamenti */
- if(s.skipD>=2&&s.okD>=2&&evRate(s.skipXo,s.skipD)>evRate(s.okXo,s.okD)+.25){links.push('Nei giorni con un pasto saltato hai mangiato fuori pasto '+s.skipXo+' volte su '+s.skipD+', negli altri '+s.okXo+' su '+s.okD+'.');todo.push({w:3,t:'Saltare un pasto ti porta a mangiare dopo. Meglio un pasto piccolo, anche al volo, che niente.'})}
+ if(s.skipD>=2&&s.okD>=2&&evRate(s.skipXo,s.skipD)>evRate(s.okXo,s.okD)+.25){links.push('Nei giorni con un pasto saltato hai mangiato fuori pasto '+s.skipXo+' volte su '+s.skipD+', negli altri '+s.okXo+' su '+s.okD+'.');todo.push({w:3,k:'i pasti saltati',t:'Saltare un pasto ti porta a mangiare dopo. Meglio un pasto piccolo, anche al volo, che niente.'})}
  var negK=Object.keys(s.mood).filter(function(m){return MOODNEG.indexOf(m)>=0&&s.mood[m]>=2}).sort(function(a,b){return evRate(s.moodXo[b]||0,s.mood[b])-evRate(s.moodXo[a]||0,s.mood[a])});
  if(negK.length){var m0=negK[0];var r0=evRate(s.moodXo[m0]||0,s.mood[m0]),rp=evRate(s.posXo,s.pos);
-  if(r0>=.5&&r0>rp+.2){links.push('Nei giorni con '+(EVNOUN[m0]||m0.toLowerCase())+' hai mangiato fuori pasto '+(s.moodXo[m0]||0)+' volte su '+s.mood[m0]+(s.pos?', nei giorni senza umori negativi '+s.posXo+' su '+s.pos:'')+'.');todo.push({w:2.8,t:EVMOODTIP[m0]})}}
+  if(r0>=.5&&r0>rp+.2){links.push('Nei giorni con '+(EVNOUN[m0]||m0.toLowerCase())+' hai mangiato fuori pasto '+(s.moodXo[m0]||0)+' volte su '+s.mood[m0]+(s.pos?', nei giorni senza umori negativi '+s.posXo+' su '+s.pos:'')+'.');todo.push({w:2.8,k:'il cibo quando c\'è '+(EVNOUN[m0]||m0.toLowerCase()),t:EVMOODTIP[m0]})}}
  if(s.sleepD>=2&&evRate(s.sleepXo,s.sleepD)>=.5&&!(negK.length&&negK[0]==='Dormito male'))links.push('Dopo le notti dormite male hai mangiato fuori pasto '+s.sleepXo+' volte su '+s.sleepD+'.');
  /* fame */
  if(s.sos){if(s.sosOk)good.push('Il riquadro Fame o voglia ha funzionato '+s.sosOk+(s.sosOk===1?' volta':' volte')+' su '+s.sos+'.')}
- else if(s.xo>=3)todo.push({w:1.4,t:'Hai segnato '+s.xo+' fuori pasto e mai il riquadro Fame o voglia. Prova a usarlo prima, la prossima volta: due minuti, poi decidi tu.'});
+ else if(s.xo>=3)todo.push({w:1.4,k:'usare Fame o voglia prima di mangiare',t:'Hai segnato '+s.xo+' fuori pasto e mai il riquadro Fame o voglia. Prova a usarlo prima, la prossima volta: due minuti, poi decidi tu.'});
  /* mal di testa */
  if(s.hdDays>=2){var why=[];if(s.hdSkip)why.push('in '+s.hdSkip+' avevi saltato un pasto');if(s.hdSleep)why.push('in '+s.hdSleep+' avevi dormito male');
   links.push('Mal di testa in '+s.hdDays+' giorni'+(why.length?': '+why.join(', '):'')+'.');
-  if(s.hdSkip)todo.push({w:2,t:'Il mal di testa arriva spesso nei giorni con un pasto saltato. Pasti regolari e acqua durante la mattina sono la prima cosa da provare.'});
-  if(s.hdMed>=Math.min(4,n/2))todo.push({w:2.2,t:'Hai preso antidolorifici in '+s.hdMed+' giorni. Se va avanti così, parlane con il medico: in Calendario c\'è il riepilogo pronto.'})}
+  if(s.hdSkip)todo.push({w:2,k:'pasti regolari contro il mal di testa',t:'Il mal di testa arriva spesso nei giorni con un pasto saltato. Pasti regolari e acqua durante la mattina sono la prima cosa da provare.'});
+  if(s.hdMed>=Math.min(4,n/2))todo.push({w:2.2,k:'gli antidolorifici',t:'Hai preso antidolorifici in '+s.hdMed+' giorni. Se va avanti così, parlane con il medico: in Calendario c\'è il riepilogo pronto.'})}
  /* movimento */
  var mon=mondayOf(todayIso());var ws=weekStats(mon),lw=weekStats(addDays(mon,-7));var dow=dowOf(todayIso());
- if(ws.gym>=2)good.push('Palestra fatta '+ws.gym+' volte questa settimana.');else if(dow>=3&&ws.gym===0)todo.push({w:1.6,t:'Questa settimana la palestra non c\'è ancora. Fissa una mattina precisa nei prossimi giorni, anche solo mezz\'ora.'});
+ if(ws.gym>=2)good.push('Palestra fatta '+ws.gym+' volte questa settimana.');else if(dow>=3&&ws.gym===0)todo.push({w:1.6,k:'la palestra',t:'Questa settimana la palestra non c\'è ancora. Fissa una mattina precisa nei prossimi giorni, anche solo mezz\'ora.'});
  var wg=walkGoal(lw.walk);if(ws.walk>=wg)good.push('Camminate: obiettivo della settimana raggiunto.');
  todo.sort(function(a,b){return b.w-a.w});
  return {s:s,p:p,good:good,todo:todo.slice(0,4),links:links}}
 function evHead(){var r=evAnalyse(7);if(r.few)return null;return r}
-function evCard(iso){if(iso!==todayIso())return '';var r=evHead();if(!r)return '';var s=r.s;var tip=r.todo[0]?r.todo[0].t:(r.good[0]||'');
- return '<button class="evc" data-act="eval"><span class="e" aria-hidden="true">🧭</span><span><small>Il punto · ultimi 7 giorni'+(s.avg!=null?' · '+s.avg+'%':'')+'</small><b>'+esc(tip.length>110?tip.slice(0,tip.lastIndexOf(' ',108))+'…':tip)+'</b></span><span class="ar" aria-hidden="true">›</span></button>'}
+function evCard(iso){if(iso!==todayIso())return '';var r=evHead();if(!r)return '';var s=r.s;var v=evVerdict(r);var tip=v?v.t+(v.sub?' '+v.sub:''):(r.todo[0]?r.todo[0].t:(r.good[0]||''));
+ return '<button class="evc" data-act="eval"><span class="e" aria-hidden="true">🧭</span><span><small>Il punto · ultimi 7 giorni'+(s.avg!=null?' · '+s.avg+'%':'')+'</small><b>'+esc(tip.length>140?tip.slice(0,tip.lastIndexOf(' ',138))+'…':tip)+'</b></span><span class="ar" aria-hidden="true">›</span></button>'}
 function openEval(n){n=n||S.evn||7;S.evn=n;var need=[];evDays(n*2).forEach(function(d){var y=ymOf(d);if(need.indexOf(y)<0)need.push(y)});
  if(need.some(function(y){return !mLoaded(y)})){Promise.all(need.map(ensureMonth)).then(function(){openEval(n)});return}
  var r=evAnalyse(n);var s=r.s;
  var h='<h3>Il punto</h3><div class="seg" style="margin:6px 0 12px">'+[[7,'7 giorni'],[14,'14 giorni'],[30,'30 giorni']].map(function(x){return '<button class="'+(x[0]===n?'on':'')+'" data-act="evn" data-v="'+x[0]+'">'+x[1]+'</button>'}).join('')+'</div>';
  if(r.few)return sheet(h+'<p>Servono almeno un paio di giorni segnati per dire qualcosa di utile. Continua a segnare pasti, fuori pasto e come ti senti: il punto si costruisce da solo.</p>');
- h+='<div class="stat" style="grid-template-columns:1fr 1fr 1fr;margin-bottom:12px"><div><b>'+(s.avg!=null?s.avg+'%':'–')+'</b><span>media'+(r.p.avg!=null?' (prima '+r.p.avg+'%)':'')+'</span></div><div><b>'+s.xo+'</b><span>fuori pasto</span></div><div><b>'+s.hdDays+'</b><span>giorni con mal di testa</span></div></div>';
+ h+=evVerdictHtml(r);h+='<div class="stat" style="grid-template-columns:1fr 1fr 1fr;margin-bottom:12px"><div><b>'+(s.avg!=null?s.avg+'%':'–')+'</b><span>media'+(r.p.avg!=null?' (prima '+r.p.avg+'%)':'')+'</span></div><div><b>'+s.xo+'</b><span>fuori pasto</span></div><div><b>'+s.hdDays+'</b><span>giorni con mal di testa</span></div></div>';
  if(r.todo.length)h+='<div class="lbl">Su cosa lavorare</div><ol class="evl">'+r.todo.map(function(t){return '<li>'+esc(t.t)+'</li>'}).join('')+'</ol>';
  if(r.good.length)h+='<div class="lbl">Cosa va bene</div><ul class="evl ok">'+r.good.map(function(t){return '<li>'+esc(t)+'</li>'}).join('')+'</ul>';
  if(r.links.length)h+='<div class="lbl">Collegamenti trovati</div><ul class="dev">'+r.links.map(function(t){return '<li>'+esc(t)+'</li>'}).join('')+'</ul>';
  if(!r.todo.length&&!r.links.length)h+='<p class="small muted">Per ora niente di storto che si ripeta. Più cose segni (umore, fuori pasto con l\'ora, mal di testa), più i consigli diventano precisi.</p>';
  h+='<p class="small muted" style="margin-top:12px">Si aggiorna da solo con quello che segni. Una giornata storta non cambia il quadro: conta quello che si ripete.</p>';
  sheet(h)}
+
+function evVerdict(r){var s=r.s,p=r.p;if(r.few||s.avg==null)return null;var a=s.avg,d=p.avg!=null?a-p.avg:0;var per=s.days?s.xo/s.days*7:0;
+ var fix=r.todo.slice(0,2).map(function(t){return t.k});var fx=fix.length===2?fix[0]+' e '+fix[1]:fix[0]||'';
+ var lv,t,sub;
+ if(a>=85&&per<=1.5){lv='g';t='Andando avanti così ce la fai, e anche in fretta.';sub=d<=-5?'Occhio solo che stai calando un po\'.':(fx?'Se vuoi limare ancora: '+fx+'.':'Continua così.')}
+ else if(a>=75){lv='g';t='Andando avanti così ce la fai, piano piano.';sub=(d>=5?'E stai migliorando. ':d<=-5?'Però stai perdendo un po\' di terreno. ':'')+(fx?'Per andare più veloce sistema '+fx+'.':'')}
+ else if(a>=60){lv='y';t='Così vai avanti a fatica.';sub=(d>=5?'Stai migliorando, è la direzione giusta. ':'')+(fx?'Se sistemi '+fx+', ce la fai.':'Segui per bene un pasto alla volta e ce la fai.')}
+ else{lv='r';t='Così non ce la fai.';sub=(fx?'Prima di tutto sistema '+fx+'. ':'')+'Non serve tutto subito: una cosa alla volta, a partire da quella.'}
+ return {lv:lv,t:t,sub:sub}}
+function evVerdictHtml(r){var v=evVerdict(r);if(!v)return '';return '<div class="evv '+v.lv+'"><b>'+esc(v.t)+'</b>'+(v.sub?'<span>'+esc(v.sub)+'</span>':'')+'</div>'}
 
 /* ---------- menu di nonna sincronizzato via GitHub ---------- */
 var GHREPO='rakdoel/alimentazione',GHFILE='menu.json';
