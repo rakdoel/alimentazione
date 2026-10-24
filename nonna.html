@@ -2484,6 +2484,20 @@ var _tabCucCh=tabCucina;tabCucina=function(){var h=_tabCucCh();if(/Carico…/.te
 /* una tantum (24 ottobre): capo squadra K-7 e chat azzerate */
 (function(){if(lsGet('leo:mig_k7'))return;lsSet('leo:coachc','robot');lsDel('leo:coachn');lsDel('leo:coachnc');['gruppo','robot','volpe','leone','panda','gufo','ninja','pinguino','unicorno','drago'].forEach(function(id){lsDel(id==='gruppo'?'leo:chat':'leo:chat:'+id)});lsDel('leo:chatnew');S.thread='gruppo';S.chatApi=null;lsSet('leo:mig_k7',1);COACHN=coachName()})();
 
+/* ---------- il piano dei prossimi giorni arriva a tutta la squadra ---------- */
+function planCtx(n){var t=todayIso(),out=[];var M={c:'Colazione',p:'Pranzo',m:'Merenda',n:'Cena'};
+ for(var k=0;k<n;k++){var iso=addDays(t,k);var dd=dayData(iso)||{};var plan=PLAN[dowOf(iso)];var lines=[];
+  try{slots(dd).forEach(function(z){var slot=z[0],src=z[1];var lib=plan.libera&&src==='n';var it=mealItems(iso,src,dd).map(function(i){if(i.g==='VEG'){var v=vegOf(iso,src,dd);return 'verdure '+i.q+(v.length?' ('+v.join(', ').toLowerCase()+')':'')}var al=i.g&&G[i.g]?G[i.g].filter(function(a){return a[0]!==i.f}).slice(0,5).map(function(a){return fname(a[0])+' '+a[1]}).join(', '):'';return fname(i.f)+' '+i.q+(al?' [alternative: '+al+']':'')}).join('; ');
+   var d=null;if(src==='p'||src==='n'){try{d=pickDish(iso,src,dd)}catch(e){}}var st=dd.t&&dd.t[slot]&&dd.t[slot].s;
+   lines.push('  '+M[slot]+(lib?' (cena libera: le quantità sono un esempio)':'')+': '+it+(d?' → piatto proposto dall\'app: '+dishName(d):'')+(st?' [già segnato: '+st+']':''))})}catch(e){}
+  if(lines.length)out.push(fmtDay(iso)+(k===0?' (oggi)':k===1?' (domani)':'')+':\n'+lines.join('\n'))}
+ return '\n\nPIANO DEL NUTRIZIONISTA, pasto per pasto (grammature e alternative ammesse), con il piatto proposto dall\'app:\n'+out.join('\n')}
+cookCtx=function(){var R=RC.filter(function(r){return r.k==='piatto'}).map(function(r){return r.t.it});
+ return '\n\nCome cuoca: quando ti chiede cosa mangiare, fai un resoconto chiaro pasto per pasto (cosa prevede il piano, con le grammature) e per pranzo e cena proponi 1-2 piatti concreti e buoni che rispettano il piano: nome del piatto, ingredienti con le dosi del piano, 3-4 passaggi brevi. Preferisci le ricette dell\'app quando calzano e dillo ("è nel ricettario"). Tieni conto che spesso cucina la nonna polacca. Ricette nell\'app: '+R.join('; ')+'.'};
+var _braceSysP=braceSystem;braceSystem=function(){var s=_braceSysP();if(s.indexOf('PIANO DEL NUTRIZIONISTA')<0)s+=planCtx(3);
+ if(!S.thread||S.thread==='gruppo'){if(s.indexOf('Come cuoca:')<0)s+='\n\nNel gruppo, per domande su cosa mangiare, menu, piatti, spesa e ricette, fai rispondere Vesper (la cuoca) con il resoconto e le proposte; gli altri intervengono solo se aggiungono qualcosa.'+cookCtx().replace('Come cuoca:','Vesper, come cuoca:')}
+ return s+'\n\nI dati del piano qui sopra ci sono sempre: non dire mai che non li hai.'};
+
 /* ---------- menu di nonna sincronizzato via GitHub ---------- */
 var GHREPO='rakdoel/alimentazione',GHFILE='menu.json';
 var SYNC={t:null,busy:false,again:false};
