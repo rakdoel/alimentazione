@@ -1899,7 +1899,7 @@ function braceLine(){var t=todayIso();var dd=dayData(t)||{};var y=dayScore(addDa
  return L.slice(0,2).join(' ')}
 function braceCard(iso){if(iso!==todayIso())return '';var hi=coachHi();var sk=streakInfo();
  if(lsGet('leo:chatnew'))return '<button class="brc" data-act="chat">'+i3(coachImg(),58,'brc-av')+'<span class="brc-t"><small>'+COACHN+' · il tuo coach</small><b>💬 Ti ho risposto.</b> Tocca per leggere.</span><span class="ar" aria-hidden="true">›</span></button>';
- return '<button class="brc" data-act="tab" data-tab="coach">'+i3(coachImg(),58,'brc-av')+'<span class="brc-t"><small>'+COACHN+' · il tuo coach'+(sk.n>=2?' <span class="stk">'+i3('fuoco',14)+' '+sk.n+'</span>':'')+'</small><b>'+hi+'!</b> '+esc(braceLine())+'</span><span class="ar" aria-hidden="true">›</span></button>'}
+ return '<button class="brc" data-act="tab" data-tab="coach">'+i3(coachImg(),58,'brc-av')+'<span class="brc-t"><small>'+COACHN+' · il tuo coach'+(sk.n>=2?' <span class="stk">'+i3('fuoco',14)+' '+sk.n+'</span>':'')+'</small><b>'+esc(hi)+'</b> '+esc(braceLine())+'</span><span class="ar" aria-hidden="true">›</span></button>'}
 
 /* ---------- misure con il metro e massa grassa (formula della Marina USA, uomo: vita, collo, altezza) ---------- */
 var MISF=[['vita','Vita','all\'altezza dell\'ombelico, pancia rilassata, a fine espirazione',1],['collo','Collo','appena sotto il pomo d\'Adamo, metro un po\' inclinato in giù davanti',1],['fianchi','Fianchi','nel punto più largo dei glutei',0],['petto','Petto','all\'altezza dei capezzoli, braccia lungo i fianchi',0],['braccio','Braccio','a metà tra spalla e gomito, braccio rilassato',0],['coscia','Coscia','a metà coscia, in piedi',0]];
