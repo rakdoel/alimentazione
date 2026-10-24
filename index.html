@@ -414,6 +414,8 @@ details.bimby.nn summary{font-size:18px}
 .evl{margin:6px 0 12px;padding-left:20px}.evl li{margin-bottom:8px;line-height:1.45}.evl.ok li::marker{color:var(--olive)}
 .evv{border-radius:16px;padding:14px;margin:0 0 12px;border:1px solid}.evv b{display:block;font-size:18px;line-height:1.3}.evv span{display:block;margin-top:6px;font-size:15px;line-height:1.45}
 .evv.g{background:var(--olive-soft);border-color:var(--olive)}.evv.g b{color:var(--olive)}.evv.y{background:var(--ochre-soft);border-color:var(--ochre)}.evv.y b{color:var(--ochre)}.evv.r{background:var(--red-soft);border-color:var(--red)}.evv.r b{color:var(--red)}
+.evsteps{list-style:none;margin:6px 0 8px;padding:0}.evsteps li{display:flex;justify-content:space-between;gap:10px;padding:8px 12px;border-radius:10px;background:var(--surface2);margin-bottom:4px}.evsteps li span{color:var(--muted)}
+.evv{display:flex;gap:12px;align-items:flex-start}.evv .av{font-size:30px;line-height:1;flex:none;background:var(--surface);border-radius:50%;width:46px;height:46px;display:flex;align-items:center;justify-content:center}.evv small{display:block;font-size:11.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}.evv p{margin:4px 0 0;font-size:16px;line-height:1.5;color:var(--ink)}
 </style>
 <div id="app"><div class="splash"><p class="muted" style="font-size:28px">…</p></div></div>
 <script type="application/json" id="nonna-data">{"u":null,"days":{}}</script>
@@ -1029,7 +1031,7 @@ function tabOggi(){var iso=S.day;if(needMonths([iso]))return '<p class="muted">C
  h+='<div class="chips"><button class="chip '+(S.quick?'on':'')+'" data-act="quick">'+(S.quick?'Vista rapida':'Vista completa')+'</button><button class="chip '+(dd.inv?'on':'')+'" data-act="inv">⇅ Inverti pranzo e cena</button></div>';
  h+='<details class="card"><summary>Note del nutrizionista</summary><p>'+esc(NOTE_PC)+'</p><p>'+esc(NOTE_MER)+'</p></details>';
  slots(dd).forEach(function(s){h+=mealCard(iso,s[0],s[1],dd,plan)});
- h+='<section class="card"><div class="lbl" style="margin-top:0">Come ti senti</div>'+moodChips(iso,dd)+'<label class="lbl" for="f-note">Note della giornata</label><textarea id="f-note" class="inp" rows="3" data-field="note" placeholder="Com\'è andata, come ti senti…">'+esc(dd.note||'')+'</textarea></section>';
+ h+='<section class="card"><div class="lbl" style="margin-top:0">Come ti senti</div>'+moodChips(iso,dd)+'<label class="lbl" for="f-steps">👟 Passi di oggi</label><input id="f-steps" class="inp" inputmode="numeric" data-field="steps" placeholder="Li leggi dal contapassi del telefono" value="'+esc(dd.steps||'')+'" style="max-width:220px"><label class="lbl" for="f-note">Note della giornata</label><textarea id="f-note" class="inp" rows="3" data-field="note" placeholder="Com\'è andata, come ti senti…">'+esc(dd.note||'')+'</textarea></section>';
  return h}
 function mealSum(iso,src,dd){var x=mealItems(iso,src,dd).filter(function(it){var c=foodCls(it);return c!=='drink'&&c!=='other'&&c!=='sweet'}).map(function(it){if(it.g==='VEG'){return 'verdure '+it.q}return (SHORT[it.f]||fname(it.f).toLowerCase())+' '+it.q}).join(' · ');return x.charAt(0).toUpperCase()+x.slice(1)}
 var NOREC=true;
@@ -1704,7 +1706,7 @@ function evDays(n,end){end=end||todayIso();var a=[];for(var i=n-1;i>=0;i--)a.pus
 function evHour(h){var x=+String(h||'').slice(0,2);if(isNaN(x)||h==null||h==='')return null;return x<12?'mattina':x<17?'pomeriggio':x<21?'sera':'tarda sera'}
 function evStats(isos){var s={days:0,sc:[],slot:{c:[],p:[],m:[],n:[]},skip:0,xo:0,xoDays:0,xoT:{},xoC:{},xoK:0,sos:0,sosOk:0,hd:0,hdDays:0,hdMed:0,hdSkip:0,hdSleep:0,
   mood:{},moodXo:{},neg:0,negXo:0,pos:0,posXo:0,skipD:0,skipXo:0,okD:0,okXo:0,sleepD:0,sleepXo:0,good:0,list:[]};
- isos.forEach(function(iso){var dd=dayData(iso);if(!dd)return;var any=dd.t||dd.xo||dd.sos||dd.hd||dd.mood;if(!any)return;s.days++;
+ isos.forEach(function(iso){var dd=dayData(iso);if(!dd)return;var any=dd.t||dd.xo||dd.sos||dd.hd||dd.mood||dd.steps;if(!any)return;s.days++;var stp=parseInt(dd.steps,10);if(stp>0){s.stepN=(s.stepN||0)+1;s.stepT=(s.stepT||0)+stp}
   var sc=dayScore(iso,dd);if(sc!=null){s.sc.push(sc);if(sc>=80)s.good++}
   var skipped=false;slots(dd).forEach(function(z){var slot=z[0],src=z[1];var t=dd.t&&dd.t[slot];if(t&&t.s==='skip'){s.skip++;skipped=true}
    if(PLAN[dowOf(iso)].libera&&src==='n')return;var v=mealScore(iso,slot,src,dd);if(v!=null)s.slot[slot].push(v)});
@@ -1718,6 +1720,8 @@ function evStats(isos){var s={days:0,sc:[],slot:{c:[],p:[],m:[],n:[]},skip:0,xo:
   if(M.indexOf('Dormito male')>=0){s.sleepD++;if(ate)s.sleepXo++}
   if(dd.hd&&dd.hd.length){s.hdDays++;s.hd+=dd.hd.length;if(dd.hd.some(function(e){return hdMeds(e).length}))s.hdMed++;if(skipped)s.hdSkip++;if(M.indexOf('Dormito male')>=0)s.hdSleep++}
  });
+ s.steps=s.stepN?Math.round(s.stepT/s.stepN):null;
+ s.xoKw=0;isos.forEach(function(iso){var dd=dayData(iso);(dd&&dd.xo||[]).forEach(function(x){s.xoKw+=x.k||({1:100,2:250,3:500})[x.q]||250})});s.xoKw=s.days?s.xoKw/s.days*7:0;
  s.avg=s.sc.length?Math.round(s.sc.reduce(function(a,b){return a+b},0)/s.sc.length):null;
  Object.keys(s.slot).forEach(function(k){var L=s.slot[k];s.slot[k]=L.length>=2?Math.round(L.reduce(function(a,b){return a+b},0)/L.length):null});
  return s}
@@ -1746,7 +1750,7 @@ function evRate(a,b){return b?a/b:0}
 function evAnalyse(n){var isos=evDays(n),prev=evDays(n,addDays(todayIso(),-n));var s=evStats(isos),p=evStats(prev);var good=[],todo=[],links=[];
  if(s.days<2)return {s:s,p:p,good:good,todo:todo,links:links,few:true};
  /* andamento */
- if(s.avg!=null&&p.avg!=null){var d=s.avg-p.avg;if(d>=5)good.push('Stai migliorando: media al '+s.avg+'%, prima eri al '+p.avg+'%.');else if(d<=-5)todo.push({w:3,k:'tornare a seguire il piano un pasto alla volta',t:'Media al '+s.avg+'%, prima eri al '+p.avg+'%. Non è un fallimento: riparti dal pasto che ti viene più facile e segui quello per bene.'})}
+ if(s.avg!=null&&p.avg!=null){var d=s.avg-p.avg;if(d>=5)good.push('Stai migliorando: media al '+s.avg+'%, prima eri al '+p.avg+'%.');else if(d<=-5)todo.push({w:3,k:'la costanza, un pasto alla volta',t:'Media al '+s.avg+'%, prima eri al '+p.avg+'%. Non è un fallimento: riparti dal pasto che ti viene più facile e segui quello per bene.'})}
  if(s.good>=Math.max(2,Math.ceil(s.sc.length*.6)))good.push(s.good+' giorni su '+s.sc.length+' sopra l\'80%.');
  /* pasto più debole */
  var ks=Object.keys(s.slot).filter(function(k){return s.slot[k]!=null});ks.sort(function(a,b){return s.slot[a]-s.slot[b]});
@@ -1767,43 +1771,89 @@ function evAnalyse(n){var isos=evDays(n),prev=evDays(n,addDays(todayIso(),-n));v
  if(s.sleepD>=2&&evRate(s.sleepXo,s.sleepD)>=.5&&!(negK.length&&negK[0]==='Dormito male'))links.push('Dopo le notti dormite male hai mangiato fuori pasto '+s.sleepXo+' volte su '+s.sleepD+'.');
  /* fame */
  if(s.sos){if(s.sosOk)good.push('Il riquadro Fame o voglia ha funzionato '+s.sosOk+(s.sosOk===1?' volta':' volte')+' su '+s.sos+'.')}
- else if(s.xo>=3)todo.push({w:1.4,k:'usare Fame o voglia prima di mangiare',t:'Hai segnato '+s.xo+' fuori pasto e mai il riquadro Fame o voglia. Prova a usarlo prima, la prossima volta: due minuti, poi decidi tu.'});
+ else if(s.xo>=3)todo.push({w:1.4,k:'il riquadro Fame o voglia',t:'Hai segnato '+s.xo+' fuori pasto e mai il riquadro Fame o voglia. Prova a usarlo prima, la prossima volta: due minuti, poi decidi tu.'});
  /* mal di testa */
  if(s.hdDays>=2){var why=[];if(s.hdSkip)why.push('in '+s.hdSkip+' avevi saltato un pasto');if(s.hdSleep)why.push('in '+s.hdSleep+' avevi dormito male');
   links.push('Mal di testa in '+s.hdDays+' giorni'+(why.length?': '+why.join(', '):'')+'.');
-  if(s.hdSkip)todo.push({w:2,k:'pasti regolari contro il mal di testa',t:'Il mal di testa arriva spesso nei giorni con un pasto saltato. Pasti regolari e acqua durante la mattina sono la prima cosa da provare.'});
+  if(s.hdSkip)todo.push({w:2,k:'i pasti regolari',t:'Il mal di testa arriva spesso nei giorni con un pasto saltato. Pasti regolari e acqua durante la mattina sono la prima cosa da provare.'});
   if(s.hdMed>=Math.min(4,n/2))todo.push({w:2.2,k:'gli antidolorifici',t:'Hai preso antidolorifici in '+s.hdMed+' giorni. Se va avanti così, parlane con il medico: in Calendario c\'è il riepilogo pronto.'})}
  /* movimento */
  var mon=mondayOf(todayIso());var ws=weekStats(mon),lw=weekStats(addDays(mon,-7));var dow=dowOf(todayIso());
  if(ws.gym>=2)good.push('Palestra fatta '+ws.gym+' volte questa settimana.');else if(dow>=3&&ws.gym===0)todo.push({w:1.6,k:'la palestra',t:'Questa settimana la palestra non c\'è ancora. Fissa una mattina precisa nei prossimi giorni, anche solo mezz\'ora.'});
  var wg=walkGoal(lw.walk);if(ws.walk>=wg)good.push('Camminate: obiettivo della settimana raggiunto.');
+ if(s.steps!=null){if(s.steps>=8000)good.push('Passi: in media '+s.steps.toLocaleString('it-IT')+' al giorno.');else if(s.steps<6000)todo.push({w:1.5,k:'i passi',t:'In media fai '+s.steps.toLocaleString('it-IT')+' passi al giorno. Con il lavoro da ricercatore si sta tanto seduti: scendi una fermata prima o fai una telefonata camminando, ogni mille passi in più contano.'})}
  todo.sort(function(a,b){return b.w-a.w});
  return {s:s,p:p,good:good,todo:todo.slice(0,4),links:links}}
 function evHead(){var r=evAnalyse(7);if(r.few)return null;return r}
-function evCard(iso){if(iso!==todayIso())return '';var r=evHead();if(!r)return '';var s=r.s;var v=evVerdict(r);var tip=v?v.t+(v.sub?' '+v.sub:''):(r.todo[0]?r.todo[0].t:(r.good[0]||''));
- return '<button class="evc" data-act="eval"><span class="e" aria-hidden="true">🧭</span><span><small>Il punto · ultimi 7 giorni'+(s.avg!=null?' · '+s.avg+'%':'')+'</small><b>'+esc(tip.length>140?tip.slice(0,tip.lastIndexOf(' ',138))+'…':tip)+'</b></span><span class="ar" aria-hidden="true">›</span></button>'}
+function evCard(iso){if(iso!==todayIso())return '';var r=evHead();if(!r)return '';var s=r.s;var v=evVerdict(r);var tip=v?v.t:(r.todo[0]?r.todo[0].t:(r.good[0]||''));
+ return '<button class="evc" data-act="eval"><span class="e" aria-hidden="true">🧭</span><span><small>Il tuo coach · Il punto</small><b>'+esc(tip.length>150?tip.slice(0,tip.lastIndexOf(' ',148))+'…':tip)+'</b></span><span class="ar" aria-hidden="true">›</span></button>'}
 function openEval(n){n=n||S.evn||7;S.evn=n;var need=[];evDays(n*2).forEach(function(d){var y=ymOf(d);if(need.indexOf(y)<0)need.push(y)});
  if(need.some(function(y){return !mLoaded(y)})){Promise.all(need.map(ensureMonth)).then(function(){openEval(n)});return}
  var r=evAnalyse(n);var s=r.s;
  var h='<h3>Il punto</h3><div class="seg" style="margin:6px 0 12px">'+[[7,'7 giorni'],[14,'14 giorni'],[30,'30 giorni']].map(function(x){return '<button class="'+(x[0]===n?'on':'')+'" data-act="evn" data-v="'+x[0]+'">'+x[1]+'</button>'}).join('')+'</div>';
  if(r.few)return sheet(h+'<p>Servono almeno un paio di giorni segnati per dire qualcosa di utile. Continua a segnare pasti, fuori pasto e come ti senti: il punto si costruisce da solo.</p>');
  h+=evVerdictHtml(r);h+='<div class="stat" style="grid-template-columns:1fr 1fr 1fr;margin-bottom:12px"><div><b>'+(s.avg!=null?s.avg+'%':'–')+'</b><span>media'+(r.p.avg!=null?' (prima '+r.p.avg+'%)':'')+'</span></div><div><b>'+s.xo+'</b><span>fuori pasto</span></div><div><b>'+s.hdDays+'</b><span>giorni con mal di testa</span></div></div>';
- if(r.todo.length)h+='<div class="lbl">Su cosa lavorare</div><ol class="evl">'+r.todo.map(function(t){return '<li>'+esc(t.t)+'</li>'}).join('')+'</ol>';
+ h+=evProjHtml(r);if(r.todo.length)h+='<div class="lbl">Su cosa lavorare</div><ol class="evl">'+r.todo.map(function(t){return '<li>'+esc(t.t)+'</li>'}).join('')+'</ol>';
  if(r.good.length)h+='<div class="lbl">Cosa va bene</div><ul class="evl ok">'+r.good.map(function(t){return '<li>'+esc(t)+'</li>'}).join('')+'</ul>';
  if(r.links.length)h+='<div class="lbl">Collegamenti trovati</div><ul class="dev">'+r.links.map(function(t){return '<li>'+esc(t)+'</li>'}).join('')+'</ul>';
  if(!r.todo.length&&!r.links.length)h+='<p class="small muted">Per ora niente di storto che si ripeta. Più cose segni (umore, fuori pasto con l\'ora, mal di testa), più i consigli diventano precisi.</p>';
  h+='<p class="small muted" style="margin-top:12px">Si aggiorna da solo con quello che segni. Una giornata storta non cambia il quadro: conta quello che si ripete.</p>';
  sheet(h)}
 
-function evVerdict(r){var s=r.s,p=r.p;if(r.few||s.avg==null)return null;var a=s.avg,d=p.avg!=null?a-p.avg:0;var per=s.days?s.xo/s.days*7:0;
- var fix=r.todo.slice(0,2).map(function(t){return t.k});var fx=fix.length===2?fix[0]+' e '+fix[1]:fix[0]||'';
- var lv,t,sub;
- if(a>=85&&per<=1.5){lv='g';t='Andando avanti così ce la fai, e anche in fretta.';sub=d<=-5?'Occhio solo che stai calando un po\'.':(fx?'Se vuoi limare ancora: '+fx+'.':'Continua così.')}
- else if(a>=75){lv='g';t='Andando avanti così ce la fai, piano piano.';sub=(d>=5?'E stai migliorando. ':d<=-5?'Però stai perdendo un po\' di terreno. ':'')+(fx?'Per andare più veloce sistema '+fx+'.':'')}
- else if(a>=60){lv='y';t='Così vai avanti a fatica.';sub=(d>=5?'Stai migliorando, è la direzione giusta. ':'')+(fx?'Se sistemi '+fx+', ce la fai.':'Segui per bene un pasto alla volta e ce la fai.')}
- else{lv='r';t='Così non ce la fai.';sub=(fx?'Prima di tutto sistema '+fx+'. ':'')+'Non serve tutto subito: una cosa alla volta, a partire da quella.'}
- return {lv:lv,t:t,sub:sub}}
-function evVerdictHtml(r){var v=evVerdict(r);if(!v)return '';return '<div class="evv '+v.lv+'"><b>'+esc(v.t)+'</b>'+(v.sub?'<span>'+esc(v.sub)+'</span>':'')+'</div>'}
+function evPrep(pr,x){if(!x)return '';var m=x.match(/^(il |i |la |le |gli |lo |l')/);if(!m)return pr+' '+x;var art=m[1],rest=x.slice(art.length);var base=pr==='su'?'su':'a';var map={'il ':'l ','i ':'i ','la ':'lla ','le ':'lle ','gli ':'gli ','lo ':'llo ',"l'":"ll'"};return base+map[art]+rest}
+function evPick(L,seed){var h=0;for(var i=0;i<seed.length;i++)h=(h*31+seed.charCodeAt(i))|0;return L[Math.abs(h)%L.length]}
+function evVerdict(r){var s=r.s,p=r.p;if(r.few||s.avg==null)return null;var a=s.avg,d=p.avg!=null?a-p.avg:0;var per=s.days?s.xo/s.days*7:0;var seed=todayIso();
+ var A=r.todo[0]&&r.todo[0].k,B=r.todo[1]&&r.todo[1].k;
+ var pj=evProj(r);var go=pj&&!pj.done&&pj.month>.05;var first=go?pj.steps[0]:null,last=go?pj.steps[pj.steps.length-1]:null;
+ var lv,out=[];
+ if(a>=75&&per<=3){lv='g';
+  out.push(evPick(['Ehi, te lo dico chiaro: così ce la fai.','Stai facendo un buon lavoro, e si vede.','Bella, sul serio. Andando avanti così ce la fai.'],seed+'a'));
+  if(d>=5)out.push('E rispetto a prima hai fatto un salto, me ne sono accorto.');else if(d<=-5)out.push('Ultimamente hai mollato un pochino la presa, niente di grave: lo riprendi subito.');
+  if(go)out.push(evPick(['Se tieni questo passo, verso '+last.when+' sulla bilancia leggi '+kgs(last.kg)+'. Pensa a com\'è arrivarci.','La prima tappa, '+kgs(first.kg)+' kg, è già lì: verso '+first.when+'. E da lì l\'obiettivo arriva verso '+last.when+'.'],seed+'n'));
+  if(r.good[0])out.push('E una cosa la stai facendo davvero bene: '+r.good[0].charAt(0).toLowerCase()+r.good[0].slice(1));
+  if(A)out.push('Se vuoi correre ancora di più, lavoriamo '+evPrep('su',A)+(B?' e '+evPrep('su',B):'')+'.');
+  out.push(evPick(['Avanti così.','Io ci credo, e i numeri pure.','Un giorno alla volta, come stai facendo.'],seed+'c'))}
+ else if(a>=60){lv='y';
+  out.push(evPick(['Ti parlo da amico: così vai avanti, ma a fatica.','Non è andata male, però così arrivi lento.','Ci sei a metà: la strada è giusta, il passo no.'],seed+'a'));
+  if(d>=5)out.push('Però stai migliorando, e questa è la cosa che conta di più.');
+  if(go)out.push('A questo ritmo i '+kgs(last.kg)+' kg li vedi verso '+last.when+'. Si può arrivare molto prima.');
+  if(A)out.push('Le cose che ti frenano sono '+A+(B?' e '+B:'')+'. Sistema quelle e cambia tutto.');
+  out.push(evPick(['Ce la puoi fare, lo so.','Domani è un giorno buono per ripartire.','Una cosa alla volta, e ci arriviamo.'],seed+'c'))}
+ else{lv='r';
+  out.push(evPick(['Te lo devo dire onestamente: così non ce la fai.','Così non va, e un po\' lo sai anche tu.'],seed+'a'));
+  if(pj&&!pj.done&&!go)out.push('Il peso così resta fermo, e tutta la fatica che fai non si vede.');
+  if(A)out.push('Partiamo da una cosa sola: '+A+'.'+(B?' Quando quella va, passiamo '+evPrep('a',B)+'.':''));
+  out.push(evPick(['Non è un giudizio su di te, è solo il punto di partenza. Io sono qui.','Una giornata storta non conta, conta cosa fai domani. Si riparte dalla colazione.'],seed+'c'))}
+ if(!evGoal())out.push('Scrivimi qui sotto quanto pesi, anche a occhio, e dove vuoi arrivare: così ti dico anche quando.');
+ return {lv:lv,t:out.join(' ')}}
+function evVerdictHtml(r){var v=evVerdict(r);if(!v)return '';return '<div class="evv '+v.lv+'"><span class="av" aria-hidden="true">🌱</span><div><small>Il tuo coach</small><p>'+esc(v.t)+'</p></div></div>'}
+
+/* ---------- dove arrivi: stima del ritmo e tappe in kg ---------- */
+function evGoal(){var g=lsGet('leo:goal');return g&&g.w&&g.t?g:null}
+function evNowW(g){var L=S.peso&&S.peso.list||[];if(L.length){var x=L[L.length-1];if(x.d>=addDays(todayIso(),-45))return {kg:x.kg,real:true}}return {kg:g.w,real:false}}
+function evRealRate(){var L=(S.peso&&S.peso.list||[]).filter(function(x){return x.d>=addDays(todayIso(),-70)});if(L.length<2)return null;var a=L[0],b=L[L.length-1];var wk=(parseIso(b.d)-parseIso(a.d))/6048e5;if(wk<2)return null;return (a.kg-b.kg)/wk}
+function evPace(r){var s=r.s;if(s.avg==null)return null;var adh=Math.max(0,Math.min(1,(s.avg-50)/50));var v=.7*adh-s.xoKw/7700;if(s.steps!=null)v+=Math.max(-.07,Math.min(.15,(s.steps-5000)/1000*.035));var real=evRealRate();if(real!=null)v=real;return {v:Math.max(-.5,Math.min(1.1,v)),real:real!=null}}
+function evWhen(weeks){var d=parseIso(addDays(todayIso(),Math.round(weeks*7)));var g=d.getDate();return (g<=10?'inizio ':g<=20?'metà ':'fine ')+MESI[d.getMonth()].toLowerCase()+(d.getFullYear()!==parseIso(todayIso()).getFullYear()?' '+d.getFullYear():'')}
+function evProj(r){var g=evGoal();if(!g)return null;var now=evNowW(g);var rt=evPace(r);if(!rt)return null;var w=now.kg,t=+g.t;var steps=[];
+ if(w<=t)return {done:true,w:w,t:t};
+ var m=Math.floor(w/5)*5;if(m>=w)m-=5;for(;m>t;m-=5)steps.push(m);steps.push(t);
+ var month=Math.round(rt.v*4.35*10)/10;
+ return {w:w,t:t,real:now.real,rateReal:rt.real,month:month,steps:steps.map(function(k){return {kg:k,when:rt.v>.05?evWhen((w-k)/rt.v):null}})}}
+function kgs(x){return String(x).replace('.',',')}
+function evProjHtml(r){var g=evGoal();var hv=g||lsGet('leo:goal')||{};
+ var form='<div class="row" style="gap:8px;margin-top:6px"><label style="flex:1"><span class="small muted">Altezza (cm)</span><input id="eg-h" class="inp" inputmode="numeric" value="'+esc(hv.h||'')+'"></label><label style="flex:1"><span class="small muted">Peso adesso (kg, anche a occhio)</span><input id="eg-w" class="inp" inputmode="decimal" value="'+esc(hv.w||'')+'"></label><label style="flex:1"><span class="small muted">Obiettivo (kg)</span><input id="eg-t" class="inp" inputmode="decimal" value="'+esc(hv.t||'')+'"></label></div><button class="btn block" data-act="evgoal">Salva</button>';
+ if(!g)return '<div class="lbl">Dove arrivi</div><p class="small muted" style="margin:0">Scrivi più o meno quanto pesi e dove vuoi arrivare: l\'app stima quando, dal modo in cui segui il piano. Quando ti pesi davvero, usa il peso vero.</p>'+form;
+ var pj=evProj(r);var h='<div class="lbl">Dove arrivi</div>';
+ if(!pj)return h+'<p class="small muted">Segna qualche giorno di pasti e la stima compare qui.</p>';
+ if(pj.done)return h+'<p>Obiettivo raggiunto. Ora si tratta di restarci.</p>';
+ if(pj.month<=0.05)h+='<p style="margin:0 0 6px">A questo ritmo il peso resta più o meno fermo. Le tappe si sbloccano appena la media sale.</p>';
+ else h+='<p style="margin:0 0 6px">Circa <b>'+kgs(pj.month)+' kg al mese</b>, partendo da '+kgs(pj.w)+' kg'+(pj.real?'':' (stima)')+'.</p>';
+ h+='<ul class="evsteps">'+pj.steps.map(function(x){return '<li><b>'+kgs(x.kg)+' kg</b><span>'+(x.when||'quando il ritmo riparte')+'</span></li>'}).join('')+'</ul>';
+ h+='<p class="small muted">'+(pj.rateReal?'Il ritmo viene dal tuo peso vero delle ultime settimane.':'Il ritmo è stimato da quanto segui il piano, dai fuori pasto e dai passi: con il peso vero diventa preciso.')+' Le date si spostano da sole, in avanti e indietro, con quello che fai.</p>';
+ h+='<details class="small"><summary class="muted" style="cursor:pointer">Cambia peso o obiettivo</summary>'+form+'</details>';
+ return h}
+function evGoalSave(){var h=parseFloat((($('#eg-h')||{}).value||'').replace(',','.')),w=parseFloat((($('#eg-w')||{}).value||'').replace(',','.')),t=parseFloat((($('#eg-t')||{}).value||'').replace(',','.'));
+ if(!(w>30&&w<300)||!(t>30&&t<300)){toast('Scrivi peso e obiettivo in kg');return}lsSet('leo:goal',{h:h>100&&h<230?Math.round(h):null,w:Math.round(w*10)/10,t:Math.round(t*10)/10});openEval();render()}
 
 /* ---------- menu di nonna sincronizzato via GitHub ---------- */
 var GHREPO='rakdoel/alimentazione',GHFILE='menu.json';
@@ -3049,7 +3099,7 @@ function act(a,b){var ds=b.dataset;
  case 'vegt':toggleVeg(ds.name);break;
  case 'vegadd':var inp=$('#vegfree');var nm=inp&&inp.value.trim().slice(0,30);if(nm){var cap=nm.charAt(0).toUpperCase()+nm.slice(1);var dv=dayEdit(S.day);dv.veg=dv.veg||{};var l=dv.veg[S.vegSrc]||[];if(l.map(function(x){return x.toLowerCase()}).indexOf(cap.toLowerCase())<0)l.push(cap);dv.veg[S.vegSrc]=l;saveDay(S.day);openVeg(S.vegSrc)}break;
  case 'recipe':openRecipe(ds.id);break;
- case 'dish':openDish(ds.iso,ds.src);break;case 'volo':openVolo(ds.iso,ds.src);break;case 'vosel':if(S.vo){S.vo.sel[ds.key]=ds.v;var shv=$('#sheet .sheet'),scv=shv?shv.scrollTop:0;openVolo(S.vo.iso,S.vo.src,true);shv=$('#sheet .sheet');if(shv)shv.scrollTop=scv}break;case 'vouse':voUse();break;case 'ghlink':openGhLink();break;case 'ghsave':ghSave();break;case 'ghnow':lsDel('leo:synced');nonnaSync(true).then(function(ok){toast(ok?'Menu inviato a nonna':'Invio non riuscito');render()});break;case 'ghoff':lsDel('leo:ghtoken');lsDel('leo:synced');closeSheet();toast('Scollegato');render();break;case 'exportai':openExportAI();break;case 'bkmake':openBkMake();break;case 'bkgo':bkMake();break;case 'bkrestore':bkRestore();break;case 'dnpaste':openDnPaste();break;case 'dnapply':var mm=((($('#dn-t')||{}).value)||'').match(/#dn=([A-Za-z0-9_-]+)/);if(mm)applyDn(mm[1]);else toast('Non trovo il codice nel messaggio');break;case 'nch':openNChange(ds.iso,ds.src);break;case 'npick':if(ds.id)nPickDo(ds);else openNPick(ds.iso,ds.src);break;case 'nchdish':case 'nchsw':case 'nchveg':case 'nchreset':case 'nchsend':nchAct(a,ds);break;case 'npanc':openNPanc();break;case 'hdopen':openHd(ds.iso);break;case 'pal':openPal();break;case 'mood':moodToggle(b,ds.v);break;case 'eval':openEval();break;case 'evn':openEval(+ds.v);break;case 'palset':palSet(ds.v);break;case 'hdedit':openHd(ds.iso,ds.i);break;case 'hd':hdToggle(ds);break;case 'hdsave':hdSave();break;case 'hddel':hdDel();break;case 'hdmd':openHdMd();break;case 'huopen':openHu(ds.iso,ds.i);break;case 'huedit':openHu(ds.iso,ds.i,ds.u);break;case 'hu':huToggle(ds);break;case 'husave':huSave();break;case 'hudel':huDel();break;case 'nrecipe':openNRecipe(ds.iso,ds.src);break;
+ case 'dish':openDish(ds.iso,ds.src);break;case 'volo':openVolo(ds.iso,ds.src);break;case 'vosel':if(S.vo){S.vo.sel[ds.key]=ds.v;var shv=$('#sheet .sheet'),scv=shv?shv.scrollTop:0;openVolo(S.vo.iso,S.vo.src,true);shv=$('#sheet .sheet');if(shv)shv.scrollTop=scv}break;case 'vouse':voUse();break;case 'ghlink':openGhLink();break;case 'ghsave':ghSave();break;case 'ghnow':lsDel('leo:synced');nonnaSync(true).then(function(ok){toast(ok?'Menu inviato a nonna':'Invio non riuscito');render()});break;case 'ghoff':lsDel('leo:ghtoken');lsDel('leo:synced');closeSheet();toast('Scollegato');render();break;case 'exportai':openExportAI();break;case 'bkmake':openBkMake();break;case 'bkgo':bkMake();break;case 'bkrestore':bkRestore();break;case 'dnpaste':openDnPaste();break;case 'dnapply':var mm=((($('#dn-t')||{}).value)||'').match(/#dn=([A-Za-z0-9_-]+)/);if(mm)applyDn(mm[1]);else toast('Non trovo il codice nel messaggio');break;case 'nch':openNChange(ds.iso,ds.src);break;case 'npick':if(ds.id)nPickDo(ds);else openNPick(ds.iso,ds.src);break;case 'nchdish':case 'nchsw':case 'nchveg':case 'nchreset':case 'nchsend':nchAct(a,ds);break;case 'npanc':openNPanc();break;case 'hdopen':openHd(ds.iso);break;case 'pal':openPal();break;case 'mood':moodToggle(b,ds.v);break;case 'eval':openEval();break;case 'evn':openEval(+ds.v);break;case 'evgoal':evGoalSave();break;case 'palset':palSet(ds.v);break;case 'hdedit':openHd(ds.iso,ds.i);break;case 'hd':hdToggle(ds);break;case 'hdsave':hdSave();break;case 'hddel':hdDel();break;case 'hdmd':openHdMd();break;case 'huopen':openHu(ds.iso,ds.i);break;case 'huedit':openHu(ds.iso,ds.i,ds.u);break;case 'hu':huToggle(ds);break;case 'husave':huSave();break;case 'hudel':huDel();break;case 'nrecipe':openNRecipe(ds.iso,ds.src);break;
  case 'dishnext':var at=S.dishAt;if(!at)break;var dd8=dayData(at[0])||{};var pd=pickDish(at[0],at[1],dd8);if(!pd)break;var ix=pd.opts.indexOf(pd.t);var nx=pd.opts[(ix+1)%pd.opts.length];ensureMonth(ymOf(at[0])).then(function(){var de=dayEdit(at[0]);de.dish=de.dish||{};de.dish[at[1]]=nx.id;saveDay(at[0]);openDish(at[0],at[1]);render()});break;
  case 'calm':S.cal=addMonth(S.cal,+ds.n);render();break;
  case 'calnow':S.cal=ymOf(todayIso());render();break;
