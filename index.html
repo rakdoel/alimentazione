@@ -1554,6 +1554,29 @@ function openX(slot,ix){var iso=S.day;var dd=dayData(iso)||{};var ex=slot==='xo'
  S.xd={slot:slot,c:ex?ex.c:null,q:ex?ex.q:2,ix:ex?+ix:null};var hv=ex?(ex.h||''):(iso===todayIso()?nowHM():'');var on=function(b){return b?' on':''};
  sheet('<h3>'+(slot==='xo'?(ex?'Modifica':'Mangiato fuori dai pasti'):'Aggiunta a '+MEALS[slot].it.toLowerCase())+'</h3>'+(slot==='xo'?'<label class="lbl" for="x-h">A che ora</label><input id="x-h" class="inp" type="time" value="'+esc(hv)+'" style="max-width:150px">':'')+'<label class="lbl" for="x-w">Cosa</label><input id="x-w" class="inp" maxlength="60" placeholder="Es. biscotti, patatine, un bicchiere di vino" value="'+esc(ex?ex.w||'':'')+'"><div class="lbl">Che tipo</div><div class="xopt" id="x-c">'+Object.keys(XC).map(function(k){return '<button class="'+on(ex&&ex.c===k).trim()+'" data-act="xc" data-v="'+k+'">'+XC[k]+'</button>'}).join('')+'</div><div class="lbl">Quanto</div><div class="opts" id="x-q">'+[1,2,3].map(function(q){return '<button class="opt'+on(S.xd.q===q)+'" data-act="xq" data-v="'+q+'"><span><b>'+XQ[q].l+'</b><br><span class="muted small">'+XQ[q].d+'</span></span></button>'}).join('')+'</div>'+(slot==='xo'?'':'<p class="small" id="x-prev" style="background:var(--surface2);border-radius:12px;padding:8px 12px;margin:10px 0 0"></p>')+'<button class="btn block" style="margin-top:12px" data-act="xsave">'+(ex?'Salva':'Aggiungi')+'</button>');xPrev()}
 
+/* ---------- cibi comuni con le calorie per porzione: servono solo a scegliere poco/medio/tanto, non si mostrano mai ---------- */
+var XFOODS=[
+['dolce','Biscotti secchi, 3 (30 g)',130],['dolce','Cioccolato, 2 quadretti (20 g)',110],['dolce','Cioccolato, mezza tavoletta (50 g)',270],['dolce','Cioccolato, tavoletta intera (100 g)',540],['dolce','Cornetto o brioche',300],['dolce','Fetta di torta',350],['dolce','Gelato, 2 palline',220],['dolce','Merendina confezionata',170],['dolce','Nutella, un cucchiaio (15 g)',80],['dolce','Caramelle o gommose, una manciata (30 g)',100],['dolce','Biscotti al cioccolato, 4 (50 g)',240],['dolce','Dolce al cucchiaio o budino',180],
+['salato','Patatine, sacchetto piccolo (25 g)',135],['salato','Patatine, sacchetto grande (100 g)',530],['salato','Popcorn, una ciotola (30 g)',130],['salato','Crackers, una manciata (30 g)',130],['salato','Rustico o pizzetta',250],['salato','Salatini o taralli, una manciata (30 g)',140],
+['carbo','Fetta di pane (30 g)',80],['carbo','Panino (60 g)',170],['carbo','Pizza, un trancio (150 g)',380],['carbo','Pizza intera',800],['carbo','Pasta, un piatto (80 g crudi)',290],['carbo','Patatine fritte, porzione',350],
+['formaggi','Parmigiano, 30 g',120],['formaggi','Mozzarella, 125 g',290],['formaggi','Salame o prosciutto, 50 g',160],['formaggi','Formaggio spalmabile, 30 g',90],
+['fruttasecca','Mandorle o noci, una manciata (30 g)',185],['fruttasecca','Burro di arachidi, un cucchiaio (15 g)',95],['fruttasecca','Arachidi o pistacchi, una ciotolina (50 g)',300],
+['condimento','Olio, un cucchiaio (10 g)',90],['condimento','Maionese o salse, un cucchiaio',100],
+['alcol','Birra, 330 ml',140],['alcol','Birra, 500 ml',215],['alcol','Vino, un bicchiere (125 ml)',90],['alcol','Spritz',170],['alcol','Amaro o liquore, un bicchierino',90],['alcol','Cocktail',220],
+['bibita','Cola o aranciata, lattina (330 ml)',140],['bibita','Succo di frutta (200 ml)',90],['bibita','Cappuccino',90],['bibita','Caffè con zucchero',20],['bibita','Tè freddo (330 ml)',110]
+];
+function xKcalQ(k){return k<=130?1:k<=330?2:3}
+function xFoods(){var el=$('#x-f');if(!el||!S.xd)return;var c=S.xd.c;if(!c){el.innerHTML='';return}
+ el.innerHTML='<div class="lbl" style="margin-top:12px">Scegli dalla lista (decide l\'app quanto pesa)</div><div class="xopt">'+XFOODS.map(function(f,i){return f[0]===c?'<button class="'+(S.xd.f===i?'on':'')+'" data-act="xf" data-v="'+i+'">'+esc(f[1])+'</button>':''}).join('')+'</div>'+
+ (S.xd.f!=null?'<div class="row" style="margin-top:8px;align-items:center;gap:10px"><span class="small muted" style="flex:1">Quante porzioni</span><button class="btn ghost" data-act="xn" data-v="-1" style="flex:none">−</button><b id="x-nn" style="min-width:34px;text-align:center">'+xNfmt(S.xd.n)+'</b><button class="btn ghost" data-act="xn" data-v="1" style="flex:none">+</button></div>':'')}
+function xNfmt(n){return n===.5?'½':n===1.5?'1½':String(n)}
+function xApply(){var d=S.xd;if(!d||d.f==null)return;var f=XFOODS[d.f];var k=Math.round(f[2]*d.n);d.k=k;d.q=xKcalQ(k);
+ Array.prototype.forEach.call(document.querySelectorAll('#x-q button'),function(x){x.classList.toggle('on',+x.dataset.v===d.q)});
+ var w=$('#x-w');if(w)w.value=f[1].replace(/,.*$|\(.*$/,'').trim()+(d.n!==1?' ×'+xNfmt(d.n):'');xFoods();xPrev()}
+function xFoodPick(i){var d=S.xd;if(!d)return;d.f=d.f===i?null:i;d.n=1;if(d.f==null){d.k=null;xFoods();return}xApply()}
+function xPortion(dir){var d=S.xd;if(!d||d.f==null)return;var L=[.5,1,1.5,2,3,4];var j=L.indexOf(d.n);if(j<0)j=1;j=Math.max(0,Math.min(L.length-1,j+dir));d.n=L[j];xApply()}
+var _openXk=openX;openX=function(slot,ix){_openXk(slot,ix);var q=$('#x-q');if(q){var holder=document.createElement('div');holder.id='x-f';q.parentNode.insertBefore(holder,q.previousElementSibling);if(S.xd.c)xFoods()}};
+
 /* ---------- menu di nonna sincronizzato via GitHub ---------- */
 var GHREPO='rakdoel/alimentazione',GHFILE='menu.json';
 var SYNC={t:null,busy:false,again:false};
@@ -2781,9 +2804,9 @@ function act(a,b){var ds=b.dataset;
  case 'itsave':{var mI=S.itm,wI=(($('#it-w')||{}).value||'').trim().slice(0,60);var dE=dayEdit(S.day);dE.t=dE.t||{};var tE=dE.t[mI.slot]||(dE.t[mI.slot]={s:'detail'});tE.s='detail';tE.it=tE.it||{};var itI=mealItems(S.day,mI.src,dE).filter(function(x){return x.key===mI.key})[0];var rI={c:mI.c,q:mI.q,w:wI};if(itI&&isPlanRec(rI,itI))delete tE.it[mI.key];else{var oI={c:rI.c,q:rI.q};if(wI)oI.w=wI;tE.it[mI.key]=oI}if(tE.sub)delete tE.sub[mI.key];saveDay(S.day);closeSheet();render();break}
  case 'itreset':{var dR=dayEdit(S.day);var tR=dR.t&&dR.t[S.itm.slot];if(tR&&tR.it)delete tR.it[S.itm.key];if(tR&&tR.sub)delete tR.sub[S.itm.key];saveDay(S.day);closeSheet();render();break}
  case 'addx':openX(ds.slot);break;case 'xoedit':openX('xo',ds.i);break;
- case 'xc':S.xd.c=ds.v;Array.prototype.forEach.call(document.querySelectorAll('#x-c button'),function(x){x.classList.toggle('on',x===b)});xPrev();break;
- case 'xq':S.xd.q=+ds.v;Array.prototype.forEach.call(document.querySelectorAll('#x-q button'),function(x){x.classList.toggle('on',x===b)});xPrev();break;
- case 'xsave':var w=(($('#x-w')||{}).value||'').trim().slice(0,60);if(!w&&!S.xd.c){toast('Scrivi cosa o scegli il tipo');break}var x={w:w,c:S.xd.c||'altro',q:S.xd.q||2};var d6=dayEdit(S.day);if(S.xd.slot==='xo'){var xh=($('#x-h')||{}).value;if(xh)x.h=xh;d6.xo=d6.xo||[];if(S.xd.ix!=null)d6.xo[S.xd.ix]=x;else d6.xo.push(x);d6.xo.sort(function(a,b){return String(a.h||'99').localeCompare(String(b.h||'99'))})}else{d6.t=d6.t||{};var t6=d6.t[S.xd.slot]||(d6.t[S.xd.slot]={});(t6.x=t6.x||[]).push(x)}saveDay(S.day);closeSheet();render();break;
+ case 'xc':S.xd.c=ds.v;S.xd.f=null;S.xd.k=null;Array.prototype.forEach.call(document.querySelectorAll('#x-c button'),function(x){x.classList.toggle('on',x===b)});xFoods();xPrev();break;case 'xf':xFoodPick(+ds.v);break;case 'xn':xPortion(+ds.v);break;
+ case 'xq':S.xd.q=+ds.v;S.xd.k=null;Array.prototype.forEach.call(document.querySelectorAll('#x-q button'),function(x){x.classList.toggle('on',x===b)});xPrev();break;
+ case 'xsave':var w=(($('#x-w')||{}).value||'').trim().slice(0,60);if(!w&&!S.xd.c){toast('Scrivi cosa o scegli il tipo');break}var x={w:w,c:S.xd.c||'altro',q:S.xd.q||2};if(S.xd.k)x.k=S.xd.k;var d6=dayEdit(S.day);if(S.xd.slot==='xo'){var xh=($('#x-h')||{}).value;if(xh)x.h=xh;d6.xo=d6.xo||[];if(S.xd.ix!=null)d6.xo[S.xd.ix]=x;else d6.xo.push(x);d6.xo.sort(function(a,b){return String(a.h||'99').localeCompare(String(b.h||'99'))})}else{d6.t=d6.t||{};var t6=d6.t[S.xd.slot]||(d6.t[S.xd.slot]={});(t6.x=t6.x||[]).push(x)}saveDay(S.day);closeSheet();render();break;
  case 'delx':var d7=dayEdit(S.day);if(ds.slot==='xo'){d7.xo.splice(+ds.i,1);if(!d7.xo.length)delete d7.xo}else{var t7=d7.t[ds.slot];t7.x.splice(+ds.i,1);if(!t7.x.length)delete t7.x;if(!t7.s&&!t7.x)delete d7.t[ds.slot]}saveDay(S.day);render();break;
  case 'alt':openAlt(ds.key);break;
  case 'accpick':accPick(ds.key,ds.id);break;
