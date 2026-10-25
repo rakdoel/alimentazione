@@ -516,8 +516,13 @@ body.chat-open{overflow:hidden}
 .crt{flex:1;min-width:0}.crt b{display:block;font-size:17px}.crt small{display:block;font-size:14.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cgav{display:flex;width:56px;flex-wrap:wrap;justify-content:center}.cgav img{margin:-3px}.cgav.sm{width:44px}
 .crow.new b{color:var(--accent)}.cdot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--accent);vertical-align:2px;margin-left:4px}
-#chatv .cmic{flex:none;width:44px;height:46px;border:0;background:none;font-size:24px;border-radius:50%}#chatv .cmic.on{background:var(--red-soft);animation:bl 1.2s infinite}
-.vsay{border:0;background:none;font-size:15px;padding:2px 6px;margin:2px 0 0 6px;opacity:.6}
+#chatv .cpill{flex:1;min-width:0;display:flex;align-items:flex-end;background:var(--surface2);border:1px solid var(--line);border-radius:24px}
+#chatv .cpill textarea{flex:1;min-width:0;border:0!important;background:none!important;border-radius:24px;padding:12px 4px 12px 16px!important;outline:none}
+#chatv .cpill .cph{flex:none;width:42px;height:46px;border:0;background:none;color:var(--muted);display:grid;place-items:center;padding:0}
+#chatv .csend,#chatv .cmic{flex:none;width:48px;height:48px;border-radius:50%;border:0;background:var(--accent);color:#fff;display:grid;place-items:center;padding:0}
+#chatv .ci.has .cmic{display:none}#chatv .ci:not(.has):not(.nomic) .csend{display:none}
+#chatv .cmic.on{background:var(--red,#c0392b);animation:bl 1.2s infinite}
+.vsay{border:0;background:none;color:var(--muted);padding:4px 6px;margin:2px 0 0 4px;opacity:.7;display:inline-grid;place-items:center}
 </style>
 <div id="app"><div class="splash"><p class="muted" style="font-size:28px">…</p></div></div>
 <script type="application/json" id="nonna-data">{"u":null,"days":{}}</script>
@@ -2227,11 +2232,12 @@ function bData(n){var out=[];evDays(n).forEach(function(iso){var dd=dayData(iso)
  if(dd.xo)o.fuori_pasto=dd.xo.map(function(x,i){return {indice:i,ora:x.h||'',cosa:x.w||'',tipo:x.c,quanto:({1:'poco',2:'medio',3:'tanto'})[x.q]}});
  if(dd.mood)o.umore=dd.mood;if(dd.steps)o.passi=dd.steps;if(dd.note)o.note=dd.note;if(dd.hd)o.mal_di_testa=dd.hd.map(function(e){return hdTxtAll(e)});if(dd.sos)o.fame=dd.sos.map(function(e){return e.h+' '+(SOS_OUT[e.out]||'')});
  out.push(o)});return JSON.stringify(out)}
-function chatBody(msgs){return {model:braceModel(),max_tokens:2200,system:braceSystem()+'\n\nPuoi lavorare dentro il diario con gli strumenti: quando te lo chiede, o quando vedi una sistemazione chiara (per esempio nelle note ha scritto che ha mangiato qualcosa fuori pasto: proponi di spostarlo nei fuori pasto con l\'ora e di togliere quella frase dalle note). Ogni modifica gliela mostro e la conferma lui, quindi proponile senza chiedere prima il permesso a parole. Non inventare dati che non ha scritto.\nDati del diario degli ultimi 21 giorni in JSON, con date e indici da usare negli strumenti:\n'+bData(21)+'\n\nAllenamenti degli ultimi 45 giorni (palestra con esercizi e serie, camminate):\n'+JSON.stringify(bMoves(45))+'\nScheda attuale nell\'app: '+bScheda()+(calUrl()?'\n\nImpegni dal suo calendario (ultimi 7 giorni e prossimi 14), usali per capire quando è carico e adattare consigli e sfide: '+JSON.stringify(calSummary(14)):'')+'\nSugli allenamenti: valuta come sta andando e consiglia passo passo come proseguire (carichi, ripetizioni, recuperi, quando cambiare scheda, camminate e passi), con prudenza: niente dolore, progressione graduale. La palestra la fa la mattina presto prima del treno, quindi sessioni brevi.',tools:BTOOLS,messages:msgs}}
+function chatBody(msgs){return {model:braceModel(),max_tokens:2200,system:braceSystem()+'\n\nPuoi lavorare dentro il diario con gli strumenti: quando te lo chiede, o quando vedi una sistemazione chiara (per esempio nelle note ha scritto che ha mangiato qualcosa fuori pasto: proponi di spostarlo nei fuori pasto con l\'ora e di togliere quella frase dalle note). Ogni modifica gliela mostro e la conferma lui, quindi proponile senza chiedere prima il permesso a parole. Non inventare dati che non ha scritto.\nDati del diario degli ultimi 21 giorni in JSON, con date e indici da usare negli strumenti:\n'+bData(21)+'\n\nAllenamenti degli ultimi 45 giorni (palestra con esercizi e serie, camminate):\n'+JSON.stringify(bMoves(45))+'\nScheda attuale nell\'app: '+bScheda()+(calUrl()?'\n\nImpegni dal suo calendario (ultimi 7 giorni e prossimi 14), usali per capire quando è carico e adattare consigli e sfide: '+JSON.stringify(calSummary(14)):'')+'\nSugli allenamenti: valuta come sta andando e consiglia passo passo come proseguire (carichi, ripetizioni, recuperi, quando cambiare scheda, camminate e passi), con prudenza: niente dolore, progressione graduale. La palestra la fa la mattina presto prima del treno, quindi sessioni brevi.',tools:BTOOLS,messages:chatClean(msgs)}}
+function chatClean(msgs){var lastTh=false;var out=msgs.map(function(m,i){if(m.role!=='assistant'||typeof m.content==='string')return m;var c=m.content.filter(function(b){return b.type!=='thinking'&&b.type!=='redacted_thinking'});var nx=msgs[i+1];if(c.length!==m.content.length&&i===msgs.length-2&&nx&&Array.isArray(nx.content)&&nx.content.some(function(b){return b.type==='tool_result'}))lastTh=true;if(!c.length)c=[{type:'text',text:'…'}];return {role:'assistant',content:c}});chatClean.noThink=lastTh;return out}
 function chatApiMsgs(){if(!S.capi[thKey()]){var L=chatList();var m=L.filter(function(x){return x.r!=='err'}).slice(-16).map(function(x){return {role:x.r==='user'?'user':'assistant',content:x.c}});while(m.length&&m[0].role!=='user')m.shift();var c=[];m.forEach(function(x){if(c.length&&c[c.length-1].role===x.role)c[c.length-1].content+='\n'+x.content;else c.push(x)});S.capi[thKey()]=c}return S.capi[thKey()]}
 function chatAdd(html){var l=$('#chat-l');var em=$('#chat-empty');if(em)em.remove();if(l){l.insertAdjacentHTML('beforeend',html);l.scrollTop=l.scrollHeight}}
 function chatCall(){var th=thKey();var vis=function(){return thKey()===th&&$('#chat-l')};var addIf=function(h){if(vis())chatAdd(h)};var k=akGet();var msgs=chatApiMsgs();S.cbusy[th]=true;addIf('<div class="cm br wait" id="chat-w">Sto pensando…</div>');
- fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'content-type':'application/json','x-api-key':k,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify(chatBody(msgs))})
+ fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'content-type':'application/json','x-api-key':k,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify((function(){var b=chatBody(msgs);if(chatClean.noThink)b.thinking={type:'disabled'};return b})())})
  .then(function(r){return r.json().then(function(j){return {ok:r.ok,j:j}})}).then(function(x){S.cbusy[th]=false;var w=$('#chat-w');if(w)w.remove();
   if(!x.ok){var e='Non riesco a rispondere: '+(x.j&&x.j.error&&x.j.error.message||'errore');var Le=(lsGet(keyFor(th))||[]);Le.push({r:'err',c:e});lsSet(keyFor(th),Le.slice(-30));addIf(chatMsg({r:'err',c:e}));bNotifyT(th,e);S.capi[th]=null;return}
   var C=x.j.content||[];msgs.push({role:'assistant',content:C});
@@ -2587,28 +2593,37 @@ function openNtfy(){var on=lsGet('leo:ntfyon');var p=ntfyPrefs();var ch=function
  '<p class="small muted" style="margin:10px 0 0">Allo script arriva solo un riassunto minimo (quali pasti hai segnato, il punteggio, le palestre della settimana, la sfida). ntfy è un servizio pubblico: l\'argomento è un codice casuale che conosci solo tu.</p>')}
 
 /* ---------- voce: dettatura e lettura delle risposte con le voci del telefono ---------- */
-var VPROF={robot:[0.85,1.02],volpe:[1.18,1.04],leone:[0.72,0.98],panda:[1.08,0.9],gufo:[0.8,0.92],ninja:[0.9,1.05],pinguino:[1.25,1],unicorno:[1.35,1.08],drago:[0.95,1]};
+var VPROF={};
 function vVoices(){try{return speechSynthesis.getVoices().filter(function(v){return /^it/i.test(v.lang)})}catch(e){return []}}
+function vBest(male){var V=vVoices();if(!V.length)return null;var score=function(v){var n=v.name;var q=/natural|neural|premium|enhanced|wavenet|online|google/i.test(n)?4:0;if(v.localService===false)q+=2;if(/compact|eloquence|espeak/i.test(n))q-=5;var g=male?/male|uomo|diego|luca|cosimo|giorgio|itd|itc/i:/female|donna|alice|elsa|federica|paola|isabella|ita|itb/i;if(g.test(n))q+=1;return q};return V.slice().sort(function(a,b){return score(b)-score(a)})[0]}
 function vSay(text,who){if(!('speechSynthesis' in window))return toast('Questo telefono non sa leggere ad alta voce');try{speechSynthesis.cancel()}catch(e){}
- var t=String(text).replace(/[*_#>`]/g,'').replace(/\s+/g,' ').trim();if(!t)return;var V=vVoices();var p=VPROF[who]||[1,1];
- var chunks=t.match(/[^.!?]+[.!?]*/g)||[t];chunks.forEach(function(c,i){var u=new SpeechSynthesisUtterance(c.trim());u.lang='it-IT';if(V.length){var male=['robot','leone','gufo','ninja','pinguino','drago'].indexOf(who)>=0;var pick=V.filter(function(v){return male?/male|uomo|diego|luca|cosimo|giorgio/i.test(v.name):/female|donna|alice|elsa|federica|paola/i.test(v.name)})[0];u.voice=pick||V[0]}u.pitch=p[0];u.rate=p[1];speechSynthesis.speak(u)})}
+ var t=String(text).replace(/[*_#>`]/g,'').replace(/\p{Extended_Pictographic}/gu,'').replace(/\s+/g,' ').trim();if(!t)return;var male=['robot','leone','gufo','ninja','pinguino','drago'].indexOf(who)>=0;var vo=vBest(male);
+ var chunks=t.match(/[^.!?]+[.!?]*/g)||[t];chunks.forEach(function(c){var u=new SpeechSynthesisUtterance(c.trim());u.lang='it-IT';if(vo)u.voice=vo;u.pitch=1;u.rate=1.02;speechSynthesis.speak(u)})}
 function vStop(){try{speechSynthesis.cancel()}catch(e){}}
 try{speechSynthesis&&speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=function(){}}catch(e){}
 /* 🔊 sotto ogni risposta */
-var _chatMsgV=chatMsg;chatMsg=function(m){var h=_chatMsgV(m);if(m.r==='brace'&&('speechSynthesis' in window))h=h.replace('</div></div></div>','</div><button class="vsay" data-act="vsay" aria-label="Ascolta">🔊</button></div></div>');return h};
+var _chatMsgV=chatMsg;chatMsg=function(m){var h=_chatMsgV(m);if(m.r==='brace'&&('speechSynthesis' in window))h=h.replace('</div></div></div>','</div><button class="vsay" data-act="vsay" aria-label="Ascolta"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg></button></div></div>');return h};
 /* microfono nella barra della chat */
 var vRec=null;
 function vListen(){var SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){toast('La dettatura qui non è disponibile: usa il microfono della tastiera');return}
  if(vRec){try{vRec.stop()}catch(e){}return}vStop();var r=new SR();vRec=r;r.lang='it-IT';r.interimResults=true;r.continuous=false;var ta=$('#chat-in');var base=ta?ta.value:'';var fin='';var mb=$('.cmic');if(mb)mb.classList.add('on');
  r.onresult=function(e){var s='';for(var i=e.resultIndex;i<e.results.length;i++){if(e.results[i].isFinal)fin+=e.results[i][0].transcript;else s+=e.results[i][0].transcript}if(ta)ta.value=(base?base+' ':'')+fin+s};
  r.onerror=function(e){if(e.error==='not-allowed')toast('Serve il permesso del microfono');};
- r.onend=function(){vRec=null;var m2=$('.cmic');if(m2)m2.classList.remove('on');if(fin.trim()&&ta&&lsGet('leo:vauto')!==0){chatSend()}};
+ r.onend=function(){vRec=null;var m2=$('.cmic');if(m2)m2.classList.remove('on');if(fin.trim()&&ta&&lsGet('leo:vauto')!==0){chatSend()}var ci=$('#chatv .ci');if(ci&&ta)ci.classList.toggle('has',!!ta.value.trim())};
  try{r.start()}catch(e){vRec=null}}
-var _openChatV=openChat;openChat=function(pre,thread){_openChatV(pre,thread);var ci=$('#chatv .ci');if(ci&&!$('.cmic'))ci.insertAdjacentHTML('afterbegin','<button class="cmic" data-act="vmic" aria-label="Parla">🎤</button>')};
+var VSVG_MIC='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>';
+var VSVG_CAM='<svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>';
+var VSVG_SEND='<svg viewBox="0 0 24 24" width="21" height="21" fill="currentColor"><path d="M3.4 20.4 21 12 3.4 3.6 3.4 10l12 2-12 2z"/></svg>';
+function vBar(){var ci=$('#chatv .ci');if(!ci||ci.querySelector('.cpill'))return;var ta=$('#chat-in'),ph=ci.querySelector('.cph'),sd=ci.querySelector('.csend');var pill=document.createElement('div');pill.className='cpill';ci.insertBefore(pill,ta);pill.appendChild(ta);if(ph){ph.innerHTML=VSVG_CAM;pill.appendChild(ph)}if(sd)sd.innerHTML=VSVG_SEND;
+ var SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(SR)ci.insertAdjacentHTML('beforeend','<button class="cmic" data-act="vmic" aria-label="Parla">'+VSVG_MIC+'</button>');else ci.classList.add('nomic');
+ var sync=function(){ci.classList.toggle('has',!!ta.value.trim()||!!vRec)};ta.addEventListener('input',sync);sync()}
+var _openChatV=openChat;openChat=function(pre,thread){_openChatV(pre,thread);vBar()};
 /* lettura automatica delle risposte, se attiva */
 var _chatAddV=chatAdd;chatAdd=function(html){_chatAddV(html);if(lsGet('leo:vread')&&/class="cr br"/.test(html)&&!/typing/.test(html)){var d=document.createElement('div');d.innerHTML=html;var cb=d.querySelector('.cb');var w=(d.querySelector('.cr')||{}).getAttribute?d.querySelector('.cr').getAttribute('data-who'):'';if(cb)setTimeout(function(){vSay(cb.innerText,w)},150)}};
 var _chatMenuV=chatMenu;chatMenu=function(){_chatMenuV();var sh=$('#sheet .sheet');if(sh)sh.insertAdjacentHTML('beforeend','<button class="btn ghost block" data-act="vread" style="margin-top:8px">'+(lsGet('leo:vread')?'🔇 Smetti di leggere le risposte a voce':'🔊 Leggi le risposte a voce')+'</button>')};
 var _chatCloseV=chatClose;chatClose=function(){vStop();if(vRec){try{vRec.stop()}catch(e){}}_chatCloseV()};
+
+var _chatSendV=chatSend;chatSend=function(){_chatSendV.apply(this,arguments);var ci=$('#chatv .ci'),ta=$('#chat-in');if(ci&&ta)ci.classList.toggle('has',!!ta.value.trim())};
 
 /* ---------- menu di nonna sincronizzato via GitHub ---------- */
 var GHREPO='rakdoel/alimentazione',GHFILE='menu.json';
