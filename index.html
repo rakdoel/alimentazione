@@ -523,6 +523,12 @@ body.chat-open{overflow:hidden}
 #chatv .ci.has .cmic{display:none}#chatv .ci:not(.has):not(.nomic) .csend{display:none}
 #chatv .cmic.on{background:var(--red,#c0392b);animation:bl 1.2s infinite}
 .vsay{border:0;background:none;color:var(--muted);padding:4px 6px;margin:2px 0 0 4px;opacity:.7;display:inline-grid;place-items:center}
+
+.wkb{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex:none}.wkb .swap{margin:0}.wkb .swap.ghost{background:none;border:1px solid var(--line);color:var(--muted)}
+.wkmine{font-size:11px;color:var(--olive,#6b7f3a);font-weight:700}.wkhint{margin:4px 2px 10px}
+.wkrow{display:flex;align-items:center;gap:8px;border-top:1px solid var(--line)}.wkrow.on .wkopt b{color:var(--accent)}
+.wkopt{flex:1;text-align:left;background:none;border:0;padding:11px 2px;font:inherit;color:var(--ink)}.wkopt b{display:block;font-size:15px}.wkopt small{color:var(--muted);font-size:12px}
+.wkview{flex:none;font-size:13px}.wkmore summary{padding:12px 2px;color:var(--muted);font-size:14px;border-top:1px solid var(--line)}
 </style>
 <div id="app"><div class="splash"><p class="muted" style="font-size:28px">…</p></div></div>
 <script type="application/json" id="nonna-data">{"u":null,"days":{}}</script>
@@ -3872,6 +3878,18 @@ function nPickDo(ds){var iso=ds.iso,src=ds.src,id=ds.id;var r=RCMAP[id];
   if(v&&v.length){c.veg=c.veg||{};c.veg[src]=v}});
  closeSheet();render();var L=S.lang==='pl'?'pl':'it';toast(L==='pl'?'Wybrane. Przepis jest pod posiłkiem.':'Scelto. La ricetta è sotto il pasto.')}
 
+/* ---------- scegliere i piatti della settimana dal Menu ---------- */
+var _tabCucWk=tabCucina;tabCucina=function(){var h=_tabCucWk();if(S.cook!=='menu'||/Carico…/.test(h))return h;
+ h=h.replace(/<button class="swap" data-act="dish" data-iso="([0-9-]+)" data-src="([a-z])">Ricetta<\/button>/g,function(m,iso,src){var dd=dayData(iso)||{};var mine=dd.dish&&dd.dish[src];return '<span class="wkb">'+(mine?'<span class="wkmine">★ scelto</span>':'')+'<button class="swap" data-act="wkpick" data-iso="'+iso+'" data-src="'+src+'">Cambia</button><button class="swap ghost" data-act="dish" data-iso="'+iso+'" data-src="'+src+'">Ricetta</button></span>'});
+ return h.replace(/(<div class="n-weeks"[\s\S]*?<\/div>)/,'$1<p class="small muted wkhint">I piatti te li propongo io. Tocca <b>Cambia</b> su un pasto per scegliere tu la ricetta: quelle elencate vanno già bene con le dosi del piano di quel giorno.</p>')};
+function wkPick(iso,src){var dd=dayData(iso)||{};var d=pickDish(iso,src,dd);if(!d)return toast('Per questo pasto non ho ricette adatte');var cur=d.t.id;var mine=dd.dish&&dd.dish[src];
+ var row=function(o){var on=o.id===cur;return '<div class="wkrow'+(on?' on':'')+'"><button class="wkopt" data-act="wkset" data-iso="'+iso+'" data-src="'+src+'" data-id="'+esc(o.id)+'"><b>'+(on?'✓ ':'')+esc(o.t.it)+'</b><small>'+(o.min?o.min+' min':'')+(o.fit?' · fit':'')+(o.port?' · si porta':'')+'</small></button>'+(o.combo?'':'<button class="link wkview" data-act="wkview" data-id="'+esc(o.id)+'">Vedi</button>')+'</div>'};
+ var pi=d.opts.filter(function(o){return !o.combo}),co=d.opts.filter(function(o){return o.combo});
+ sheet('<div class="kind">'+esc(MEALS[src].it)+' · '+esc(fmtDay(iso))+'</div><h3>Cosa vuoi mangiare?</h3><p class="small muted" style="margin:-4px 0 10px">'+(mine?'Hai scelto tu. ':'Ora c\'è la mia proposta. ')+'Tutte usano quello che il piano prevede quel giorno.</p>'
+  +pi.map(row).join('')+(co.length?'<details class="wkmore"><summary>Abbinamenti semplici ('+co.length+')</summary>'+co.map(row).join('')+'</details>':'')
+  +(mine?'<button class="btn ghost block" data-act="wkauto" data-iso="'+iso+'" data-src="'+src+'" style="margin-top:10px">🎲 Torna alla mia proposta</button>':''))}
+function wkSet(iso,src,id){ensureMonth(ymOf(iso)).then(function(){var de=dayEdit(iso);de.dish=de.dish||{};if(id)de.dish[src]=id;else delete de.dish[src];saveDay(iso);closeSheet();render();toast(id?'Fatto: '+mealLabel(iso,src):'Torna la mia proposta')})}
+
 
 /* ---------- vista nonna ---------- */
 var T={it:{title:'Il menu di L.',week:'Settimana',thisW:'Questa settimana',nextW:'Prossima',today:'oggi',out:'Fuori casa',free:'Cena libera: fuori o quello che si preferisce',msg:'Messaggio di L.',veg:'Verdure',vegAny:'a scelta',atLeast:'almeno',upd:'Aggiornato',std:'Menu standard del nutrizionista',back:'L.? Apri il tuo diario',menu:'Menu',shop:'Spesa',help:'Aiuto',dish:'Idea',shopNote:'Tutto quello che serve per la settimana, pasti fuori esclusi.'},
@@ -4092,7 +4110,7 @@ function act(a,b){var ds=b.dataset;
  case 'sosplan':openSosPlan();break;
  case 'sosplansave':var lines2=(($('#sp-t')||{}).value||'').split('\n').map(function(x){return x.trim()}).filter(Boolean).slice(0,15);S.settings.sosPlan=lines2;Store.save('settings',S.settings);openSos(2);break;
  case 'inspire':openInspire(ds.id);break;
- case 'dishall':openDishAll(ds.iso,ds.src);break;
+ case 'wkpick':wkPick(ds.iso,ds.src);break;case 'wkset':wkSet(ds.iso,ds.src,ds.id);break;case 'wkauto':wkSet(ds.iso,ds.src,null);break;case 'wkview':openRc(ds.id);break;case 'dishall':openDishAll(ds.iso,ds.src);break;
  case 'fitapply':var tt3=DT.filter(function(x){return x.id===ds.t})[0];applyFit(tt3,ds.iso,ds.src).then(function(ok){if(!ok){toast('Non compatibile con quel pasto');return}closeSheet();toast('Fatto: '+mealLabel(ds.iso,ds.src)+' aggiornato');render();openDish(ds.iso,ds.src)});break;
  case 'dishveg':var dvv=dayEdit(ds.iso);var pdd=pickDish(ds.iso,ds.src,dvv);if(pdd){var ww=dishWords(pdd);dvv.veg=dvv.veg||{};dvv.veg[ds.src]=ww.vlist;dvv.dish=dvv.dish||{};dvv.dish[ds.src]=pdd.t.id;saveDay(ds.iso);openDish(ds.iso,ds.src);render()}break;
  case 'valadd':{var vt=$('#valtxt');var vv=vt&&vt.value.trim();if(!vv){toast('Scrivi prima la nota');break}var vl=valList();vl.unshift({id:Date.now().toString(36),t:vv,d:todayIso()});lsSet('leo:val',vl);render();toast('Aggiunta all\'elenco');break}
